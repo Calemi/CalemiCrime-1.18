@@ -1,0 +1,21 @@
+{
+  "block.calemicrime.region_protector": "Region Protector",
+
+
+
+  "screen.regionprotector.btn.rule.off": "OFF",
+  "screen.regionprotector.btn.rule.allow": "ALLOW",
+  "screen.regionprotector.btn.rule.prevent": "PREVENT",
+  "screen.regionprotector.txt.priority": "Priority",
+  "screen.regionprotector.txt.regionoffset": "Region Offset",
+  "screen.regionprotector.txt.regionedge": "Region Edge",
+  "screen.regionprotector.txt.rule.blockbreaking": "Block Breaking",
+  "screen.regionprotector.txt.rule.blockplacing": "Block Placing",
+  "screen.regionprotector.txt.rule.blockusing": "Block Using",
+  "screen.regionprotector.txt.rule.entityhurting": "Entity Hurting",
+  "screen.regionprotector.txt.rule.entityinteracting": "Entity Interacting",
+
+
+
+  "itemGroup.calemicrime.tabMain": "Calemi's Organized Crime"
+}

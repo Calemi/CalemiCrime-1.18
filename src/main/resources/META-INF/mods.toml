@@ -1,0 +1,41 @@
+modLoader="javafml"
+loaderVersion="[39,)"
+license="All rights reserved"
+
+[[mods]]
+modId="calemicrime"
+version="1.0.0"
+displayName="Calemi's Organized Crime"
+authors="Calemi, CaptainKray"
+credits="Calemi - Lead Programmer & Lead Artist, CaptainKray - Programmer & Artist"
+description='''
+    This mod adds custom content for the Official Calemi's Organized Crime Server.
+    '''
+
+[[dependencies.calemicrime]]
+    modId="calemicore"
+    mandatory=true
+    versionRange="1.0.14"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.calemicrime]]
+    modId="calemieconomy"
+    mandatory=true
+    versionRange="1.0.1"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.calemicrime]]
+    modId="forge"
+    mandatory=true
+    versionRange="[40.1.2,)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.calemicrime]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="1.18.2"
+    ordering="NONE"
+    side="BOTH"
