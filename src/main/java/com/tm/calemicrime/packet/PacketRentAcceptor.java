@@ -1,11 +1,10 @@
 package com.tm.calemicrime.packet;
 
 import com.tm.calemicore.util.Location;
-import com.tm.calemicore.util.helper.LogHelper;
 import com.tm.calemicrime.blockentity.BlockEntityRentAcceptor;
-import com.tm.calemicrime.main.CCReference;
 import com.tm.calemicrime.util.RegionRuleSet;
 import com.tm.calemieconomy.item.ItemWallet;
+import dev.ftb.mods.ftbteams.data.TeamManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
@@ -17,6 +16,8 @@ public class PacketRentAcceptor {
 
     private String command;
     private BlockPos pos;
+    private int maxRentTicks;
+    private int costPerHour;
     private int ruleSetIndex;
     private byte ruleOverrideIndex;
     private int walletCurrency;
@@ -28,14 +29,18 @@ public class PacketRentAcceptor {
      * Used to sync the data of the Rent Acceptor.
      * @param command Used to determine the type of packet to send.
      * @param pos The Block position of the Tile Entity.
+     * @param maxRentTicks The max time of rent in ticks.
+     * @param costPerHour The cost of currency per hour of rent.
      * @param ruleSetIndex The rule set index.
      * @param ruleOverrideIndex The index of type of override for the rule.
      * @param walletCurrency The Bank's Wallet's stored currency.
      * @param bankCurrency The Bank's stored currency.
      */
-    public PacketRentAcceptor(String command, BlockPos pos, int ruleSetIndex, byte ruleOverrideIndex, int walletCurrency, int bankCurrency) {
+    public PacketRentAcceptor(String command, BlockPos pos, int maxRentTicks, int costPerHour, int ruleSetIndex, byte ruleOverrideIndex, int walletCurrency, int bankCurrency) {
         this.command = command;
         this.pos = pos;
+        this.maxRentTicks = maxRentTicks;
+        this.costPerHour = costPerHour;
         this.ruleSetIndex = ruleSetIndex;
         this.ruleOverrideIndex = ruleOverrideIndex;
         this.bankCurrency = bankCurrency;
@@ -43,16 +48,18 @@ public class PacketRentAcceptor {
     }
 
     public PacketRentAcceptor(String command, BlockPos pos, int ruleSetIndex, byte ruleOverrideIndex) {
-        this(command, pos, ruleSetIndex, ruleOverrideIndex, 0, 0);
+        this(command, pos, 0, 0, ruleSetIndex, ruleOverrideIndex, 0, 0);
     }
 
-    public PacketRentAcceptor(String command, BlockPos pos, int walletCurrency, int bankCurrency) {
-        this(command, pos, 0, (byte)0, walletCurrency, bankCurrency);
+    public PacketRentAcceptor(String command, BlockPos pos, int maxRentTicks, int costPerHour, int walletCurrency, int bankCurrency) {
+        this(command, pos, maxRentTicks, costPerHour, 0, (byte)0, walletCurrency, bankCurrency);
     }
 
     public PacketRentAcceptor(FriendlyByteBuf buf) {
         command = buf.readUtf(16).trim();
         pos = new BlockPos(buf.readInt(), buf.readInt(), buf.readInt());
+        maxRentTicks = buf.readInt();
+        costPerHour = buf.readInt();
         ruleSetIndex = buf.readInt();
         ruleOverrideIndex = buf.readByte();
         walletCurrency = buf.readInt();
@@ -64,6 +71,8 @@ public class PacketRentAcceptor {
         buf.writeInt(pos.getX());
         buf.writeInt(pos.getY());
         buf.writeInt(pos.getZ());
+        buf.writeInt(maxRentTicks);
+        buf.writeInt(costPerHour);
         buf.writeInt(ruleSetIndex);
         buf.writeByte(ruleOverrideIndex);
         buf.writeInt(walletCurrency);
@@ -83,11 +92,13 @@ public class PacketRentAcceptor {
                 //Checks if the Tile Entity is a Region Protector.
                 if (location.getBlockEntity() instanceof BlockEntityRentAcceptor rentAcceptor) {
 
-                    LogHelper.log(CCReference.MOD_NAME, "PACKET RECEIVED");
-                    LogHelper.log(CCReference.MOD_NAME, "SET OVERRIDE TO " + ruleOverrideIndex);
+                    if (command.equalsIgnoreCase("syncoptions")) {
+                        rentAcceptor.setMaxRentTime(maxRentTicks);
+                        rentAcceptor.setCostToFillRentTime(costPerHour);
+                    }
 
                     //Handles syncing rule.
-                    if (command.equalsIgnoreCase("syncrule")) {
+                    else if (command.equalsIgnoreCase("syncrule")) {
                         rentAcceptor.getRegionRuleSetOverride().ruleSets[ruleSetIndex] = RegionRuleSet.RuleOverrideType.fromIndex(ruleOverrideIndex);
                     }
 
@@ -98,11 +109,15 @@ public class PacketRentAcceptor {
                         }
 
                         rentAcceptor.refillRentTime();
+                        rentAcceptor.setResidentTeam(TeamManager.INSTANCE.getPlayerTeam(player));
                     }
 
                     else if (command.equalsIgnoreCase("refillrentbank")) {
+
                         rentAcceptor.getBank().setCurrency(bankCurrency);
+
                         rentAcceptor.refillRentTime();
+                        rentAcceptor.setResidentTeam(TeamManager.INSTANCE.getPlayerTeam(player));
                     }
 
                     rentAcceptor.markUpdated();

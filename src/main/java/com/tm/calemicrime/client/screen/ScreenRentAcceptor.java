@@ -13,7 +13,9 @@ import com.tm.calemicrime.menu.MenuRentAcceptor;
 import com.tm.calemicrime.packet.CCPacketHandler;
 import com.tm.calemicrime.packet.PacketRentAcceptor;
 import com.tm.calemieconomy.item.ItemWallet;
+import com.tm.calemieconomy.util.helper.CurrencyHelper;
 import com.tm.calemieconomy.util.helper.ScreenTabs;
+import dev.ftb.mods.ftbteams.data.Team;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -56,7 +58,7 @@ public class ScreenRentAcceptor extends ScreenContainerBase<MenuRentAcceptor> {
                 wallet.withdrawCurrency(walletStack, rentAcceptor.getCostToRefillRentTime());
                 rentAcceptor.refillRentTime();
 
-                CCPacketHandler.INSTANCE.sendToServer(new PacketRentAcceptor("refillrentwallet", rentAcceptor.getBlockPos(), walletCurrency, wallet.getCurrency(walletStack)));
+                CCPacketHandler.INSTANCE.sendToServer(new PacketRentAcceptor("refillrentwallet", rentAcceptor.getBlockPos(), 0, 0, wallet.getCurrency(walletStack), 0));
             }
         }
 
@@ -69,31 +71,55 @@ public class ScreenRentAcceptor extends ScreenContainerBase<MenuRentAcceptor> {
                 rentAcceptor.getBank().withdrawCurrency(rentAcceptor.getCostToRefillRentTime());
                 rentAcceptor.refillRentTime();
 
-                CCPacketHandler.INSTANCE.sendToServer(new PacketRentAcceptor("refillrentwallet", rentAcceptor.getBlockPos(), 0, rentAcceptor.getBank().getCurrency()));
+                CCPacketHandler.INSTANCE.sendToServer(new PacketRentAcceptor("refillrentbank", rentAcceptor.getBlockPos(), 0, 0,0, rentAcceptor.getBank().getCurrency()));
             }
         }
+    }
+
+    @Override
+    protected void renderBg(PoseStack poseStack, float partialTick, int mouseX, int mouseY) {
+        super.renderBg(poseStack, partialTick, mouseX, mouseY);
+
+        //Time Left Bar
+        poseStack.pushPose();
+        RenderSystem.setShaderTexture(0, textureLocation);
+        ScreenRect rectTimeLeft = new ScreenRect(getScreenX() + 8, getScreenY() + 40, MathHelper.scaleInt(rentAcceptor.getRemainingRentTime(), rentAcceptor.getMaxRentTime(), 161), 7);
+        ScreenHelper.drawRect(0, 136, rectTimeLeft, 0);
+        poseStack.popPose();
     }
 
     @Override
     public void render(PoseStack poseStack, int mouseX, int mouseY, float partialTick) {
         super.render(poseStack, mouseX, mouseY, partialTick);
 
+        //Bank Currency Tab
         if (rentAcceptor.getBank() != null) {
             ScreenTabs.addCurrencyTab(poseStack, getScreenX(), getScreenY() + 5, mouseX, mouseY, rentAcceptor.getBank());
         }
 
-        poseStack.pushPose();
+        //Team Tab
+        Team residentTeam = rentAcceptor.getResidentTeam();
 
-        RenderSystem.setShaderTexture(0, textureLocation);
-        ScreenRect rectTimeLeft = new ScreenRect(getScreenX() + 8, getScreenY() + 40, MathHelper.scaleInt(rentAcceptor.getRentTicksRemaining(), rentAcceptor.getMaxRentTicks(), 160), 7);
-        ScreenHelper.drawExpandableRect(0, 136, rectTimeLeft, 160, 7, 0);
+        if (residentTeam != null) {
 
-        poseStack.popPose();
+            poseStack.pushPose();
+            RenderSystem.setShaderTexture(0, textureLocation);
+            int nameSize = minecraft.font.width(residentTeam.getDisplayName()) + 8;
+            ScreenRect rectTimeLeft = new ScreenRect(getScreenX() + (getXSize() / 2) - (nameSize / 2), getScreenY() + getYSize(), nameSize, 11);
+            ScreenHelper.drawExpandableRect(0, 143, rectTimeLeft, 160, 11, 0);
+            poseStack.popPose();
 
+            ScreenHelper.drawCenteredString(poseStack, getScreenX() + getXSize() / 2, getScreenY() + getYSize() + 1, 0, 4210752, new TextComponent(residentTeam.getDisplayName()));
+        }
+
+        //Amount to Refill Hover Box
         ScreenRect rectHoverRefill = new ScreenRect(getScreenX() + 62, getScreenY() + 17, 52, 16);
-        ScreenHelper.drawHoveringTextBox(poseStack, rectHoverRefill, 0, mouseX, mouseY, 0xFFFFFF, new TextComponent("Cost to Refill Time: " + rentAcceptor.getCostToRefillRentTime()));
+        ScreenHelper.drawHoveringTextBox(poseStack, rectHoverRefill, 0, mouseX, mouseY, 0xFFFFFF, new TextComponent("Cost to Refill Time: ").append(CurrencyHelper.formatCurrency(rentAcceptor.getCostToRefillRentTime())));
 
+        //Time Left Hover Box
         ScreenRect rectHoverTimeLeft = new ScreenRect(getScreenX() + 8, getScreenY() + 40, 160, 7);
-        ScreenHelper.drawHoveringTextBox(poseStack, rectHoverTimeLeft, 0, mouseX, mouseY, 0xFFFFFF, new TextComponent("Time Left: " + rentAcceptor.getFormattedTimeLeft()));
+        ScreenHelper.drawHoveringTextBox(poseStack, rectHoverTimeLeft, 0, mouseX, mouseY, 0xFFFFFF,
+                new TextComponent("Remaining: ").append(rentAcceptor.getFormattedTime(rentAcceptor.getRemainingRentTime())),
+                new TextComponent("Max:        ").append(rentAcceptor.getFormattedTime(rentAcceptor.getMaxRentTime())));
     }
 }

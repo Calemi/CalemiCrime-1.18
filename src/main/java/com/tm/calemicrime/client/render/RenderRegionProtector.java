@@ -26,11 +26,11 @@ public class RenderRegionProtector implements BlockEntityRenderer<BlockEntityReg
 
         if (Minecraft.getInstance().player.isCreative()) {
 
-            if (regionProtector != null && regionProtector.getRegionOffset() != null && regionProtector.getRegionEdge() != null) {
+            if (regionProtector != null && regionProtector.getRegionOffset() != null && regionProtector.getRegionSize() != null) {
                 VertexConsumer vertexconsumer = buffer.getBuffer(RenderType.lines());
                 LevelRenderer.renderLineBox(poseStack, vertexconsumer,
                         regionProtector.getRegionOffset().x, regionProtector.getRegionOffset().y, regionProtector.getRegionOffset().z,
-                        regionProtector.getRegionOffset().x + regionProtector.getRegionEdge().x, regionProtector.getRegionOffset().y + regionProtector.getRegionEdge().y, regionProtector.getRegionOffset().z + regionProtector.getRegionEdge().z,
+                        regionProtector.getRegionOffset().x + regionProtector.getRegionSize().x, regionProtector.getRegionOffset().y + regionProtector.getRegionSize().y, regionProtector.getRegionOffset().z + regionProtector.getRegionSize().z,
                         1F, 1F, 1F, 1F);
             }
         }

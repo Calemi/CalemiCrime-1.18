@@ -5,8 +5,10 @@ import com.tm.calemicore.util.screen.ScreenBase;
 import com.tm.calemicore.util.screen.widget.SmoothButton;
 import com.tm.calemicrime.blockentity.BlockEntityRentAcceptor;
 import com.tm.calemicrime.packet.CCPacketHandler;
-import com.tm.calemicrime.packet.PacketRegionProtector;
+import com.tm.calemicrime.packet.PacketRentAcceptor;
 import com.tm.calemicrime.util.RegionRuleSet;
+import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
@@ -20,6 +22,9 @@ public class ScreenRentAcceptorOptions extends ScreenBase {
 
     private final SmoothButton[] regionRuleSetButtons;
 
+    private EditBox maxRentTimeBox;
+    private EditBox costToFillRentTimeBox;
+
     public ScreenRentAcceptorOptions(Player player, InteractionHand hand, BlockEntityRentAcceptor rentAcceptor) {
         super(player, hand);
         this.rentAcceptor = rentAcceptor;
@@ -31,13 +36,33 @@ public class ScreenRentAcceptorOptions extends ScreenBase {
         super.init();
 
         int btnXOffset = -60;
-        int btnYOffset = -47;
+        int btnYOffset = -58;
         int btnYSpace = 20;
+
+        int editBoxXOffset = 30;
+        int editBoxYOffset = -13;
+        int editBoxYSpace = 30;
 
         for (int i = 0; i < regionRuleSetButtons.length; i++) {
             final int fi = i;
             regionRuleSetButtons[i] = addRenderableWidget(new SmoothButton(getScreenX() + btnXOffset, getScreenY() + btnYOffset + (btnYSpace * i), 50, getRuleButtonKey(i), (btn) -> toggleRule(fi)));
         }
+
+        maxRentTimeBox = initField(rentAcceptor.getMaxRentTime(), editBoxXOffset, editBoxYOffset);
+        costToFillRentTimeBox = initField(rentAcceptor.getCostToFillRentTime(), editBoxXOffset, editBoxYOffset + editBoxYSpace);
+    }
+
+    private EditBox initField (int value, int x, int y) {
+
+        if (minecraft != null) {
+            EditBox editBox = new EditBox(minecraft.font, getScreenX() + x - 20, getScreenY() + y - 7, 100, 12, new TextComponent(""));
+            addWidget(editBox);
+            editBox.setMaxLength(15);
+            editBox.setValue("" + value);
+            return editBox;
+        }
+
+        return null;
     }
 
     private String getRuleButtonKey(int ruleSetIndex) {
@@ -53,9 +78,16 @@ public class ScreenRentAcceptorOptions extends ScreenBase {
 
     private void confirmEditBoxes() {
 
+        int maxRentTicks = parseInteger(maxRentTimeBox.getValue());
+        int costPerHour = parseInteger(costToFillRentTimeBox.getValue());
+
+        maxRentTimeBox.setValue("" + maxRentTicks);
+        costToFillRentTimeBox.setValue("" + costPerHour);
+
+        CCPacketHandler.INSTANCE.sendToServer(new PacketRentAcceptor("syncoptions", rentAcceptor.getBlockPos(), maxRentTicks, costPerHour, 0, 0));
     }
 
-    private int parseCoordinate(String value) {
+    private int parseInteger(String value) {
         try {
             return Integer.parseInt(value);
         } catch (NumberFormatException numberformatexception) {
@@ -71,7 +103,7 @@ public class ScreenRentAcceptorOptions extends ScreenBase {
         ruleOverrideIndex %= 3;
 
         rentAcceptor.getRegionRuleSetOverride().ruleSets[ruleSetIndex] = RegionRuleSet.RuleOverrideType.fromIndex(ruleOverrideIndex);
-        CCPacketHandler.INSTANCE.sendToServer(new PacketRegionProtector("syncrule", rentAcceptor.getBlockPos(), ruleSetIndex, ruleOverrideIndex));
+        CCPacketHandler.INSTANCE.sendToServer(new PacketRentAcceptor("syncrule", rentAcceptor.getBlockPos(), ruleSetIndex, ruleOverrideIndex));
     }
 
     @Override
@@ -84,6 +116,10 @@ public class ScreenRentAcceptorOptions extends ScreenBase {
 
         regionRuleSetButtons[3].setMessage(new TranslatableComponent(getRuleButtonKey(3)));
         regionRuleSetButtons[4].setMessage(new TranslatableComponent(getRuleButtonKey(4)));
+        regionRuleSetButtons[5].setMessage(new TranslatableComponent(getRuleButtonKey(5)));
+
+        maxRentTimeBox.tick();
+        costToFillRentTimeBox.tick();
     }
 
     @Override
@@ -91,6 +127,17 @@ public class ScreenRentAcceptorOptions extends ScreenBase {
 
     @Override
     protected void drawGuiForeground(PoseStack poseStack, int mouseX, int mouseY) {
+
+        maxRentTimeBox.render(poseStack, mouseX, mouseY, 0);
+        costToFillRentTimeBox.render(poseStack, mouseX, mouseY, 0);
+
+        int editBoxYOffset = 11;
+
+        TranslatableComponent maxRentTicksText = new TranslatableComponent("screen.rent_acceptor.txt.maxrenttime");
+        minecraft.font.draw(poseStack, maxRentTicksText, maxRentTimeBox.x, maxRentTimeBox.y - editBoxYOffset, 0xFFFFFF);
+
+        TranslatableComponent costPerHourText = new TranslatableComponent("screen.rent_acceptor.txt.costtofillrenttime");
+        minecraft.font.draw(poseStack, costPerHourText, costToFillRentTimeBox.x, costToFillRentTimeBox.y - editBoxYOffset, 0xFFFFFF);
 
         int buttonOffset = 4;
 
@@ -108,6 +155,9 @@ public class ScreenRentAcceptorOptions extends ScreenBase {
 
         TranslatableComponent entityInteractingText = new TranslatableComponent("screen.regionprotector.txt.rule.entityinteracting");
         minecraft.font.draw(poseStack, entityInteractingText, regionRuleSetButtons[4].x - minecraft.font.width(entityInteractingText) - buttonOffset, regionRuleSetButtons[4].y + buttonOffset, 0xFFFFFF);
+
+        TranslatableComponent pvpText = new TranslatableComponent("screen.regionprotector.txt.rule.pvp");
+        minecraft.font.draw(poseStack, pvpText, regionRuleSetButtons[4].x - minecraft.font.width(pvpText) - buttonOffset, regionRuleSetButtons[5].y + buttonOffset, 0xFFFFFF);
     }
 
     @Override

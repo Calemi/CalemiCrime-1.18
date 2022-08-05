@@ -21,17 +21,17 @@ public class ScreenRegionProtector extends ScreenBase {
 
     private final BlockEntityRegionProtector regionProtector;
 
+    private final SmoothButton[] regionRuleSetButtons;
+
     private EditBox priorityBox;
 
     private EditBox regionOffsetXBox;
     private EditBox regionOffsetYBox;
     private EditBox regionOffsetZBox;
 
-    private EditBox regionEdgeXBox;
-    private EditBox regionEdgeYBox;
-    private EditBox regionEdgeZBox;
-
-    private final SmoothButton[] regionRuleSetButtons;
+    private EditBox regionSizeXBox;
+    private EditBox regionSizeYBox;
+    private EditBox regionSizeZBox;
 
     public ScreenRegionProtector(Player player, InteractionHand hand, BlockEntityRegionProtector regionProtector) {
         super(player, hand);
@@ -43,29 +43,29 @@ public class ScreenRegionProtector extends ScreenBase {
     protected void init() {
         super.init();
 
-        int rightOffset = 30;
+        int btnXOffset = -60;
+        int btnYOffset = -58;
+        int btnYSpace = 20;
+
+        int editBoxXOffset = 30;
         int editBoxYOffset = 2;
         int editBoxXSpace = 45;
         int editBoxYSpace = 30;
-
-        int btnXOffset = -60;
-        int btnYOffset = -47;
-        int btnYSpace = 20;
-
-        priorityBox = initField(regionProtector.getPriority(), rightOffset, editBoxYOffset - editBoxYSpace);
-
-        regionOffsetXBox = initField(regionProtector.getRegionOffset().x, rightOffset, editBoxYOffset);
-        regionOffsetYBox = initField(regionProtector.getRegionOffset().y, rightOffset + editBoxXSpace, editBoxYOffset);
-        regionOffsetZBox = initField(regionProtector.getRegionOffset().z, rightOffset + editBoxXSpace * 2, editBoxYOffset);
-
-        regionEdgeXBox = initField(regionProtector.getRegionEdge().x, rightOffset, editBoxYOffset + editBoxYSpace);
-        regionEdgeYBox = initField(regionProtector.getRegionEdge().y, rightOffset + editBoxXSpace, editBoxYOffset + editBoxYSpace);
-        regionEdgeZBox = initField(regionProtector.getRegionEdge().z, rightOffset + editBoxXSpace * 2, editBoxYOffset + editBoxYSpace);
 
         for (int i = 0; i < regionRuleSetButtons.length; i++) {
             final int fi = i;
             regionRuleSetButtons[i] = addRenderableWidget(new SmoothButton(getScreenX() + btnXOffset, getScreenY() + btnYOffset + (btnYSpace * i), 50, getRuleButtonKey(i), (btn) -> toggleRule(fi)));
         }
+
+        priorityBox = initField(regionProtector.getPriority(), editBoxXOffset, editBoxYOffset - editBoxYSpace);
+
+        regionOffsetXBox = initField(regionProtector.getRegionOffset().x, editBoxXOffset, editBoxYOffset);
+        regionOffsetYBox = initField(regionProtector.getRegionOffset().y, editBoxXOffset + editBoxXSpace, editBoxYOffset);
+        regionOffsetZBox = initField(regionProtector.getRegionOffset().z, editBoxXOffset + editBoxXSpace * 2, editBoxYOffset);
+
+        regionSizeXBox = initField(regionProtector.getRegionSize().x, editBoxXOffset, editBoxYOffset + editBoxYSpace);
+        regionSizeYBox = initField(regionProtector.getRegionSize().y, editBoxXOffset + editBoxXSpace, editBoxYOffset + editBoxYSpace);
+        regionSizeZBox = initField(regionProtector.getRegionSize().z, editBoxXOffset + editBoxXSpace * 2, editBoxYOffset + editBoxYSpace);
     }
 
     private EditBox initField (int value, int x, int y) {
@@ -94,15 +94,15 @@ public class ScreenRegionProtector extends ScreenBase {
 
     private void confirmEditBoxes() {
 
-        int priority = parseCoordinate(priorityBox.getValue());
+        int priority = parseInteger(priorityBox.getValue());
 
-        int offsetX = parseCoordinate(regionOffsetXBox.getValue());
-        int offsetY = parseCoordinate(regionOffsetYBox.getValue());
-        int offsetZ = parseCoordinate(regionOffsetZBox.getValue());
+        int offsetX = parseInteger(regionOffsetXBox.getValue());
+        int offsetY = parseInteger(regionOffsetYBox.getValue());
+        int offsetZ = parseInteger(regionOffsetZBox.getValue());
 
-        int edgeX = parseCoordinate(regionEdgeXBox.getValue());
-        int edgeY = parseCoordinate(regionEdgeYBox.getValue());
-        int edgeZ = parseCoordinate(regionEdgeZBox.getValue());
+        int edgeX = parseInteger(regionSizeXBox.getValue());
+        int edgeY = parseInteger(regionSizeYBox.getValue());
+        int edgeZ = parseInteger(regionSizeZBox.getValue());
 
         priorityBox.setValue("" + priority);
 
@@ -110,9 +110,9 @@ public class ScreenRegionProtector extends ScreenBase {
         regionOffsetYBox.setValue("" + offsetY);
         regionOffsetZBox.setValue("" + offsetZ);
 
-        regionEdgeXBox.setValue("" + edgeX);
-        regionEdgeYBox.setValue("" + edgeY);
-        regionEdgeZBox.setValue("" + edgeZ);
+        regionSizeXBox.setValue("" + edgeX);
+        regionSizeYBox.setValue("" + edgeY);
+        regionSizeZBox.setValue("" + edgeZ);
 
         BlockPos offset = new BlockPos(offsetX, offsetY, offsetZ);
         BlockPos edge = new BlockPos(edgeX, edgeY, edgeZ);
@@ -121,7 +121,7 @@ public class ScreenRegionProtector extends ScreenBase {
         CCPacketHandler.INSTANCE.sendToServer(new PacketRegionProtector("syncpriority", regionProtector.getBlockPos(), priority));
     }
 
-    private int parseCoordinate(String value) {
+    private int parseInteger(String value) {
         try {
             return Integer.parseInt(value);
         } catch (NumberFormatException numberformatexception) {
@@ -144,22 +144,23 @@ public class ScreenRegionProtector extends ScreenBase {
     public void tick() {
         super.tick();
 
-        regionOffsetXBox.tick();
-        regionOffsetYBox.tick();
-        regionOffsetZBox.tick();
-
-        regionEdgeXBox.tick();
-        regionEdgeYBox.tick();
-        regionEdgeZBox.tick();
-
-        priorityBox.tick();
-
         regionRuleSetButtons[0].setMessage(new TranslatableComponent(getRuleButtonKey(0)));
         regionRuleSetButtons[1].setMessage(new TranslatableComponent(getRuleButtonKey(1)));
         regionRuleSetButtons[2].setMessage(new TranslatableComponent(getRuleButtonKey(2)));
 
         regionRuleSetButtons[3].setMessage(new TranslatableComponent(getRuleButtonKey(3)));
         regionRuleSetButtons[4].setMessage(new TranslatableComponent(getRuleButtonKey(4)));
+        regionRuleSetButtons[5].setMessage(new TranslatableComponent(getRuleButtonKey(5)));
+
+        regionOffsetXBox.tick();
+        regionOffsetYBox.tick();
+        regionOffsetZBox.tick();
+
+        regionSizeXBox.tick();
+        regionSizeYBox.tick();
+        regionSizeZBox.tick();
+
+        priorityBox.tick();
     }
 
     @Override
@@ -172,9 +173,9 @@ public class ScreenRegionProtector extends ScreenBase {
         regionOffsetYBox.render(poseStack, mouseX, mouseY, 0);
         regionOffsetZBox.render(poseStack, mouseX, mouseY, 0);
 
-        regionEdgeXBox.render(poseStack, mouseX, mouseY, 0);
-        regionEdgeYBox.render(poseStack, mouseX, mouseY, 0);
-        regionEdgeZBox.render(poseStack, mouseX, mouseY, 0);
+        regionSizeXBox.render(poseStack, mouseX, mouseY, 0);
+        regionSizeYBox.render(poseStack, mouseX, mouseY, 0);
+        regionSizeZBox.render(poseStack, mouseX, mouseY, 0);
 
         priorityBox.render(poseStack, mouseX, mouseY, 0);
 
@@ -186,8 +187,8 @@ public class ScreenRegionProtector extends ScreenBase {
         TranslatableComponent regionOffsetText = new TranslatableComponent("screen.regionprotector.txt.regionoffset");
         minecraft.font.draw(poseStack, regionOffsetText, regionOffsetXBox.x, regionOffsetXBox.y - editBoxYOffset, 0xFFFFFF);
 
-        TranslatableComponent regionEdgeText = new TranslatableComponent("screen.regionprotector.txt.regionedge");
-        minecraft.font.draw(poseStack, regionEdgeText, regionEdgeXBox.x, regionEdgeXBox.y - editBoxYOffset, 0xFFFFFF);
+        TranslatableComponent regionEdgeText = new TranslatableComponent("screen.regionprotector.txt.regionsize");
+        minecraft.font.draw(poseStack, regionEdgeText, regionSizeXBox.x, regionSizeXBox.y - editBoxYOffset, 0xFFFFFF);
 
         int buttonOffset = 4;
 
@@ -205,6 +206,9 @@ public class ScreenRegionProtector extends ScreenBase {
 
         TranslatableComponent entityInteractingText = new TranslatableComponent("screen.regionprotector.txt.rule.entityinteracting");
         minecraft.font.draw(poseStack, entityInteractingText, regionRuleSetButtons[4].x - minecraft.font.width(entityInteractingText) - buttonOffset, regionRuleSetButtons[4].y + buttonOffset, 0xFFFFFF);
+
+        TranslatableComponent pvpTxt = new TranslatableComponent("screen.regionprotector.txt.rule.pvp");
+        minecraft.font.draw(poseStack, pvpTxt, regionRuleSetButtons[5].x - minecraft.font.width(pvpTxt) - buttonOffset, regionRuleSetButtons[5].y + buttonOffset, 0xFFFFFF);
     }
 
     @Override

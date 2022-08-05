@@ -3,19 +3,19 @@ package com.tm.calemicrime.block;
 import com.tm.calemicore.util.Location;
 import com.tm.calemicore.util.blockentity.BlockEntityContainerBase;
 import com.tm.calemicore.util.helper.ItemHelper;
-import com.tm.calemicore.util.helper.LogHelper;
 import com.tm.calemicrime.blockentity.BlockEntityRentAcceptor;
 import com.tm.calemicrime.client.screen.ScreenRentAcceptorOptions;
 import com.tm.calemicrime.init.InitBlockEntityTypes;
-import com.tm.calemicrime.main.CCReference;
 import dev.ftb.mods.ftbteams.data.Team;
 import dev.ftb.mods.ftbteams.data.TeamManager;
+import net.minecraft.ChatFormatting;
+import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -31,29 +31,11 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.network.NetworkHooks;
-import org.jetbrains.annotations.Nullable;
 
 public class BlockRentAcceptor extends BaseEntityBlock {
 
     public BlockRentAcceptor() {
         super(Properties.of(Material.STONE).sound(SoundType.WOOD).strength(-1.0F, 3600000.0F).noDrops());
-    }
-
-    @Override
-    public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
-
-        super.setPlacedBy(level, pos, state, placer, stack);
-
-        Location location = new Location(level, pos);
-
-        if (location.getBlockEntity() instanceof BlockEntityRentAcceptor rentAcceptor) {
-
-            Team team = TeamManager.INSTANCE.getPlayerTeam(placer.getUUID());
-
-            if (team != null) {
-                rentAcceptor.setResidentTeam(team);
-            }
-        }
     }
 
     @Override
@@ -69,7 +51,18 @@ public class BlockRentAcceptor extends BaseEntityBlock {
 
             else {
                 if (!level.isClientSide()) {
-                    NetworkHooks.openGui((ServerPlayer) player, rentAcceptor, pos);
+
+                    Team team = rentAcceptor.getResidentTeam();
+
+                    if (team == null || TeamManager.INSTANCE.getPlayerTeam((ServerPlayer) player) == team) {
+                        NetworkHooks.openGui((ServerPlayer) player, rentAcceptor, pos);
+                    }
+
+                    else {
+
+                        player.sendMessage(new TextComponent(ChatFormatting.RED + "This plot is owned by: " + team.getDisplayName()), Util.NIL_UUID);
+                        player.sendMessage(new TextComponent(ChatFormatting.RED + "Time left on their rent: ").append(rentAcceptor.getFormattedTime(rentAcceptor.getRemainingRentTime())), Util.NIL_UUID);
+                    }
                 }
             }
 

@@ -14,7 +14,7 @@ public class MenuRentAcceptor extends MenuBlockBase {
         super(InitMenuTypes.RENT_ACCEPTOR.get(), containerID, rentAcceptor);
 
         //Wallet Slot
-        addSlot(new SlotFilter(rentAcceptor, 0, 134, 17, InitItems.WALLET.get()));
+        addSlot(new SlotFilter(rentAcceptor, 0, 26, 17, InitItems.WALLET.get()));
 
         addPlayerInventory(playerInv, 54);
     }

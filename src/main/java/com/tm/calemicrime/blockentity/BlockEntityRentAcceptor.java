@@ -2,9 +2,8 @@ package com.tm.calemicrime.blockentity;
 
 import com.tm.calemicore.util.Location;
 import com.tm.calemicore.util.blockentity.BlockEntityContainerBase;
-import com.tm.calemicore.util.helper.LogHelper;
+import com.tm.calemicore.util.helper.MathHelper;
 import com.tm.calemicrime.init.InitBlockEntityTypes;
-import com.tm.calemicrime.main.CCReference;
 import com.tm.calemicrime.menu.MenuRentAcceptor;
 import com.tm.calemicrime.util.RegionRuleSet;
 import com.tm.calemieconomy.blockentity.BlockEntityBank;
@@ -30,9 +29,9 @@ public class BlockEntityRentAcceptor extends BlockEntityContainerBase implements
 
     private Team residentTeam;
 
-    private int maxRentTicks = 20 * 60 * 60;
-    private int rentTicksRemaining = 0;
-    private int costPerHour = 1;
+    private int maxRentTime = 20 * 60 * 60;
+    private int remainingRentTime = 0;
+    private int costToFillRentTime = 1;
 
     private final RegionRuleSet regionRuleSetOverride = new RegionRuleSet();
 
@@ -52,43 +51,69 @@ public class BlockEntityRentAcceptor extends BlockEntityContainerBase implements
         residentTeam = value;
     }
 
-    public int getMaxRentTicks() {
-        return maxRentTicks;
+    public int getMaxRentTime() {
+        return maxRentTime;
     }
 
-    public int getRentTicksRemaining() {
-        return rentTicksRemaining;
+    public void setMaxRentTime(int value) {
+        maxRentTime = value;
     }
 
-    public void setRentTicksRemaining(int value) {
-        rentTicksRemaining = value;
+    public int getRemainingRentTime() {
+        return remainingRentTime;
+    }
+
+    public void setRemainingRentTime(int value) {
+        remainingRentTime = value;
+    }
+
+    public int getCostToFillRentTime() {
+        return costToFillRentTime;
+    }
+
+    public void setCostToFillRentTime(int value) {
+        costToFillRentTime = value;
     }
 
     public int getCostToRefillRentTime() {
-        return ((maxRentTicks - rentTicksRemaining) / 72000) * costPerHour;
+
+        int value = MathHelper.scaleInt(getMaxRentTime() - getRemainingRentTime(), getMaxRentTime(), getCostToFillRentTime());
+
+        if (value == 0) {
+            return 1;
+        }
+
+        return value;
     }
 
     public void refillRentTime() {
-        setRentTicksRemaining(getMaxRentTicks());
+        setRemainingRentTime(getMaxRentTime());
     }
 
-    public String getFormattedTimeLeft() {
+    public String getFormattedTime(int ticks) {
 
-        int timeInSeconds = rentTicksRemaining / (20) % 60;
-        int timeInMinutes = rentTicksRemaining / (20 * 60) % 60;
-        int timeInHours = rentTicksRemaining / (20 * 60 * 60) % 24;
-        int timeInDays = rentTicksRemaining / (20 * 60 * 60 * 24);
+        int timeInSeconds = ticks / (20) % 60;
+        int timeInMinutes = ticks / (20 * 60) % 60;
+        int timeInHours = ticks / (20 * 60 * 60) % 24;
+        int timeInDays = ticks / (20 * 60 * 60 * 24);
 
-        return timeInDays + "d:" + timeInHours + "h:" + timeInMinutes + "m:" + timeInSeconds + "s";
+        return timeInDays + "d | " + timeInHours + "h | " + timeInMinutes + "m | " + timeInSeconds + "s";
     }
 
     public static void tick(Level level, BlockPos pos, BlockState state, BlockEntityRentAcceptor rentAcceptor) {
 
-        if (rentAcceptor.getRentTicksRemaining() > 0) {
-            rentAcceptor.setRentTicksRemaining(rentAcceptor.getRentTicksRemaining() - 1);
+        if (rentAcceptor.getRemainingRentTime() > 0) {
+
+            if (rentAcceptor.getRemainingRentTime() > rentAcceptor.getMaxRentTime()) {
+                rentAcceptor.setRemainingRentTime(rentAcceptor.getMaxRentTime());
+            }
+
+            rentAcceptor.setRemainingRentTime(rentAcceptor.getRemainingRentTime() - 1);
         }
 
-        //LogHelper.log(CCReference.MOD_NAME, rentAcceptor.getResidentTeam().getName().getString());
+        else if (rentAcceptor.getResidentTeam() != null) {
+            rentAcceptor.setResidentTeam(null);
+        }
     }
 
     /**
@@ -141,11 +166,11 @@ public class BlockEntityRentAcceptor extends BlockEntityContainerBase implements
     public void load(CompoundTag tag) {
         super.load(tag);
 
-        residentTeam = TeamManager.INSTANCE.getTeamByID(tag.getUUID("ResidentTeam"));
+        if (tag.hasUUID("ResidentTeam")) residentTeam = TeamManager.INSTANCE.getTeamByID(tag.getUUID("ResidentTeam"));
 
-        maxRentTicks = tag.getInt("MaxRentTicks");
-        rentTicksRemaining = tag.getInt("RentTicksRemaining");
-        costPerHour = tag.getInt("CostPerHour");
+        maxRentTime = tag.getInt("MaxRentTime");
+        remainingRentTime = tag.getInt("RemainingRentTime");
+        costToFillRentTime = tag.getInt("CostToFillRentTime");
 
         regionRuleSetOverride.loadFromNBT(tag);
     }
@@ -154,11 +179,11 @@ public class BlockEntityRentAcceptor extends BlockEntityContainerBase implements
     protected void saveAdditional(CompoundTag tag) {
         super.saveAdditional(tag);
 
-        tag.putUUID("ResidentTeam", residentTeam.getId());
+        if (residentTeam != null) tag.putUUID("ResidentTeam", residentTeam.getId());
 
-        tag.putInt("MaxRentTicks", maxRentTicks);
-        tag.putInt("RentTicksRemaining", rentTicksRemaining);
-        tag.putInt("CostPerHour", costPerHour);
+        tag.putInt("MaxRentTime", maxRentTime);
+        tag.putInt("RemainingRentTime", remainingRentTime);
+        tag.putInt("CostToFillRentTime", costToFillRentTime);
 
         regionRuleSetOverride.saveToNBT(tag);
     }

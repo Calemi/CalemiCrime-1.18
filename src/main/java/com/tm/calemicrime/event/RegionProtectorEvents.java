@@ -3,8 +3,10 @@ package com.tm.calemicrime.event;
 import com.tm.calemicore.util.Location;
 import com.tm.calemicore.util.helper.LogHelper;
 import com.tm.calemicrime.blockentity.BlockEntityRegionProtector;
+import com.tm.calemicrime.blockentity.BlockEntityRentAcceptor;
 import com.tm.calemicrime.main.CCReference;
 import com.tm.calemicrime.util.RegionRuleSet;
+import dev.ftb.mods.ftbteams.data.TeamManager;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
@@ -50,14 +52,17 @@ public class RegionProtectorEvents {
 
         Location location = new Location(event.getEntity().getLevel(), event.getEntity().getOnPos().offset(0, 1, 0));
 
-        handleEventCancellation(event, event.getEntity().getLevel(), event.getPlayer(), location, 3);
+        if (!(event.getEntity() instanceof Player)) {
+            handleEventCancellation(event, event.getEntity().getLevel(), event.getPlayer(), location, 3);
+        }
+
+        else handleEventCancellation(event, event.getEntity().getLevel(), event.getPlayer(), location, 4);
     }
 
     @SubscribeEvent
     public void onEntityInteract(PlayerInteractEvent.EntityInteract event) {
 
         Location location = new Location(event.getEntity().getLevel(), event.getPos());
-
         handleEventCancellation(event, event.getWorld(), event.getPlayer(), location, 4);
     }
 
@@ -73,7 +78,20 @@ public class RegionProtectorEvents {
 
                 LogHelper.log(CCReference.MOD_NAME, "FOUND REGION PROTECTOR");
 
-                if (regionProtector.getRegionRuleSet().ruleSets[ruleSetIndex] == RegionRuleSet.RuleOverrideType.PREVENT) {
+                BlockEntityRentAcceptor rentAcceptor = regionProtector.getRentAcceptor();
+
+                boolean hasRentAcceptor = rentAcceptor != null;
+                boolean sameTeam = hasRentAcceptor && TeamManager.INSTANCE.getPlayerTeam(player.getUUID()) == rentAcceptor.getResidentTeam();
+                boolean ruleNotOff = hasRentAcceptor && rentAcceptor.getRegionRuleSetOverride().ruleSets[ruleSetIndex] != RegionRuleSet.RuleOverrideType.OFF;
+
+                if (hasRentAcceptor && sameTeam && ruleNotOff) {
+
+                    if (rentAcceptor.getRegionRuleSetOverride().ruleSets[ruleSetIndex] == RegionRuleSet.RuleOverrideType.PREVENT) {
+                        event.setCanceled(true);
+                    }
+                }
+
+                else if (regionProtector.getRegionRuleSet().ruleSets[ruleSetIndex] == RegionRuleSet.RuleOverrideType.PREVENT) {
 
                     LogHelper.log(CCReference.MOD_NAME, "REGION PROTECTOR PREVENTED ACTION");
 

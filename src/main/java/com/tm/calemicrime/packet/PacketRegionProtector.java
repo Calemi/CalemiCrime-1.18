@@ -95,13 +95,10 @@ public class PacketRegionProtector {
                 //Checks if the Tile Entity is a Region Protector.
                 if (location.getBlockEntity() instanceof BlockEntityRegionProtector regionProtector) {
 
-                    LogHelper.log(CCReference.MOD_NAME, "PACKET RECEIVED");
-                    LogHelper.log(CCReference.MOD_NAME, "SET OVERRIDE TO " + ruleOverrideIndex);
-
                     //Handles syncing locations.
                     if (command.equalsIgnoreCase("synclocations")) {
                         regionProtector.setRegionOffset(new Location(player.getLevel(), regionOffset));
-                        regionProtector.setRegionEdge(new Location(player.getLevel(), regionEdge));
+                        regionProtector.setRegionSize(new Location(player.getLevel(), regionEdge));
                     }
 
                     //Handles syncing priority.

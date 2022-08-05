@@ -10,13 +10,15 @@ public class RegionRuleSet {
 
     private final RuleOverrideType entityHurting = RuleOverrideType.OFF;
     private final RuleOverrideType entityInteracting = RuleOverrideType.OFF;
+    private final RuleOverrideType pvp = RuleOverrideType.OFF;
 
     public RuleOverrideType[] ruleSets = {
             blockBreaking,
             blockPlacing,
             blockUsing,
             entityHurting,
-            entityInteracting
+            entityInteracting,
+            pvp
     };
 
     public void loadFromNBT(CompoundTag tag) {

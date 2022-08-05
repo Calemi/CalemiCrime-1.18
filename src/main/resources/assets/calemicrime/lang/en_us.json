@@ -9,14 +9,17 @@
   "screen.regionprotector.btn.rule.prevent": "PREVENT",
   "screen.regionprotector.txt.priority": "Priority",
   "screen.regionprotector.txt.regionoffset": "Region Offset",
-  "screen.regionprotector.txt.regionedge": "Region Edge",
+  "screen.regionprotector.txt.regionsize": "Region Size",
   "screen.regionprotector.txt.rule.blockbreaking": "Block Breaking",
   "screen.regionprotector.txt.rule.blockplacing": "Block Placing",
   "screen.regionprotector.txt.rule.blockusing": "Block Using",
   "screen.regionprotector.txt.rule.entityhurting": "Entity Hurting",
   "screen.regionprotector.txt.rule.entityinteracting": "Entity Interacting",
+  "screen.regionprotector.txt.rule.pvp": "PVP",
   "container.rent_acceptor": "Rent Acceptor",
   "screen.rent_acceptor.btn.payrent": "Pay Rent",
+  "screen.rent_acceptor.txt.maxrenttime": "Max Rent Time (in ticks)",
+  "screen.rent_acceptor.txt.costtofillrenttime": "Cost To Fill Rent Time",
 
 
 
