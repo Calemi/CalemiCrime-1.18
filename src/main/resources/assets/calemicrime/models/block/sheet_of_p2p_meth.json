@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:block/pressure_plate_up",
   "textures": {
-    "texture": "calemicrime:blocks/sheet_of_meth"
+    "texture": "calemicrime:blocks/sheet_of_p2p_meth"
   }
 }

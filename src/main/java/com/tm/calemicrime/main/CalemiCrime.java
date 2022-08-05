@@ -4,6 +4,7 @@ import com.tm.calemicrime.client.render.RenderRegionProtector;
 import com.tm.calemicrime.client.screen.ScreenRentAcceptor;
 import com.tm.calemicrime.event.RegionProtectorEvents;
 import com.tm.calemicrime.init.InitBlockEntityTypes;
+import com.tm.calemicrime.init.InitBlockRenderTypes;
 import com.tm.calemicrime.init.InitItems;
 import com.tm.calemicrime.init.InitMenuTypes;
 import com.tm.calemicrime.packet.CCPacketHandler;
@@ -61,6 +62,8 @@ public class CalemiCrime {
     private void onClientSetup(final FMLClientSetupEvent event) {
 
         MenuScreens.register(InitMenuTypes.RENT_ACCEPTOR.get(), ScreenRentAcceptor::new);
+
+        InitBlockRenderTypes.init();
 
         BlockEntityRenderers.register(InitBlockEntityTypes.REGION_PROTECTOR.get(), RenderRegionProtector::new);
     }

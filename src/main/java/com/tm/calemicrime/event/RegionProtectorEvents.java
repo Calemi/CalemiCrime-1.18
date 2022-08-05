@@ -6,6 +6,7 @@ import com.tm.calemicrime.blockentity.BlockEntityRegionProtector;
 import com.tm.calemicrime.blockentity.BlockEntityRentAcceptor;
 import com.tm.calemicrime.main.CCReference;
 import com.tm.calemicrime.util.RegionRuleSet;
+import com.tm.calemieconomy.blockentity.BlockEntityTradingPost;
 import dev.ftb.mods.ftbteams.data.TeamManager;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.LevelAccessor;
@@ -42,7 +43,15 @@ public class RegionProtectorEvents {
 
         Location location = new Location(event.getEntity().getLevel(), event.getPos());
 
+        if (location.getBlockEntity() != null) {
+
+            if (location.getBlockEntity() instanceof BlockEntityTradingPost || location.getBlockEntity() instanceof BlockEntityRentAcceptor) {
+                return;
+            }
+        }
+
         if (event.getEntity() instanceof Player player) {
+
             handleEventCancellation(event, event.getWorld(), player, location, 2);
         }
     }
