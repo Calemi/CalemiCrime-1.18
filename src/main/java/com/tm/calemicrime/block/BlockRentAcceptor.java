@@ -1,12 +1,18 @@
 package com.tm.calemicrime.block;
 
 import com.tm.calemicore.util.Location;
-import com.tm.calemicrime.blockentity.BlockEntityRegionProtector;
+import com.tm.calemicore.util.blockentity.BlockEntityContainerBase;
+import com.tm.calemicore.util.helper.ItemHelper;
+import com.tm.calemicore.util.helper.LogHelper;
 import com.tm.calemicrime.blockentity.BlockEntityRentAcceptor;
+import com.tm.calemicrime.client.screen.ScreenRentAcceptorOptions;
 import com.tm.calemicrime.init.InitBlockEntityTypes;
+import com.tm.calemicrime.main.CCReference;
 import dev.ftb.mods.ftbteams.data.Team;
 import dev.ftb.mods.ftbteams.data.TeamManager;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
@@ -24,6 +30,7 @@ import net.minecraft.world.level.material.Material;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.Nullable;
 
 public class BlockRentAcceptor extends BaseEntityBlock {
@@ -57,13 +64,17 @@ public class BlockRentAcceptor extends BaseEntityBlock {
         if (location.getBlockEntity() instanceof BlockEntityRentAcceptor rentAcceptor) {
 
             if (player.isCreative()) {
-
-                if (level.isClientSide()) {
-                    openGui(player, hand, rentAcceptor);
-                }
-
-                return InteractionResult.SUCCESS;
+                if (level.isClientSide()) openOptionsGui(player, hand, rentAcceptor);
             }
+
+            else {
+                if (!level.isClientSide()) {
+                    NetworkHooks.openGui((ServerPlayer) player, rentAcceptor, pos);
+                }
+            }
+
+            return InteractionResult.SUCCESS;
+
         }
 
         return InteractionResult.FAIL;
@@ -74,14 +85,22 @@ public class BlockRentAcceptor extends BaseEntityBlock {
 
         if (!state.is(newState.getBlock())) {
 
-            BlockEntityRegionProtector.cleanRegionProtectorList();
+            BlockEntity blockentity = level.getBlockEntity(pos);
+
+            if (blockentity instanceof BlockEntityContainerBase blockEntity) {
+
+                for (ItemStack stack : blockEntity.items) {
+                    ItemHelper.spawnStackAtLocation(level, blockEntity.getLocation(), stack);
+                }
+            }
+
             super.onRemove(state, level, pos, newState, isMoving);
         }
     }
 
     @OnlyIn(Dist.CLIENT)
-    private void openGui (Player player, InteractionHand hand, BlockEntityRentAcceptor rentAcceptor) {
-        //Minecraft.getInstance().setScreen(new ScreenRentAcceptorOptions(player, hand, rentAcceptor));
+    private void openOptionsGui(Player player, InteractionHand hand, BlockEntityRentAcceptor rentAcceptor) {
+        Minecraft.getInstance().setScreen(new ScreenRentAcceptorOptions(player, hand, rentAcceptor));
     }
 
     @Override

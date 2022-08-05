@@ -17,5 +17,6 @@ public class CCPacketHandler {
     public static void init() {
         int id = 0;
         CCPacketHandler.INSTANCE.registerMessage(++id, PacketRegionProtector.class, PacketRegionProtector::toBytes, PacketRegionProtector::new, PacketRegionProtector::handle);
+        CCPacketHandler.INSTANCE.registerMessage(++id, PacketRentAcceptor.class, PacketRentAcceptor::toBytes, PacketRentAcceptor::new, PacketRentAcceptor::handle);
     }
 }

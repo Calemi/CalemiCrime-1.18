@@ -1,5 +1,6 @@
 {
   "block.calemicrime.region_protector": "Region Protector",
+  "block.calemicrime.rent_acceptor": "Rent Acceptor",
 
 
 
@@ -14,6 +15,10 @@
   "screen.regionprotector.txt.rule.blockusing": "Block Using",
   "screen.regionprotector.txt.rule.entityhurting": "Entity Hurting",
   "screen.regionprotector.txt.rule.entityinteracting": "Entity Interacting",
+  "container.rent_acceptor": "Rent Acceptor",
+  "screen.rent_acceptor.btn.payrent": "Pay Rent",
+
+
 
   "item.calemicrime.bag": "Plastic Bag",
   "item.calemicrime.pseudoephedrine": "Pseudoephedrine",
@@ -22,6 +27,7 @@
   "item.calemicrime.unprocessed_p2p_meth": "Unprocessed P2P Meth",
   "item.calemicrime.meth": "Meth",
   "item.calemicrime.p2p_meth": "P2P Meth",
+
 
 
   "itemGroup.calemicrime.tabMain": "Calemi's Organized Crime"

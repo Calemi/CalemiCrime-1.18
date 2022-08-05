@@ -13,7 +13,10 @@ import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
+@OnlyIn(Dist.CLIENT)
 public class ScreenRegionProtector extends ScreenBase {
 
     private final BlockEntityRegionProtector regionProtector;
@@ -28,7 +31,7 @@ public class ScreenRegionProtector extends ScreenBase {
     private EditBox regionEdgeYBox;
     private EditBox regionEdgeZBox;
 
-    private SmoothButton[] regionRuleSetButtons;
+    private final SmoothButton[] regionRuleSetButtons;
 
     public ScreenRegionProtector(Player player, InteractionHand hand, BlockEntityRegionProtector regionProtector) {
         super(player, hand);
@@ -46,7 +49,7 @@ public class ScreenRegionProtector extends ScreenBase {
         int editBoxYSpace = 30;
 
         int btnXOffset = -60;
-        int btnYOffset = -7;
+        int btnYOffset = -47;
         int btnYSpace = 20;
 
         priorityBox = initField(regionProtector.getPriority(), rightOffset, editBoxYOffset - editBoxYSpace);

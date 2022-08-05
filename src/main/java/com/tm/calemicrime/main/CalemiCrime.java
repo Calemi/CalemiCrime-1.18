@@ -1,11 +1,14 @@
 package com.tm.calemicrime.main;
 
 import com.tm.calemicrime.client.render.RenderRegionProtector;
+import com.tm.calemicrime.client.screen.ScreenRentAcceptor;
 import com.tm.calemicrime.event.RegionProtectorEvents;
 import com.tm.calemicrime.init.InitBlockEntityTypes;
-import com.tm.calemicrime.tab.CCTab;
 import com.tm.calemicrime.init.InitItems;
+import com.tm.calemicrime.init.InitMenuTypes;
 import com.tm.calemicrime.packet.CCPacketHandler;
+import com.tm.calemicrime.tab.CCTab;
+import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraftforge.common.MinecraftForge;
@@ -47,6 +50,7 @@ public class CalemiCrime {
 
         InitItems.init();
         InitBlockEntityTypes.BLOCK_ENTITY_TYPES.register(MOD_EVENT_BUS);
+        InitMenuTypes.MENU_TYPES.register(MOD_EVENT_BUS);
     }
 
     private void onCommonSetup(final FMLCommonSetupEvent event) {
@@ -55,6 +59,9 @@ public class CalemiCrime {
     }
 
     private void onClientSetup(final FMLClientSetupEvent event) {
+
+        MenuScreens.register(InitMenuTypes.RENT_ACCEPTOR.get(), ScreenRentAcceptor::new);
+
         BlockEntityRenderers.register(InitBlockEntityTypes.REGION_PROTECTOR.get(), RenderRegionProtector::new);
     }
 }
