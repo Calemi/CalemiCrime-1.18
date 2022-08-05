@@ -113,6 +113,10 @@ dependencies {
 
     implementation fg.deobf("curse.maven:calemicore-573646:${core_file_id}")
     implementation fg.deobf("curse.maven:calemieconomy-579403:${economy_file_id}")
+
+    implementation fg.deobf("curse.maven:archistectury-419699:${architectury_file_id}")
+    implementation fg.deobf("curse.maven:ftb-library-404465:${ftb_library_file_id}")
+    implementation fg.deobf("curse.maven:ftb-teams-404468:${ftb_teams_file_id}")
 }
 
 jar {

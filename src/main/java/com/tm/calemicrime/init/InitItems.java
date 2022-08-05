@@ -1,6 +1,7 @@
 package com.tm.calemicrime.init;
 
 import com.tm.calemicrime.block.BlockRegionProtector;
+import com.tm.calemicrime.block.BlockRentAcceptor;
 import com.tm.calemicrime.block.base.BlockItemBase;
 import com.tm.calemicrime.main.CCReference;
 import com.tm.calemicrime.main.CalemiCrime;
@@ -33,8 +34,11 @@ public class InitItems {
     //----- BLOCKS ------\\
 
     public static final RegistryObject<Block> REGION_PROJECTOR = regBlock("region_protector", CalemiCrime.TAB, BlockRegionProtector::new);
+    public static final RegistryObject<Block> RENT_ACCEPTOR = regBlock("rent_acceptor", CalemiCrime.TAB, BlockRentAcceptor::new);
 
     //----- ITEMS ------\\
+
+    public static final RegistryObject<Item> BAG = regItem("bag", () -> new Item(new Item.Properties().tab(CalemiCrime.TAB)));
 
     /**
      * Used to register a Block.

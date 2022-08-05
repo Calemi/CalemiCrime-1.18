@@ -18,13 +18,6 @@ public class ScreenRegionProtector extends ScreenBase {
 
     private final BlockEntityRegionProtector regionProtector;
 
-    private SmoothButton blockBreakingRuleBtn;
-    private SmoothButton blockPlacingRuleBtn;
-    private SmoothButton blockUsingRuleBtn;
-
-    private SmoothButton entityHurtingRuleBtn;
-    private SmoothButton entityInteractingRuleBtn;
-
     private EditBox priorityBox;
 
     private EditBox regionOffsetXBox;
@@ -35,20 +28,24 @@ public class ScreenRegionProtector extends ScreenBase {
     private EditBox regionEdgeYBox;
     private EditBox regionEdgeZBox;
 
+    private SmoothButton[] regionRuleSetButtons;
+
     public ScreenRegionProtector(Player player, InteractionHand hand, BlockEntityRegionProtector regionProtector) {
         super(player, hand);
         this.regionProtector = regionProtector;
+        regionRuleSetButtons = new SmoothButton[regionProtector.getRegionRuleSet().ruleSets.length];
     }
 
     @Override
     protected void init() {
         super.init();
 
-        int leftOffset = 60;
         int rightOffset = 30;
         int editBoxYOffset = 2;
         int editBoxXSpace = 45;
         int editBoxYSpace = 30;
+
+        int btnXOffset = -60;
         int btnYOffset = -7;
         int btnYSpace = 20;
 
@@ -62,12 +59,10 @@ public class ScreenRegionProtector extends ScreenBase {
         regionEdgeYBox = initField(regionProtector.getRegionEdge().y, rightOffset + editBoxXSpace, editBoxYOffset + editBoxYSpace);
         regionEdgeZBox = initField(regionProtector.getRegionEdge().z, rightOffset + editBoxXSpace * 2, editBoxYOffset + editBoxYSpace);
 
-        blockBreakingRuleBtn = addRenderableWidget(new SmoothButton(getScreenX() - leftOffset, getScreenY() + btnYOffset + btnYSpace * -2, 50, getRuleButtonKey(0), (btn) -> toggleRule(0)));
-        blockPlacingRuleBtn = addRenderableWidget(new SmoothButton(getScreenX() - leftOffset, getScreenY() + btnYOffset + btnYSpace * -1, 50, getRuleButtonKey(1), (btn) -> toggleRule(1)));
-        blockUsingRuleBtn = addRenderableWidget(new SmoothButton(getScreenX() - leftOffset, getScreenY() + btnYOffset, 50, getRuleButtonKey(2), (btn) -> toggleRule(2)));
-
-        entityHurtingRuleBtn = addRenderableWidget(new SmoothButton(getScreenX() - leftOffset, getScreenY() + btnYOffset + btnYSpace, 50, getRuleButtonKey(3), (btn) -> toggleRule(3)));
-        entityInteractingRuleBtn = addRenderableWidget(new SmoothButton(getScreenX() - leftOffset, getScreenY() + btnYOffset + btnYSpace * 2, 50, getRuleButtonKey(4), (btn) -> toggleRule(4)));
+        for (int i = 0; i < regionRuleSetButtons.length; i++) {
+            final int fi = i;
+            regionRuleSetButtons[i] = addRenderableWidget(new SmoothButton(getScreenX() + btnXOffset, getScreenY() + btnYOffset + (btnYSpace * i), 50, getRuleButtonKey(i), (btn) -> toggleRule(fi)));
+        }
     }
 
     private EditBox initField (int value, int x, int y) {
@@ -156,12 +151,12 @@ public class ScreenRegionProtector extends ScreenBase {
 
         priorityBox.tick();
 
-        blockBreakingRuleBtn.setMessage(new TranslatableComponent(getRuleButtonKey(0)));
-        blockPlacingRuleBtn.setMessage(new TranslatableComponent(getRuleButtonKey(1)));
-        blockUsingRuleBtn.setMessage(new TranslatableComponent(getRuleButtonKey(2)));
+        regionRuleSetButtons[0].setMessage(new TranslatableComponent(getRuleButtonKey(0)));
+        regionRuleSetButtons[1].setMessage(new TranslatableComponent(getRuleButtonKey(1)));
+        regionRuleSetButtons[2].setMessage(new TranslatableComponent(getRuleButtonKey(2)));
 
-        entityHurtingRuleBtn.setMessage(new TranslatableComponent(getRuleButtonKey(3)));
-        entityInteractingRuleBtn.setMessage(new TranslatableComponent(getRuleButtonKey(4)));
+        regionRuleSetButtons[3].setMessage(new TranslatableComponent(getRuleButtonKey(3)));
+        regionRuleSetButtons[4].setMessage(new TranslatableComponent(getRuleButtonKey(4)));
     }
 
     @Override
@@ -194,19 +189,19 @@ public class ScreenRegionProtector extends ScreenBase {
         int buttonOffset = 4;
 
         TranslatableComponent blockBreakingText = new TranslatableComponent("screen.regionprotector.txt.rule.blockbreaking");
-        minecraft.font.draw(poseStack, blockBreakingText, blockBreakingRuleBtn.x - minecraft.font.width(blockBreakingText) - buttonOffset, blockBreakingRuleBtn.y + buttonOffset, 0xFFFFFF);
+        minecraft.font.draw(poseStack, blockBreakingText, regionRuleSetButtons[0].x - minecraft.font.width(blockBreakingText) - buttonOffset, regionRuleSetButtons[0].y + buttonOffset, 0xFFFFFF);
 
         TranslatableComponent blockPlacingText = new TranslatableComponent("screen.regionprotector.txt.rule.blockplacing");
-        minecraft.font.draw(poseStack, blockPlacingText, blockPlacingRuleBtn.x - minecraft.font.width(blockPlacingText) - buttonOffset, blockPlacingRuleBtn.y + buttonOffset, 0xFFFFFF);
+        minecraft.font.draw(poseStack, blockPlacingText, regionRuleSetButtons[1].x - minecraft.font.width(blockPlacingText) - buttonOffset, regionRuleSetButtons[1].y + buttonOffset, 0xFFFFFF);
 
         TranslatableComponent blockUsingText = new TranslatableComponent("screen.regionprotector.txt.rule.blockusing");
-        minecraft.font.draw(poseStack, blockUsingText, blockUsingRuleBtn.x - minecraft.font.width(blockUsingText) - buttonOffset, blockUsingRuleBtn.y + buttonOffset, 0xFFFFFF);
+        minecraft.font.draw(poseStack, blockUsingText, regionRuleSetButtons[2].x - minecraft.font.width(blockUsingText) - buttonOffset, regionRuleSetButtons[2].y + buttonOffset, 0xFFFFFF);
 
         TranslatableComponent entityHurtingText = new TranslatableComponent("screen.regionprotector.txt.rule.entityhurting");
-        minecraft.font.draw(poseStack, entityHurtingText, entityHurtingRuleBtn.x - minecraft.font.width(entityHurtingText) - buttonOffset, entityHurtingRuleBtn.y + buttonOffset, 0xFFFFFF);
+        minecraft.font.draw(poseStack, entityHurtingText, regionRuleSetButtons[3].x - minecraft.font.width(entityHurtingText) - buttonOffset, regionRuleSetButtons[3].y + buttonOffset, 0xFFFFFF);
 
         TranslatableComponent entityInteractingText = new TranslatableComponent("screen.regionprotector.txt.rule.entityinteracting");
-        minecraft.font.draw(poseStack, entityInteractingText, entityInteractingRuleBtn.x - minecraft.font.width(entityInteractingText) - buttonOffset, entityInteractingRuleBtn.y + buttonOffset, 0xFFFFFF);
+        minecraft.font.draw(poseStack, entityInteractingText, regionRuleSetButtons[4].x - minecraft.font.width(entityInteractingText) - buttonOffset, regionRuleSetButtons[4].y + buttonOffset, 0xFFFFFF);
     }
 
     @Override
