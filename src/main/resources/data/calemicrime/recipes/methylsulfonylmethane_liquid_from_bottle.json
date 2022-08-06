@@ -1,0 +1,15 @@
+{
+  "type": "tconstruct:melting",
+
+  "ingredient": {
+    "item": "calemicrime:methylsulfonylmethane"
+  },
+
+  "result": {
+    "fluid": "calemicrime:methylsulfonylmethane",
+    "amount": 250
+  },
+
+  "temperature": 1000,
+  "time": 80
+}

@@ -26,14 +26,22 @@
   "item.calemicrime.bag": "Plastic Bag",
   "item.calemicrime.pseudoephedrine": "Pseudoephedrine",
   "item.calemicrime.methylsulfonylmethane": "Methylsulfonylmethane",
+
   "item.calemicrime.unprocessed_meth": "Unprocessed Meth",
   "item.calemicrime.unprocessed_p2p_meth": "Unprocessed P2P Meth",
+
   "item.calemicrime.meth": "Meth",
   "item.calemicrime.p2p_meth": "P2P Meth",
+
+  "item.calemicrime.teenth_meth": "Teenth of Meth",
+  "item.calemicrime.teenth_biker_meth": "Teenth of Biker Meth",
 
   "block.calemicrime.sheet_of_meth": "Sheet of Meth",
   "block.calemicrime.sheet_of_p2p_meth": "Sheet of P2P Meth",
 
+
+  "fluid.calemicrime.methylsulfonylmethane": "Methylsulfonylmethane",
+  "item.calemicrime.methylsulfonylmethane_bucket": "Methylsulfonylmethane Bucket",
 
 
   "itemGroup.calemicrime.tabMain": "Calemi's Organized Crime"

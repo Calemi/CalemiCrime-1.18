@@ -39,7 +39,7 @@ minecraft {
             property 'mixin.env.refMapRemappingFile', "${buildDir}/createSrgToMcp/output.srg"
 
             mods {
-                "${mod_id}" {
+                calemicrime {
                     source sourceSets.main
                 }
             }
@@ -54,7 +54,7 @@ minecraft {
             property 'mixin.env.refMapRemappingFile', "${buildDir}/createSrgToMcp/output.srg"
 
             mods {
-                "${mod_id}" {
+                calemicrime {
                     source sourceSets.main
                 }
             }
@@ -67,7 +67,7 @@ minecraft {
             args '--mod', 'examplemod', '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
 
             mods {
-                "${mod_id}" {
+                calemicrime {
                     source sourceSets.main
                 }
             }
@@ -76,6 +76,7 @@ minecraft {
 }
 
 sourceSets.main.resources { srcDir 'src/generated/resources' }
+
 
 repositories {
 
@@ -117,6 +118,9 @@ dependencies {
     implementation fg.deobf("curse.maven:archistectury-419699:${architectury_file_id}")
     implementation fg.deobf("curse.maven:ftb-library-404465:${ftb_library_file_id}")
     implementation fg.deobf("curse.maven:ftb-teams-404468:${ftb_teams_file_id}")
+
+    implementation fg.deobf("curse.maven:mantle-74924:${mantle_file_id}")
+    implementation fg.deobf("curse.maven:tinkers-74072:${tinkers_file_id}")
 }
 
 jar {

@@ -3,20 +3,22 @@ package com.tm.calemicrime.main;
 import com.tm.calemicrime.client.render.RenderRegionProtector;
 import com.tm.calemicrime.client.screen.ScreenRentAcceptor;
 import com.tm.calemicrime.event.RegionProtectorEvents;
-import com.tm.calemicrime.init.InitBlockEntityTypes;
-import com.tm.calemicrime.init.InitBlockRenderTypes;
-import com.tm.calemicrime.init.InitItems;
-import com.tm.calemicrime.init.InitMenuTypes;
+import com.tm.calemicrime.init.*;
 import com.tm.calemicrime.packet.CCPacketHandler;
 import com.tm.calemicrime.tab.CCTab;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.brewing.BrewingRecipeRegistry;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
 /**
@@ -48,9 +50,11 @@ public class CalemiCrime {
         MOD_EVENT_BUS = FMLJavaModLoadingContext.get().getModEventBus();
         MOD_EVENT_BUS.addListener(this::onCommonSetup);
         MOD_EVENT_BUS.addListener(this::onClientSetup);
+        MOD_EVENT_BUS.addListener(this::onSetupComplete);
 
         InitItems.init();
         InitBlockEntityTypes.BLOCK_ENTITY_TYPES.register(MOD_EVENT_BUS);
+        InitFluids.FLUIDS.register(MOD_EVENT_BUS);
         InitMenuTypes.MENU_TYPES.register(MOD_EVENT_BUS);
     }
 
@@ -67,4 +71,9 @@ public class CalemiCrime {
 
         BlockEntityRenderers.register(InitBlockEntityTypes.REGION_PROTECTOR.get(), RenderRegionProtector::new);
     }
+
+    private void onSetupComplete(final FMLLoadCompleteEvent event) {
+        BrewingRecipeRegistry.addRecipe(Ingredient.of(Items.POTION), Ingredient.of(InitItems.PSEUDOEPHEDRINE.get()), new ItemStack(InitItems.METHYLSULFONYLMETHANE.get()));
+    }
+
 }
