@@ -46,7 +46,12 @@ public class BlockRentAcceptor extends BaseEntityBlock {
         if (location.getBlockEntity() instanceof BlockEntityRentAcceptor rentAcceptor) {
 
             if (player.isCreative()) {
-                if (level.isClientSide()) openOptionsGui(player, hand, rentAcceptor);
+
+                if (player.isCrouching()) {
+                    if (!level.isClientSide()) NetworkHooks.openGui((ServerPlayer) player, rentAcceptor, pos);
+                }
+
+                else if (level.isClientSide()) openOptionsGui(player, hand, rentAcceptor);
             }
 
             else {

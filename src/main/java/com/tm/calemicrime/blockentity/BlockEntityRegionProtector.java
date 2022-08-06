@@ -109,6 +109,11 @@ public class BlockEntityRegionProtector extends BlockEntityBase {
     }
 
     @Override
+    public AABB getRenderBoundingBox() {
+        return getRegion();
+    }
+
+    @Override
     public void load(CompoundTag tag) {
         super.load(tag);
 
