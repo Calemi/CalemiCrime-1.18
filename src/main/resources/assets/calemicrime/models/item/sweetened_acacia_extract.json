@@ -1,0 +1,6 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "calemicrime:items/sweetened_acacia_extract"
+  }
+}

@@ -55,6 +55,11 @@ public class InitItems {
     public static final RegistryObject<Item> TEENTH_METH = regItem("teenth_meth", () -> new Item(new Item.Properties().tab(CalemiCrime.TAB)));
     public static final RegistryObject<Item> TEENTH_BIKER_METH = regItem("teenth_biker_meth", () -> new Item(new Item.Properties().tab(CalemiCrime.TAB)));
 
+    public static final RegistryObject<Item> SILICA_DUST = regItem("silica_dust", () -> new Item(new Item.Properties().tab(CalemiCrime.TAB)));
+    public static final RegistryObject<Item> ACACIA_EXTRACT = regItem("acacia_extract", () -> new Item(new Item.Properties().tab(CalemiCrime.TAB)));
+
+    public static final RegistryObject<Item> SWEETENED_ACACIA_EXTRACT = regItem("sweetened_acacia_extract", () -> new Item(new Item.Properties().tab(CalemiCrime.TAB)));
+    public static final RegistryObject<Item> KETAMINE = regItem("ketamine", () -> new Item(new Item.Properties().tab(CalemiCrime.TAB)));
 
 
 
