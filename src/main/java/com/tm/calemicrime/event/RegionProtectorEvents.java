@@ -31,43 +31,6 @@ import java.util.ArrayList;
 public class RegionProtectorEvents {
 
     @SubscribeEvent
-    public void onBlockExploded(ExplosionEvent.Start event) {
-        event.setCanceled(true);
-    }
-
-    @SubscribeEvent
-    public void onMobGrief(EntityMobGriefingEvent event) {
-
-        if (!(event.getEntity() instanceof Villager)) {
-            event.setResult(Event.Result.DENY);
-        }
-    }
-
-    @SubscribeEvent
-    public void onPistonEvent(PistonEvent.Pre event) {
-
-        Location location = new Location((Level) event.getWorld(), event.getPos());
-
-        if (location.getBlock() == Blocks.STICKY_PISTON) {
-            event.setCanceled(true);
-            return;
-        }
-
-        Location moveLocation = new Location((Level) event.getWorld(), event.getFaceOffsetPos());
-
-        if (event.getPistonMoveType().isExtend) {
-            if (!moveLocation.isAirBlock() && moveLocation.getBlock().getPistonPushReaction(moveLocation.getBlockState()) != PushReaction.DESTROY) {
-                event.setCanceled(true);
-            }
-        }
-    }
-
-    @SubscribeEvent
-    public void onMobGrief(SaplingGrowTreeEvent event) {
-        event.setCanceled(true);
-    }
-
-    @SubscribeEvent
     public void onBlockBreak(BlockEvent.BreakEvent event) {
 
         Location location = new Location(event.getPlayer().getLevel(), event.getPos());

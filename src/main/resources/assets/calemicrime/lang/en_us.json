@@ -33,10 +33,11 @@
   "item.calemicrime.meth": "Meth",
   "item.calemicrime.p2p_meth": "P2P Meth",
 
-  "item.calemicrime.teenth_meth": "Teenth of Meth",
-  "item.calemicrime.teenth_biker_meth": "Teenth of Biker Meth",
+  "item.calemicrime.teenth_of_meth": "Teenth of Meth",
+  "item.calemicrime.teenth_of_biker_meth": "Teenth of Biker Meth",
 
   "item.calemicrime.silica_dust": "Silica Dust",
+  "item.calemicrime.silica_gel": "Silica Gel",
   "item.calemicrime.acacia_extract": "Acacia Extract",
   "item.calemicrime.sweetened_acacia_extract": "Sweetened Acacia Extract",
   "item.calemicrime.ketamine": "Ketamine",
@@ -47,6 +48,8 @@
 
   "fluid.calemicrime.methylsulfonylmethane": "Methylsulfonylmethane",
   "item.calemicrime.methylsulfonylmethane_bucket": "Methylsulfonylmethane Bucket",
+  "fluid.calemicrime.methylamine": "Methylamine",
+  "item.calemicrime.methylamine_bucket": "Methylamine Bucket",
 
 
   "itemGroup.calemicrime.tabMain": "Calemi's Organized Crime"

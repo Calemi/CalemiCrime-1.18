@@ -43,19 +43,22 @@ public class InitItems {
 
     public static final RegistryObject<Item> BAG = regItem("bag", () -> new Item(new Item.Properties().tab(CalemiCrime.TAB)));
 
+    public static final RegistryObject<Item> TEENTH_OF_METH = regItem("teenth_of_meth", () -> new Item(new Item.Properties().tab(CalemiCrime.TAB)));
+    public static final RegistryObject<Item> TEENTH_OF_BIKER_METH = regItem("teenth_of_biker_meth", () -> new Item(new Item.Properties().tab(CalemiCrime.TAB)));
+
+    //METH
     public static final RegistryObject<Item> PSEUDOEPHEDRINE = regItem("pseudoephedrine", () -> new Item(new Item.Properties().tab(CalemiCrime.TAB)));
-    public static final RegistryObject<Item> METHYLSULFONYLMETHANE = regItem("methylsulfonylmethane", () -> new Item(new Item.Properties().tab(CalemiCrime.TAB)));
-
     public static final RegistryObject<Item> UNPROCESSED_METH = regItem("unprocessed_meth", () -> new Item(new Item.Properties().tab(CalemiCrime.TAB)));
-    public static final RegistryObject<Item> UNPROCESSED_P2P_METH = regItem("unprocessed_p2p_meth", () -> new Item(new Item.Properties().tab(CalemiCrime.TAB)));
-
     public static final RegistryObject<Item> METH = regItem("meth", () -> new Item(new Item.Properties().tab(CalemiCrime.TAB)));
+
+    //P2P METH
+    public static final RegistryObject<Item> METHYLSULFONYLMETHANE = regItem("methylsulfonylmethane", () -> new Item(new Item.Properties().tab(CalemiCrime.TAB)));
+    public static final RegistryObject<Item> UNPROCESSED_P2P_METH = regItem("unprocessed_p2p_meth", () -> new Item(new Item.Properties().tab(CalemiCrime.TAB)));
     public static final RegistryObject<Item> P2P_METH = regItem("p2p_meth", () -> new Item(new Item.Properties().tab(CalemiCrime.TAB)));
 
-    public static final RegistryObject<Item> TEENTH_METH = regItem("teenth_meth", () -> new Item(new Item.Properties().tab(CalemiCrime.TAB)));
-    public static final RegistryObject<Item> TEENTH_BIKER_METH = regItem("teenth_biker_meth", () -> new Item(new Item.Properties().tab(CalemiCrime.TAB)));
-
+    //KETAMINE
     public static final RegistryObject<Item> SILICA_DUST = regItem("silica_dust", () -> new Item(new Item.Properties().tab(CalemiCrime.TAB)));
+    public static final RegistryObject<Item> SILICA_GEL = regItem("silica_gel", () -> new Item(new Item.Properties().tab(CalemiCrime.TAB)));
     public static final RegistryObject<Item> ACACIA_EXTRACT = regItem("acacia_extract", () -> new Item(new Item.Properties().tab(CalemiCrime.TAB)));
 
     public static final RegistryObject<Item> SWEETENED_ACACIA_EXTRACT = regItem("sweetened_acacia_extract", () -> new Item(new Item.Properties().tab(CalemiCrime.TAB)));

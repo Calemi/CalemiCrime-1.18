@@ -121,6 +121,9 @@ dependencies {
 
     implementation fg.deobf("curse.maven:mantle-74924:${mantle_file_id}")
     implementation fg.deobf("curse.maven:tinkers-74072:${tinkers_file_id}")
+
+    implementation fg.deobf("curse.maven:flywheel-486392:${flywheel_file_id}")
+    implementation fg.deobf("curse.maven:create-328085:${create_file_id}")
 }
 
 jar {

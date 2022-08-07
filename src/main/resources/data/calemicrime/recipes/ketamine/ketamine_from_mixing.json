@@ -1,0 +1,17 @@
+{
+  "type": "create:mixing",
+  "ingredients": [
+    {
+      "item": "calemicrime:sweetened_acacia_extract"
+    },
+    {
+      "item": "calemicrime:silica_gel"
+    }
+  ],
+  "results": [
+    {
+      "item": "calemicrime:ketamine"
+    }
+  ],
+  "heatRequirement": "heated"
+}

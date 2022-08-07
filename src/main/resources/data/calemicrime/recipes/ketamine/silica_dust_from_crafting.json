@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "QS",
+    "SQ",
+  ],
+  "key": {
+    "Q": {
+      "tag": "minecraft:nether_quartz"
+    },
+    "S": {
+      "item": "minecraft:sand"
+    }
+  },
+  "result": {
+    "item": "calemicrime:silica_dust"
+  }
+}

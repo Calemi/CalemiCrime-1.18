@@ -1,0 +1,17 @@
+{
+  "type": "tconstruct:casting_table",
+
+  "cast": {
+     "item": "minecraft:glass_pane"
+  },
+
+  "cast_consumed": true,
+
+  "fluid": {
+    "tag": "calemicrime:methylamine",
+    "amount": 1000
+  },
+
+  "result": "calemicrime:unprocessed_p2p_meth",
+  "cooling_time": 68
+}
