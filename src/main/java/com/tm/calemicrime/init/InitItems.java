@@ -1,5 +1,6 @@
 package com.tm.calemicrime.init;
 
+import com.tm.calemicrime.block.BlockCannabis;
 import com.tm.calemicrime.block.BlockRegionProtector;
 import com.tm.calemicrime.block.BlockRentAcceptor;
 import com.tm.calemicrime.block.BlockSheetOfMeth;
@@ -39,12 +40,17 @@ public class InitItems {
     public static final RegistryObject<Block> SHEET_OF_METH = regBlock("sheet_of_meth", CalemiCrime.TAB, BlockSheetOfMeth::new);
     public static final RegistryObject<Block> SHEET_OF_P2P_METH = regBlock("sheet_of_p2p_meth", CalemiCrime.TAB, BlockSheetOfMeth::new);
 
+    //PLANTS
+    public static final RegistryObject<Block> CANNABIS = BLOCKS.register("cannabis", BlockCannabis::new);
+    public static final RegistryObject<Item> CANNABIS_SEEDS = ITEMS.register("cannabis_seeds", () -> new BlockItemBase(CANNABIS.get(), CalemiCrime.TAB));
+
     //----- ITEMS ------\\
 
     public static final RegistryObject<Item> BAG = regItem("bag", () -> new Item(new Item.Properties().tab(CalemiCrime.TAB)));
 
     public static final RegistryObject<Item> TEENTH_OF_METH = regItem("teenth_of_meth", () -> new Item(new Item.Properties().tab(CalemiCrime.TAB)));
     public static final RegistryObject<Item> TEENTH_OF_BIKER_METH = regItem("teenth_of_biker_meth", () -> new Item(new Item.Properties().tab(CalemiCrime.TAB)));
+    public static final RegistryObject<Item> TEENTH_OF_KUSH = regItem("teenth_of_kush", () -> new Item(new Item.Properties().tab(CalemiCrime.TAB)));
 
     //METH
     public static final RegistryObject<Item> PSEUDOEPHEDRINE = regItem("pseudoephedrine", () -> new Item(new Item.Properties().tab(CalemiCrime.TAB)));
@@ -63,6 +69,9 @@ public class InitItems {
 
     public static final RegistryObject<Item> SWEETENED_ACACIA_EXTRACT = regItem("sweetened_acacia_extract", () -> new Item(new Item.Properties().tab(CalemiCrime.TAB)));
     public static final RegistryObject<Item> KETAMINE = regItem("ketamine", () -> new Item(new Item.Properties().tab(CalemiCrime.TAB)));
+
+    public static final RegistryObject<Item> CANNABIS_LEAF = regItem("cannabis_leaf", () -> new Item(new Item.Properties().tab(CalemiCrime.TAB)));
+    public static final RegistryObject<Item> KUSH = regItem("kush", () -> new Item(new Item.Properties().tab(CalemiCrime.TAB)));
 
 
 

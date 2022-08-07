@@ -35,6 +35,7 @@
 
   "item.calemicrime.teenth_of_meth": "Teenth of Meth",
   "item.calemicrime.teenth_of_biker_meth": "Teenth of Biker Meth",
+  "item.calemicrime.teenth_of_kush": "Teenth of Kush",
 
   "item.calemicrime.silica_dust": "Silica Dust",
   "item.calemicrime.silica_gel": "Silica Gel",
@@ -42,8 +43,13 @@
   "item.calemicrime.sweetened_acacia_extract": "Sweetened Acacia Extract",
   "item.calemicrime.ketamine": "Ketamine",
 
+  "item.calemicrime.cannabis_leaf": "Cannabis Leaf",
+  "item.calemicrime.kush": "Kush",
+
   "block.calemicrime.sheet_of_meth": "Sheet of Meth",
   "block.calemicrime.sheet_of_p2p_meth": "Sheet of P2P Meth",
+
+  "block.calemicrime.cannabis_seeds": "Cannabis Seeds",
 
 
   "fluid.calemicrime.methylsulfonylmethane": "Methylsulfonylmethane",

@@ -2,13 +2,13 @@
   "type": "minecraft:crafting_shapeless",
   "ingredients": [
     {
-      "item": "calemicrime:p2p_meth"
+      "item": "calemicrime:kush"
     },
     {
       "item": "calemicrime:bag"
     }
   ],
   "result": {
-    "item": "calemicrime:teenth_of_biker_meth"
+    "item": "calemicrime:teenth_of_kush"
   }
 }

@@ -1,0 +1,18 @@
+{
+  "type": "create:crushing",
+  "ingredients": [
+    {
+      "item": "calemicrime:cannabis_leaf"
+    }
+  ],
+  "results": [
+    {
+      "item": "calemicrime:kush"
+    },
+    {
+      "item": "calemicrime:kush",
+      "chance": 0.75
+    }
+  ],
+  "processingTime": 200
+}

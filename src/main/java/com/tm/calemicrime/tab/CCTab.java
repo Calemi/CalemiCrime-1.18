@@ -13,6 +13,6 @@ public class CCTab extends CreativeModeTab {
 
     @Override
     public ItemStack makeIcon () {
-        return new ItemStack(InitItems.REGION_PROJECTOR.get());
+        return new ItemStack(InitItems.CANNABIS_LEAF.get());
     }
 }

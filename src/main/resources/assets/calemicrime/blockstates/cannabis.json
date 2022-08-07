@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "mature=true": {
+      "model": "calemicrime:block/cannabis_mature"
+    },
+    "mature=false": {
+      "model": "calemicrime:block/cannabis_premature"
+    }
+  }
+}
