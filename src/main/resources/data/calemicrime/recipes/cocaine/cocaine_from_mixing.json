@@ -1,0 +1,19 @@
+{
+  "type": "create:mixing",
+  "ingredients": [
+    {
+      "item": "calemicrime:coca_leaf"
+    },
+    {
+      "fluid": "tconstruct:molten_electrum",
+      "nbt": {},
+      "amount": 1000
+    }
+  ],
+  "results": [
+    {
+      "item": "calemicrime:cocaine"
+    }
+  ],
+  "heatRequirement": "heated"
+}

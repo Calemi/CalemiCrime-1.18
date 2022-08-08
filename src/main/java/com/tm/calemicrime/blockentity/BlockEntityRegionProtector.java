@@ -100,6 +100,8 @@ public class BlockEntityRegionProtector extends BlockEntityBase {
 
     public void checkForRentAcceptors() {
 
+        rentAcceptor = null;
+
         for (Direction direction : Direction.values()) {
 
             if (new Location(getLocation(), direction, 1).getBlockEntity() instanceof BlockEntityRentAcceptor rentAcceptor) {

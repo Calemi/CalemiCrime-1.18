@@ -1,0 +1,13 @@
+{
+  "type": "create:pressing",
+  "ingredients": [
+    {
+      "item": "create:unprocessed_p2p_meth"
+    }
+  ],
+  "results": [
+    {
+      "item": "create:sheet_of_p2p_meth"
+    }
+  ]
+}

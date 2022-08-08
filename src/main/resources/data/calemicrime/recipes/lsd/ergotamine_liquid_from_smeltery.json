@@ -1,0 +1,15 @@
+{
+  "type": "tconstruct:melting",
+
+  "ingredient": {
+    "item": "calemicrime:ergotamine"
+  },
+
+  "result": {
+    "fluid": "calemicrime:ergotamine",
+    "amount": 250
+  },
+
+  "temperature": 1000,
+  "time": 80
+}

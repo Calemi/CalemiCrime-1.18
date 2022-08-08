@@ -1,0 +1,7 @@
+{
+  "loader": "mantle:fluid_texture",
+  "textures": {
+    "still": "calemicrime:blocks/ergotamine_still",
+    "flowing": "calemicrime:blocks/ergotamine_flowing"
+  }
+}

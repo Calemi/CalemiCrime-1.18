@@ -1,0 +1,23 @@
+{
+  "type": "create:crushing",
+  "ingredients": [
+    {
+      "item": "calemicrime:sheet_of_p2p_meth"
+    }
+  ],
+  "results": [
+    {
+      "item": "calemicrime:p2p_meth",
+      "amount": "2"
+    },
+    {
+      "item": "calemicrime:p2p_meth",
+      "chance": 0.50
+    },
+    {
+      "item": "calemicrime:p2p_meth",
+      "chance": 0.50
+    }
+  ],
+  "processingTime": 200
+}

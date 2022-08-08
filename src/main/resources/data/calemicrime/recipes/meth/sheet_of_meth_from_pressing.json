@@ -1,0 +1,13 @@
+{
+  "type": "create:pressing",
+  "ingredients": [
+    {
+      "item": "create:unprocessed_meth"
+    }
+  ],
+  "results": [
+    {
+      "item": "create:sheet_of_meth"
+    }
+  ]
+}

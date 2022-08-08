@@ -10,13 +10,7 @@ import com.tm.calemicrime.tab.CCTab;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.item.alchemy.PotionUtils;
-import net.minecraft.world.item.alchemy.Potions;
-import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.brewing.BrewingRecipeRegistry;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -77,14 +71,7 @@ public class CalemiCrime {
     }
 
     private void onSetupComplete(final FMLLoadCompleteEvent event) {
-
-        ItemStack water_bottle = new ItemStack(Items.POTION);
-        PotionUtils.setPotion(water_bottle, Potions.WATER);
-
-        BrewingRecipeRegistry.addRecipe(Ingredient.of(water_bottle), Ingredient.of(InitItems.PSEUDOEPHEDRINE.get()), new ItemStack(InitItems.METHYLSULFONYLMETHANE.get()));
-
-        BrewingRecipeRegistry.addRecipe(Ingredient.of(water_bottle), Ingredient.of(Items.ACACIA_LOG), new ItemStack(InitItems.ACACIA_EXTRACT.get()));
-        BrewingRecipeRegistry.addRecipe(Ingredient.of(InitItems.ACACIA_EXTRACT.get()), Ingredient.of(Items.SUGAR), new ItemStack(InitItems.SWEETENED_ACACIA_EXTRACT.get()));
+        InitBrewingRecipes.init();
     }
 
 }

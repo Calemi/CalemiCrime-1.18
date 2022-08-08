@@ -1,0 +1,17 @@
+{
+  "type": "tconstruct:casting_table",
+
+  "cast": {
+     "item": "minecraft:paper"
+  },
+
+  "cast_consumed": true,
+
+  "fluid": {
+    "tag": "calemicrime:ergotamine",
+    "amount": 1000
+  },
+
+  "result": "calemicrime:lsd",
+  "cooling_time": 68
+}

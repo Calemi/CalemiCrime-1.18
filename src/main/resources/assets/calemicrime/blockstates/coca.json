@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "mature=true": {
+      "model": "calemicrime:block/coca_mature"
+    },
+    "mature=false": {
+      "model": "calemicrime:block/coca_premature"
+    }
+  }
+}

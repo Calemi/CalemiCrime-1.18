@@ -1,0 +1,19 @@
+{
+  "type": "create:mixing",
+  "ingredients": [
+    {
+      "item": "minecraft:poppy"
+    },
+    {
+      "fluid": "tconstruct:molten_electrum",
+      "nbt": {},
+      "amount": 1000
+    }
+  ],
+  "results": [
+    {
+      "item": "calemicrime:heroin"
+    }
+  ],
+  "heatRequirement": "heated"
+}
