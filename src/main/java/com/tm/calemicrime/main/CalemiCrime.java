@@ -6,6 +6,7 @@ import com.tm.calemicrime.client.screen.ScreenMineGenerator;
 import com.tm.calemicrime.client.screen.ScreenRentAcceptor;
 import com.tm.calemicrime.event.PreventionEvents;
 import com.tm.calemicrime.event.RegionProtectorEvents;
+import com.tm.calemicrime.event.ToxicItemEvents;
 import com.tm.calemicrime.init.*;
 import com.tm.calemicrime.packet.CCPacketHandler;
 import com.tm.calemicrime.tab.CCTab;
@@ -61,6 +62,7 @@ public class CalemiCrime {
         CCPacketHandler.init();
         MinecraftForge.EVENT_BUS.register(new RegionProtectorEvents());
         MinecraftForge.EVENT_BUS.register(new PreventionEvents());
+        MinecraftForge.EVENT_BUS.register(new ToxicItemEvents());
     }
 
     private void onClientSetup(final FMLClientSetupEvent event) {

@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "X X",
+    "XPX"
+  ],
+  "key": {
+    "X": {
+      "item": "minecraft:leather"
+    },
+    "P": {
+      "item": "create:iron_sheet"
+    }
+  },
+  "result": {
+    "item": "calemicrime:gas_mask"
+  }
+}

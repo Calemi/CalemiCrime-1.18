@@ -2,6 +2,8 @@ package com.tm.calemicrime.init;
 
 import com.tm.calemicrime.block.*;
 import com.tm.calemicrime.block.base.BlockItemBase;
+import com.tm.calemicrime.item.ItemGasMask;
+import com.tm.calemicrime.item.ItemToxic;
 import com.tm.calemicrime.main.CCReference;
 import com.tm.calemicrime.main.CalemiCrime;
 import net.minecraft.data.worldgen.features.TreeFeatures;
@@ -56,6 +58,7 @@ public class InitItems {
 
     //----- ITEMS ------\\
 
+    public static final RegistryObject<Item> GAS_MASK = regItem("gas_mask", ItemGasMask::new);
     public static final RegistryObject<Item> BAG = regItem("bag", () -> new Item(new Item.Properties().tab(CalemiCrime.TAB)));
 
     public static final RegistryObject<Item> TEENTH_OF_METH = regItem("teenth_of_meth", () -> new Item(new Item.Properties().tab(CalemiCrime.TAB)));
@@ -87,7 +90,7 @@ public class InitItems {
 
     //LSD
     public static final RegistryObject<Item> ERGOT = regItem("ergot", () -> new Item(new Item.Properties().tab(CalemiCrime.TAB)));
-    public static final RegistryObject<Item> ERGOTAMINE = regItem("ergotamine", () -> new Item(new Item.Properties().tab(CalemiCrime.TAB)));
+    public static final RegistryObject<Item> ERGOTAMINE = regItem("ergotamine", () -> new ItemToxic(new Item.Properties().tab(CalemiCrime.TAB)));
     public static final RegistryObject<Item> LSD = regItem("lsd", () -> new Item(new Item.Properties().tab(CalemiCrime.TAB)));
 
     //HEROIN

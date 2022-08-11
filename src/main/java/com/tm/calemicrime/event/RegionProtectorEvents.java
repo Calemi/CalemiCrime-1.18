@@ -8,21 +8,16 @@ import com.tm.calemicrime.main.CCReference;
 import com.tm.calemicrime.util.RegionRuleSet;
 import com.tm.calemieconomy.blockentity.BlockEntityTradingPost;
 import dev.ftb.mods.ftbteams.data.TeamManager;
+import net.minecraft.ChatFormatting;
+import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.entity.npc.Villager;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.material.PushReaction;
-import net.minecraftforge.event.entity.EntityMobGriefingEvent;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.event.entity.player.FillBucketEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.world.BlockEvent;
-import net.minecraftforge.event.world.ExplosionEvent;
-import net.minecraftforge.event.world.PistonEvent;
-import net.minecraftforge.event.world.SaplingGrowTreeEvent;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
@@ -120,7 +115,7 @@ public class RegionProtectorEvents {
 
                 else if (regionProtector.getRegionRuleSet().ruleSets[ruleSetIndex] == RegionRuleSet.RuleOverrideType.PREVENT) {
 
-                    LogHelper.log(CCReference.MOD_NAME, "REGION PROTECTOR PREVENTED ACTION");
+                    player.sendMessage(new TextComponent(ChatFormatting.RED + "You cannot do that in this area!"), Util.NIL_UUID);
 
                     event.setCanceled(true);
                 }
