@@ -1,6 +1,8 @@
 package com.tm.calemicrime.main;
 
+import com.tm.calemicrime.client.render.RenderMineGenerator;
 import com.tm.calemicrime.client.render.RenderRegionProtector;
+import com.tm.calemicrime.client.screen.ScreenMineGenerator;
 import com.tm.calemicrime.client.screen.ScreenRentAcceptor;
 import com.tm.calemicrime.event.PreventionEvents;
 import com.tm.calemicrime.event.RegionProtectorEvents;
@@ -64,10 +66,12 @@ public class CalemiCrime {
     private void onClientSetup(final FMLClientSetupEvent event) {
 
         MenuScreens.register(InitMenuTypes.RENT_ACCEPTOR.get(), ScreenRentAcceptor::new);
+        MenuScreens.register(InitMenuTypes.MINE_GENERATOR.get(), ScreenMineGenerator::new);
 
         InitBlockRenderTypes.init();
 
         BlockEntityRenderers.register(InitBlockEntityTypes.REGION_PROTECTOR.get(), RenderRegionProtector::new);
+        BlockEntityRenderers.register(InitBlockEntityTypes.MINE_GENERATOR.get(), RenderMineGenerator::new);
     }
 
     private void onSetupComplete(final FMLLoadCompleteEvent event) {

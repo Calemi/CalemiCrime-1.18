@@ -40,6 +40,8 @@ public class InitItems {
 
     public static final RegistryObject<Block> REGION_PROJECTOR = regBlock("region_protector", CalemiCrime.TAB, BlockRegionProtector::new);
     public static final RegistryObject<Block> RENT_ACCEPTOR = regBlock("rent_acceptor", CalemiCrime.TAB, BlockRentAcceptor::new);
+    public static final RegistryObject<Block> MINE_GENERATOR = regBlock("mine_generator", CalemiCrime.TAB, BlockMineGenerator::new);
+
     public static final RegistryObject<Block> SHEET_OF_METH = regBlock("sheet_of_meth", CalemiCrime.TAB, BlockSheetOfMeth::new);
     public static final RegistryObject<Block> SHEET_OF_P2P_METH = regBlock("sheet_of_p2p_meth", CalemiCrime.TAB, BlockSheetOfMeth::new);
 

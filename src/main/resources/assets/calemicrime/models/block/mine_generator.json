@@ -1,0 +1,7 @@
+{
+  "parent": "block/cube_column",
+  "textures": {
+    "end": "calemieconomy:blocks/unit_side",
+    "side": "calemicrime:blocks/mine_generator_side"
+  }
+}

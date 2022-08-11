@@ -2,6 +2,8 @@ package com.tm.calemicrime.client.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.tm.calemicore.util.render.RenderedFloatingItemStack;
+import com.tm.calemicrime.blockentity.BlockEntityMineGenerator;
 import com.tm.calemicrime.blockentity.BlockEntityRegionProtector;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LevelRenderer;
@@ -14,32 +16,32 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
-public class RenderRegionProtector implements BlockEntityRenderer<BlockEntityRegionProtector> {
+public class RenderMineGenerator implements BlockEntityRenderer<BlockEntityMineGenerator> {
 
-    public RenderRegionProtector(BlockEntityRendererProvider.Context pContext) {}
+    public RenderMineGenerator(BlockEntityRendererProvider.Context pContext) {}
 
     @Override
-    public void render(BlockEntityRegionProtector regionProtector, float partialTicks, PoseStack poseStack, MultiBufferSource buffer, int packedLight, int packedOverlay) {
+    public void render(BlockEntityMineGenerator mineGenerator, float partialTicks, PoseStack poseStack, MultiBufferSource buffer, int packedLight, int packedOverlay) {
 
         if (Minecraft.getInstance().player.isCreative()) {
 
-            if (regionProtector != null && regionProtector.getRegionOffset() != null && regionProtector.getRegionSize() != null) {
+            if (mineGenerator != null && mineGenerator.getRegionOffset() != null && mineGenerator.getRegionSize() != null) {
                 VertexConsumer vertexconsumer = buffer.getBuffer(RenderType.lines());
                 LevelRenderer.renderLineBox(poseStack, vertexconsumer,
-                        regionProtector.getRegionOffset().x, regionProtector.getRegionOffset().y, regionProtector.getRegionOffset().z,
-                        regionProtector.getRegionOffset().x + regionProtector.getRegionSize().x, regionProtector.getRegionOffset().y + regionProtector.getRegionSize().y, regionProtector.getRegionOffset().z + regionProtector.getRegionSize().z,
+                        mineGenerator.getRegionOffset().x, mineGenerator.getRegionOffset().y, mineGenerator.getRegionOffset().z,
+                        mineGenerator.getRegionOffset().x + mineGenerator.getRegionSize().x, mineGenerator.getRegionOffset().y + mineGenerator.getRegionSize().y, mineGenerator.getRegionOffset().z + mineGenerator.getRegionSize().z,
                         1F, 1F, 1F, 1F);
             }
         }
     }
 
     @Override
-    public boolean shouldRender(BlockEntityRegionProtector regionProtector, Vec3 cameraPos) {
+    public boolean shouldRender(BlockEntityMineGenerator mineGenerator, Vec3 cameraPos) {
         return true;
     }
 
     @Override
-    public boolean shouldRenderOffScreen(BlockEntityRegionProtector regionProtector) {
+    public boolean shouldRenderOffScreen(BlockEntityMineGenerator mineGenerator) {
         return true;
     }
 

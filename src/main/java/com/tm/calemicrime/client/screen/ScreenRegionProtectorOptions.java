@@ -17,7 +17,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
-public class ScreenRegionProtector extends ScreenBase {
+public class ScreenRegionProtectorOptions extends ScreenBase {
 
     private final BlockEntityRegionProtector regionProtector;
 
@@ -33,7 +33,7 @@ public class ScreenRegionProtector extends ScreenBase {
     private EditBox regionSizeYBox;
     private EditBox regionSizeZBox;
 
-    public ScreenRegionProtector(Player player, InteractionHand hand, BlockEntityRegionProtector regionProtector) {
+    public ScreenRegionProtectorOptions(Player player, InteractionHand hand, BlockEntityRegionProtector regionProtector) {
         super(player, hand);
         this.regionProtector = regionProtector;
         regionRuleSetButtons = new SmoothButton[regionProtector.getRegionRuleSet().ruleSets.length];

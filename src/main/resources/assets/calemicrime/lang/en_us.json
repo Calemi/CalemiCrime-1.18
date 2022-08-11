@@ -1,6 +1,7 @@
 {
   "block.calemicrime.region_protector": "Region Protector",
   "block.calemicrime.rent_acceptor": "Rent Acceptor",
+  "block.calemicrime.mine_generator": "Mine Generator",
 
 
 
@@ -20,7 +21,7 @@
   "screen.rent_acceptor.btn.payrent": "Pay Rent",
   "screen.rent_acceptor.txt.maxrenttime": "Max Rent Time (in ticks)",
   "screen.rent_acceptor.txt.costtofillrenttime": "Cost To Fill Rent Time",
-
+  "container.mine_generator": "Mine Generator",
 
 
   "item.calemicrime.bag": "Plastic Bag",

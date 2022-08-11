@@ -1,5 +1,6 @@
 package com.tm.calemicrime.init;
 
+import com.tm.calemicrime.blockentity.BlockEntityMineGenerator;
 import com.tm.calemicrime.blockentity.BlockEntityRegionProtector;
 import com.tm.calemicrime.blockentity.BlockEntityRentAcceptor;
 import com.tm.calemicrime.main.CCReference;
@@ -20,4 +21,7 @@ public class InitBlockEntityTypes {
 
     public static RegistryObject<BlockEntityType<BlockEntityRentAcceptor>> RENT_ACCEPTOR = BLOCK_ENTITY_TYPES.register(
             "rent_acceptor", () -> BlockEntityType.Builder.of(BlockEntityRentAcceptor::new, InitItems.RENT_ACCEPTOR.get()).build(null));
+
+    public static RegistryObject<BlockEntityType<BlockEntityMineGenerator>> MINE_GENERATOR = BLOCK_ENTITY_TYPES.register(
+            "mine_generator", () -> BlockEntityType.Builder.of(BlockEntityMineGenerator::new, InitItems.MINE_GENERATOR.get()).build(null));
 }
