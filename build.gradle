@@ -115,7 +115,7 @@ dependencies {
     implementation fg.deobf("curse.maven:calemicore-573646:${core_file_id}")
     implementation fg.deobf("curse.maven:calemieconomy-579403:${economy_file_id}")
 
-    implementation fg.deobf("curse.maven:archistectury-419699:${architectury_file_id}")
+    implementation fg.deobf("curse.maven:architectury-419699:${architectury_file_id}")
     implementation fg.deobf("curse.maven:ftb-library-404465:${ftb_library_file_id}")
     implementation fg.deobf("curse.maven:ftb-teams-404468:${ftb_teams_file_id}")
 
@@ -151,6 +151,13 @@ curseforge {
         addGameVersion "${minecraft_version}"
         relations {
             requiredDependency 'calemi-core'
+            requiredDependency 'architectury-api'
+            requiredDependency 'ftb-library-forge'
+            requiredDependency 'ftb-teams-forge'
+            requiredDependency 'mantle'
+            requiredDependency 'tinkers-construct'
+            requiredDependency 'flywheel'
+            requiredDependency 'create'
         }
     }
 }

@@ -1,0 +1,7 @@
+{
+  "parent": "calemicrime:block/road_line_base",
+  "textures": {
+    "particle": "calemicrime:blocks/road_line_2",
+    "texture": "calemicrime:blocks/road_line_2"
+  }
+}

@@ -56,6 +56,16 @@ public class InitItems {
 
     public static final RegistryObject<Block> PSILOCYBIN_MUSHROOM = regBlock("psilocybin_mushroom", CalemiCrime.TAB, () -> new MushroomBlock(BlockBehaviour.Properties.of(Material.PLANT, MaterialColor.COLOR_BROWN).noCollission().randomTicks().instabreak().sound(SoundType.GRASS).lightLevel((p) -> {return 1;}), () -> {return TreeFeatures.HUGE_BROWN_MUSHROOM;}));
 
+    //ROADS
+    public static final RegistryObject<Block> ROAD_LINE_1 = regBlock("road_line_1", CalemiCrime.TAB, BlockRoadLine::new);
+    public static final RegistryObject<Block> ROAD_LINE_2 = regBlock("road_line_2", CalemiCrime.TAB, BlockRoadLine::new);
+    public static final RegistryObject<Block> ROAD_LINE_3 = regBlock("road_line_3", CalemiCrime.TAB, BlockRoadLine::new);
+    public static final RegistryObject<Block> ROAD_LINE_4 = regBlock("road_line_4", CalemiCrime.TAB, BlockRoadLine::new);
+    public static final RegistryObject<Block> ROAD_LINE_5 = regBlock("road_line_5", CalemiCrime.TAB, BlockRoadLine::new);
+    public static final RegistryObject<Block> ROAD_LINE_6 = regBlock("road_line_6", CalemiCrime.TAB, BlockRoadLine::new);
+    public static final RegistryObject<Block> ROAD_LINE_7 = regBlock("road_line_7", CalemiCrime.TAB, BlockRoadLine::new);
+    public static final RegistryObject<Block> ROAD_LINE_8 = regBlock("road_line_8", CalemiCrime.TAB, BlockRoadLine::new);
+
     //----- ITEMS ------\\
 
     public static final RegistryObject<Item> GAS_MASK = regItem("gas_mask", ItemGasMask::new);

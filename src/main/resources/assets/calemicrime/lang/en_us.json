@@ -21,7 +21,7 @@
   "screen.rent_acceptor.btn.payrent": "Pay Rent",
   "screen.rent_acceptor.txt.maxrenttime": "Max Rent Time (in ticks)",
   "screen.rent_acceptor.txt.costtofillrenttime": "Cost To Fill Rent Time",
-  "container.mine_generator": "Mine Generator6",
+  "container.mine_generator": "Mine Generator",
 
 
   "item.calemicrime.gas_mask": "Gas Mask",
@@ -64,8 +64,16 @@
 
   "block.calemicrime.cannabis": "Cannabis Seeds",
   "block.calemicrime.coca": "Coca Seeds",
-
   "block.calemicrime.psilocybin_mushroom": "Psilocybin (Magic) Mushroom",
+
+  "block.calemicrime.road_line_1": "White Road Line (Side)",
+  "block.calemicrime.road_line_2": "Yellow Road Line (Side)",
+  "block.calemicrime.road_line_3": "White Road Line (Side Dotted)",
+  "block.calemicrime.road_line_4": "White Road Line (Dashes)",
+  "block.calemicrime.road_line_5": "White Road Line (Outer Corner)",
+  "block.calemicrime.road_line_6": "Yellow Road Line (Outer Corner)",
+  "block.calemicrime.road_line_7": "White Road Line (Inner Corner)",
+  "block.calemicrime.road_line_8": "Yellow Road Line (Inner Corner)",
 
 
   "fluid.calemicrime.methylsulfonylmethane": "Methylsulfonylmethane",

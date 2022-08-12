@@ -13,7 +13,10 @@ import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.BucketItem;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.event.entity.player.FillBucketEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
@@ -56,7 +59,6 @@ public class RegionProtectorEvents {
         }
 
         if (event.getEntity() instanceof Player player) {
-
             handleEventCancellation(event, event.getWorld(), player, location, 2);
         }
     }
@@ -65,7 +67,35 @@ public class RegionProtectorEvents {
     public void onBucketUse(FillBucketEvent event) {
 
         Location location = new Location(event.getEntity().getLevel(), new BlockPos(event.getTarget().getLocation()));
-        handleEventCancellation(event, event.getWorld(), event.getPlayer(), location, 2);
+
+        if (event.getEntity() instanceof Player player) {
+
+            if (player.isCreative()) {
+                return;
+            }
+
+            if (player.getMainHandItem().getItem() instanceof BucketItem bucket) {
+
+                if (event.getEmptyBucket().getItem() == Items.BUCKET || bucket.getFluid() == Fluids.WATER) {
+                    handleEventCancellation(event, event.getWorld(), player, location, 2);
+                }
+
+                else {
+                    event.setCanceled(true);
+                }
+            }
+
+            else if (player.getOffhandItem().getItem() instanceof BucketItem bucket) {
+
+                if (event.getEmptyBucket().getItem() == Items.BUCKET || bucket.getFluid() == Fluids.WATER) {
+                    handleEventCancellation(event, event.getWorld(), player, location, 2);
+                }
+
+                else {
+                    event.setCanceled(true);
+                }
+            }
+        }
     }
 
     @SubscribeEvent
