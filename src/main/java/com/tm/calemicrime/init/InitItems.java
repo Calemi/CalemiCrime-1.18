@@ -70,6 +70,7 @@ public class InitItems {
 
     public static final RegistryObject<Item> GAS_MASK = regItem("gas_mask", ItemGasMask::new);
     public static final RegistryObject<Item> BAG = regItem("bag", () -> new Item(new Item.Properties().tab(CalemiCrime.TAB)));
+    public static final RegistryObject<Item> ROAD_KIT = regItem("road_kit", () -> new Item(new Item.Properties().tab(CalemiCrime.TAB)));
 
     public static final RegistryObject<Item> TEENTH_OF_METH = regItem("teenth_of_meth", () -> new Item(new Item.Properties().tab(CalemiCrime.TAB)));
     public static final RegistryObject<Item> TEENTH_OF_BIKER_METH = regItem("teenth_of_biker_meth", () -> new Item(new Item.Properties().tab(CalemiCrime.TAB)));

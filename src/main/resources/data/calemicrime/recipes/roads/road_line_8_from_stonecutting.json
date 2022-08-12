@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "calemicrime:road_kit"
+  },
+  "result": "calemicrime:road_line_8",
+  "count": 16
+}

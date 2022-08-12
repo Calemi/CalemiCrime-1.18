@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "PWP",
+    "PYP"
+  ],
+  "key": {
+    "W": {
+      "item": "minecraft:white_dye"
+    },
+    "Y": {
+      "item": "minecraft:yellow_dye"
+    },
+    "P": {
+      "item": "minecraft:paper"
+    }
+  },
+  "result": {
+    "item": "calemicrime:road_kit"
+  }
+}
