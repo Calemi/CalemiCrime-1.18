@@ -7,7 +7,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "minecraft:psilocybin_mushroom"
+          "name": "calemicrime:psilocybin_mushroom"
         }
       ],
       "conditions": [

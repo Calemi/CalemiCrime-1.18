@@ -2,12 +2,12 @@
   "type": "create:pressing",
   "ingredients": [
     {
-      "item": "create:unprocessed_meth"
+      "item": "calemicrime:unprocessed_meth"
     }
   ],
   "results": [
     {
-      "item": "create:sheet_of_meth"
+      "item": "calemicrime:sheet_of_meth"
     }
   ]
 }

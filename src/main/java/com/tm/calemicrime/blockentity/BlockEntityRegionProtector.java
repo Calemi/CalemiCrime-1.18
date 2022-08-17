@@ -2,7 +2,9 @@ package com.tm.calemicrime.blockentity;
 
 import com.tm.calemicore.util.Location;
 import com.tm.calemicore.util.blockentity.BlockEntityBase;
+import com.tm.calemicore.util.helper.LogHelper;
 import com.tm.calemicrime.init.InitBlockEntityTypes;
+import com.tm.calemicrime.main.CCReference;
 import com.tm.calemicrime.util.RegionRuleSet;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -22,6 +24,7 @@ public class BlockEntityRegionProtector extends BlockEntityBase {
     private Location regionOffset = new Location(getLevel(), 0, 0, 0);
     private Location regionSize = new Location(getLevel(), 16, 16, 16);
     private int priority = 0;
+    private boolean global;
 
     private final RegionRuleSet regionRuleSet = new RegionRuleSet();
 
@@ -55,6 +58,10 @@ public class BlockEntityRegionProtector extends BlockEntityBase {
         return priority;
     }
 
+    public boolean isGlobal() {
+        return global;
+    }
+
     public RegionRuleSet getRegionRuleSet() {
         return regionRuleSet;
     }
@@ -69,6 +76,10 @@ public class BlockEntityRegionProtector extends BlockEntityBase {
 
     public void setPriority(int value) {
         priority = value;
+    }
+
+    public void setGlobal(boolean value) {
+        global = value;
     }
 
     public BlockEntityRentAcceptor getRentAcceptor() {
@@ -123,6 +134,8 @@ public class BlockEntityRegionProtector extends BlockEntityBase {
         regionSize = Location.readFromNBT(level, tag.getCompound("RegionEdge"));
 
         priority = tag.getInt("Priority");
+        global = tag.getBoolean("Global");
+
         regionRuleSet.loadFromNBT(tag);
     }
 
@@ -139,6 +152,8 @@ public class BlockEntityRegionProtector extends BlockEntityBase {
         tag.put("RegionEdge", regionEdgeTag);
 
         tag.putInt("Priority", priority);
+        tag.putBoolean("Global", global);
+
         regionRuleSet.saveToNBT(tag);
     }
 }

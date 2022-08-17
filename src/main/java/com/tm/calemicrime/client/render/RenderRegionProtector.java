@@ -21,9 +21,14 @@ public class RenderRegionProtector implements BlockEntityRenderer<BlockEntityReg
     @Override
     public void render(BlockEntityRegionProtector regionProtector, float partialTicks, PoseStack poseStack, MultiBufferSource buffer, int packedLight, int packedOverlay) {
 
-        if (Minecraft.getInstance().player.isCreative()) {
+        if (Minecraft.getInstance().getEntityRenderDispatcher().shouldRenderHitBoxes()) {
 
             if (regionProtector != null && regionProtector.getRegionOffset() != null && regionProtector.getRegionSize() != null) {
+
+                if (regionProtector.isGlobal()) {
+                    return;
+                }
+
                 VertexConsumer vertexconsumer = buffer.getBuffer(RenderType.lines());
                 LevelRenderer.renderLineBox(poseStack, vertexconsumer,
                         regionProtector.getRegionOffset().x, regionProtector.getRegionOffset().y, regionProtector.getRegionOffset().z,

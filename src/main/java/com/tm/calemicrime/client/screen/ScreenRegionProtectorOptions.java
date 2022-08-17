@@ -1,9 +1,11 @@
 package com.tm.calemicrime.client.screen;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.tm.calemicore.util.helper.LogHelper;
 import com.tm.calemicore.util.screen.ScreenBase;
 import com.tm.calemicore.util.screen.widget.SmoothButton;
 import com.tm.calemicrime.blockentity.BlockEntityRegionProtector;
+import com.tm.calemicrime.main.CCReference;
 import com.tm.calemicrime.packet.CCPacketHandler;
 import com.tm.calemicrime.packet.PacketRegionProtector;
 import com.tm.calemicrime.util.RegionRuleSet;
@@ -21,9 +23,10 @@ public class ScreenRegionProtectorOptions extends ScreenBase {
 
     private final BlockEntityRegionProtector regionProtector;
 
-    private final SmoothButton[] regionRuleSetButtons;
+    private final SmoothButton[] regionRuleSetBtns;
 
     private EditBox priorityBox;
+    private SmoothButton globalBtn;
 
     private EditBox regionOffsetXBox;
     private EditBox regionOffsetYBox;
@@ -36,7 +39,7 @@ public class ScreenRegionProtectorOptions extends ScreenBase {
     public ScreenRegionProtectorOptions(Player player, InteractionHand hand, BlockEntityRegionProtector regionProtector) {
         super(player, hand);
         this.regionProtector = regionProtector;
-        regionRuleSetButtons = new SmoothButton[regionProtector.getRegionRuleSet().ruleSets.length];
+        regionRuleSetBtns = new SmoothButton[regionProtector.getRegionRuleSet().ruleSets.length];
     }
 
     @Override
@@ -48,24 +51,25 @@ public class ScreenRegionProtectorOptions extends ScreenBase {
         int btnYSpace = 20;
 
         int editBoxXOffset = 30;
-        int editBoxYOffset = 2;
+        int editBoxYOffset = -9;
         int editBoxXSpace = 45;
         int editBoxYSpace = 30;
 
-        for (int i = 0; i < regionRuleSetButtons.length; i++) {
+        for (int i = 0; i < regionRuleSetBtns.length; i++) {
             final int fi = i;
-            regionRuleSetButtons[i] = addRenderableWidget(new SmoothButton(getScreenX() + btnXOffset, getScreenY() + btnYOffset + (btnYSpace * i), 50, getRuleButtonKey(i), (btn) -> toggleRule(fi)));
+            regionRuleSetBtns[i] = addRenderableWidget(new SmoothButton(getScreenX() + btnXOffset, getScreenY() + btnYOffset + (btnYSpace * i), 50, getRuleButtonKey(i), (btn) -> toggleRule(fi)));
         }
 
         priorityBox = initField(regionProtector.getPriority(), editBoxXOffset, editBoxYOffset - editBoxYSpace);
+        globalBtn = addRenderableWidget(new SmoothButton(getScreenX() + editBoxXOffset - 21, getScreenY() + editBoxYOffset - 7, 50, getGlobalButtonKey(), (btn) -> toggleGlobal()));
 
-        regionOffsetXBox = initField(regionProtector.getRegionOffset().x, editBoxXOffset, editBoxYOffset);
-        regionOffsetYBox = initField(regionProtector.getRegionOffset().y, editBoxXOffset + editBoxXSpace, editBoxYOffset);
-        regionOffsetZBox = initField(regionProtector.getRegionOffset().z, editBoxXOffset + editBoxXSpace * 2, editBoxYOffset);
+        regionOffsetXBox = initField(regionProtector.getRegionOffset().x, editBoxXOffset, editBoxYOffset + editBoxYSpace);
+        regionOffsetYBox = initField(regionProtector.getRegionOffset().y, editBoxXOffset + editBoxXSpace, editBoxYOffset + editBoxYSpace);
+        regionOffsetZBox = initField(regionProtector.getRegionOffset().z, editBoxXOffset + editBoxXSpace * 2, editBoxYOffset + editBoxYSpace);
 
-        regionSizeXBox = initField(regionProtector.getRegionSize().x, editBoxXOffset, editBoxYOffset + editBoxYSpace);
-        regionSizeYBox = initField(regionProtector.getRegionSize().y, editBoxXOffset + editBoxXSpace, editBoxYOffset + editBoxYSpace);
-        regionSizeZBox = initField(regionProtector.getRegionSize().z, editBoxXOffset + editBoxXSpace * 2, editBoxYOffset + editBoxYSpace);
+        regionSizeXBox = initField(regionProtector.getRegionSize().x, editBoxXOffset, editBoxYOffset + editBoxYSpace * 2);
+        regionSizeYBox = initField(regionProtector.getRegionSize().y, editBoxXOffset + editBoxXSpace, editBoxYOffset + editBoxYSpace * 2);
+        regionSizeZBox = initField(regionProtector.getRegionSize().z, editBoxXOffset + editBoxXSpace * 2, editBoxYOffset + editBoxYSpace * 2);
     }
 
     private EditBox initField (int value, int x, int y) {
@@ -90,6 +94,10 @@ public class ScreenRegionProtectorOptions extends ScreenBase {
             case ALLOW -> "screen.regionprotector.btn.rule.allow";
             case OFF -> "screen.regionprotector.btn.rule.off";
         };
+    }
+
+    private String getGlobalButtonKey() {
+        return regionProtector.isGlobal() ? "screen.regionprotector.btn.global.true" : "screen.regionprotector.btn.global.false";
     }
 
     private void confirmEditBoxes() {
@@ -140,17 +148,27 @@ public class ScreenRegionProtectorOptions extends ScreenBase {
         CCPacketHandler.INSTANCE.sendToServer(new PacketRegionProtector("syncrule", regionProtector.getBlockPos(), ruleSetIndex, ruleOverrideIndex));
     }
 
+    private void toggleGlobal() {
+
+        final boolean newValue = !regionProtector.isGlobal();
+
+        regionProtector.setGlobal(newValue);
+        CCPacketHandler.INSTANCE.sendToServer(new PacketRegionProtector("syncglobal", regionProtector.getBlockPos(), newValue));
+    }
+
     @Override
     public void tick() {
         super.tick();
 
-        regionRuleSetButtons[0].setMessage(new TranslatableComponent(getRuleButtonKey(0)));
-        regionRuleSetButtons[1].setMessage(new TranslatableComponent(getRuleButtonKey(1)));
-        regionRuleSetButtons[2].setMessage(new TranslatableComponent(getRuleButtonKey(2)));
+        regionRuleSetBtns[0].setMessage(new TranslatableComponent(getRuleButtonKey(0)));
+        regionRuleSetBtns[1].setMessage(new TranslatableComponent(getRuleButtonKey(1)));
+        regionRuleSetBtns[2].setMessage(new TranslatableComponent(getRuleButtonKey(2)));
 
-        regionRuleSetButtons[3].setMessage(new TranslatableComponent(getRuleButtonKey(3)));
-        regionRuleSetButtons[4].setMessage(new TranslatableComponent(getRuleButtonKey(4)));
-        regionRuleSetButtons[5].setMessage(new TranslatableComponent(getRuleButtonKey(5)));
+        regionRuleSetBtns[3].setMessage(new TranslatableComponent(getRuleButtonKey(3)));
+        regionRuleSetBtns[4].setMessage(new TranslatableComponent(getRuleButtonKey(4)));
+        regionRuleSetBtns[5].setMessage(new TranslatableComponent(getRuleButtonKey(5)));
+
+        globalBtn.setMessage(new TranslatableComponent(getGlobalButtonKey()));
 
         regionOffsetXBox.tick();
         regionOffsetYBox.tick();
@@ -169,46 +187,51 @@ public class ScreenRegionProtectorOptions extends ScreenBase {
     @Override
     protected void drawGuiForeground(PoseStack poseStack, int mouseX, int mouseY) {
 
-        regionOffsetXBox.render(poseStack, mouseX, mouseY, 0);
-        regionOffsetYBox.render(poseStack, mouseX, mouseY, 0);
-        regionOffsetZBox.render(poseStack, mouseX, mouseY, 0);
+        int editBoxYOffset = 11;
+        int buttonOffset = 4;
 
-        regionSizeXBox.render(poseStack, mouseX, mouseY, 0);
-        regionSizeYBox.render(poseStack, mouseX, mouseY, 0);
-        regionSizeZBox.render(poseStack, mouseX, mouseY, 0);
+        if (!regionProtector.isGlobal()) {
+
+            regionOffsetXBox.render(poseStack, mouseX, mouseY, 0);
+            regionOffsetYBox.render(poseStack, mouseX, mouseY, 0);
+            regionOffsetZBox.render(poseStack, mouseX, mouseY, 0);
+
+            regionSizeXBox.render(poseStack, mouseX, mouseY, 0);
+            regionSizeYBox.render(poseStack, mouseX, mouseY, 0);
+            regionSizeZBox.render(poseStack, mouseX, mouseY, 0);
+
+            TranslatableComponent regionOffsetText = new TranslatableComponent("screen.regionprotector.txt.regionoffset");
+            minecraft.font.draw(poseStack, regionOffsetText, regionOffsetXBox.x, regionOffsetXBox.y - editBoxYOffset, 0xFFFFFF);
+
+            TranslatableComponent regionEdgeText = new TranslatableComponent("screen.regionprotector.txt.regionsize");
+            minecraft.font.draw(poseStack, regionEdgeText, regionSizeXBox.x, regionSizeXBox.y - editBoxYOffset, 0xFFFFFF);
+        }
 
         priorityBox.render(poseStack, mouseX, mouseY, 0);
-
-        int editBoxYOffset = 11;
 
         TranslatableComponent priorityText = new TranslatableComponent("screen.regionprotector.txt.priority");
         minecraft.font.draw(poseStack, priorityText, priorityBox.x, priorityBox.y - editBoxYOffset, 0xFFFFFF);
 
-        TranslatableComponent regionOffsetText = new TranslatableComponent("screen.regionprotector.txt.regionoffset");
-        minecraft.font.draw(poseStack, regionOffsetText, regionOffsetXBox.x, regionOffsetXBox.y - editBoxYOffset, 0xFFFFFF);
-
-        TranslatableComponent regionEdgeText = new TranslatableComponent("screen.regionprotector.txt.regionsize");
-        minecraft.font.draw(poseStack, regionEdgeText, regionSizeXBox.x, regionSizeXBox.y - editBoxYOffset, 0xFFFFFF);
-
-        int buttonOffset = 4;
+        TranslatableComponent globalText = new TranslatableComponent("screen.regionprotector.txt.global");
+        minecraft.font.draw(poseStack, globalText, globalBtn.x, globalBtn.y - editBoxYOffset, 0xFFFFFF);
 
         TranslatableComponent blockBreakingText = new TranslatableComponent("screen.regionprotector.txt.rule.blockbreaking");
-        minecraft.font.draw(poseStack, blockBreakingText, regionRuleSetButtons[0].x - minecraft.font.width(blockBreakingText) - buttonOffset, regionRuleSetButtons[0].y + buttonOffset, 0xFFFFFF);
+        minecraft.font.draw(poseStack, blockBreakingText, regionRuleSetBtns[0].x - minecraft.font.width(blockBreakingText) - buttonOffset, regionRuleSetBtns[0].y + buttonOffset, 0xFFFFFF);
 
         TranslatableComponent blockPlacingText = new TranslatableComponent("screen.regionprotector.txt.rule.blockplacing");
-        minecraft.font.draw(poseStack, blockPlacingText, regionRuleSetButtons[1].x - minecraft.font.width(blockPlacingText) - buttonOffset, regionRuleSetButtons[1].y + buttonOffset, 0xFFFFFF);
+        minecraft.font.draw(poseStack, blockPlacingText, regionRuleSetBtns[1].x - minecraft.font.width(blockPlacingText) - buttonOffset, regionRuleSetBtns[1].y + buttonOffset, 0xFFFFFF);
 
         TranslatableComponent blockUsingText = new TranslatableComponent("screen.regionprotector.txt.rule.blockusing");
-        minecraft.font.draw(poseStack, blockUsingText, regionRuleSetButtons[2].x - minecraft.font.width(blockUsingText) - buttonOffset, regionRuleSetButtons[2].y + buttonOffset, 0xFFFFFF);
+        minecraft.font.draw(poseStack, blockUsingText, regionRuleSetBtns[2].x - minecraft.font.width(blockUsingText) - buttonOffset, regionRuleSetBtns[2].y + buttonOffset, 0xFFFFFF);
 
         TranslatableComponent entityHurtingText = new TranslatableComponent("screen.regionprotector.txt.rule.entityhurting");
-        minecraft.font.draw(poseStack, entityHurtingText, regionRuleSetButtons[3].x - minecraft.font.width(entityHurtingText) - buttonOffset, regionRuleSetButtons[3].y + buttonOffset, 0xFFFFFF);
+        minecraft.font.draw(poseStack, entityHurtingText, regionRuleSetBtns[3].x - minecraft.font.width(entityHurtingText) - buttonOffset, regionRuleSetBtns[3].y + buttonOffset, 0xFFFFFF);
 
         TranslatableComponent entityInteractingText = new TranslatableComponent("screen.regionprotector.txt.rule.entityinteracting");
-        minecraft.font.draw(poseStack, entityInteractingText, regionRuleSetButtons[4].x - minecraft.font.width(entityInteractingText) - buttonOffset, regionRuleSetButtons[4].y + buttonOffset, 0xFFFFFF);
+        minecraft.font.draw(poseStack, entityInteractingText, regionRuleSetBtns[4].x - minecraft.font.width(entityInteractingText) - buttonOffset, regionRuleSetBtns[4].y + buttonOffset, 0xFFFFFF);
 
         TranslatableComponent pvpTxt = new TranslatableComponent("screen.regionprotector.txt.rule.pvp");
-        minecraft.font.draw(poseStack, pvpTxt, regionRuleSetButtons[5].x - minecraft.font.width(pvpTxt) - buttonOffset, regionRuleSetButtons[5].y + buttonOffset, 0xFFFFFF);
+        minecraft.font.draw(poseStack, pvpTxt, regionRuleSetBtns[5].x - minecraft.font.width(pvpTxt) - buttonOffset, regionRuleSetBtns[5].y + buttonOffset, 0xFFFFFF);
     }
 
     @Override

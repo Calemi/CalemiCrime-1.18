@@ -5,7 +5,7 @@
       "item": "minecraft:poppy"
     },
     {
-      "fluid": "tconstruct:molten_electrum",
+      "fluid": "tconstruct:molten_brass",
       "nbt": {},
       "amount": 1000
     }

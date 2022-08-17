@@ -15,7 +15,7 @@ import net.minecraftforge.event.world.SaplingGrowTreeEvent;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
-public class PreventionEvents {
+public class MiscPreventionEvents {
 
     @SubscribeEvent
     public void onBlockExploded(ExplosionEvent.Start event) {

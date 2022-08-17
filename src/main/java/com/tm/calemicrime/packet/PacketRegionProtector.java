@@ -9,6 +9,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.network.NetworkEvent;
+import org.jline.utils.Log;
 
 import java.util.function.Supplier;
 
@@ -19,6 +20,7 @@ public class PacketRegionProtector {
     private BlockPos regionOffset;
     private BlockPos regionEdge;
     private int priority;
+    private boolean global;
     private int ruleSetIndex;
     private byte ruleOverrideIndex;
 
@@ -34,26 +36,31 @@ public class PacketRegionProtector {
      * @param ruleSetIndex The rule set index.
      * @param ruleOverrideIndex The index of type of override for the rule.
      */
-    public PacketRegionProtector(String command, BlockPos pos, BlockPos regionOffset, BlockPos regionEdge, int priority, int ruleSetIndex, byte ruleOverrideIndex) {
+    public PacketRegionProtector(String command, BlockPos pos, BlockPos regionOffset, BlockPos regionEdge, int priority, boolean global, int ruleSetIndex, byte ruleOverrideIndex) {
         this.command = command;
         this.pos = pos;
         this.regionOffset = regionOffset;
         this.regionEdge = regionEdge;
         this.priority = priority;
+        this.global = global;
         this.ruleSetIndex = ruleSetIndex;
         this.ruleOverrideIndex = ruleOverrideIndex;
     }
 
     public PacketRegionProtector(String command, BlockPos pos, BlockPos regionOffset, BlockPos regionEdge) {
-        this(command, pos, regionOffset, regionEdge, 0, 0, (byte)0);
+        this(command, pos, regionOffset, regionEdge, 0, false, 0, (byte)0);
     }
 
     public PacketRegionProtector(String command, BlockPos pos, int priority) {
-        this(command, pos, BlockPos.ZERO, BlockPos.ZERO, priority, 0, (byte)0);
+        this(command, pos, BlockPos.ZERO, BlockPos.ZERO, priority,  false, 0, (byte)0);
+    }
+
+    public PacketRegionProtector(String command, BlockPos pos, boolean global) {
+        this(command, pos, BlockPos.ZERO, BlockPos.ZERO, 0,  global, 0, (byte)0);
     }
 
     public PacketRegionProtector(String command, BlockPos pos, int ruleSetIndex, byte ruleOverrideIndex) {
-        this(command, pos, BlockPos.ZERO, BlockPos.ZERO, 0, ruleSetIndex, ruleOverrideIndex);
+        this(command, pos, BlockPos.ZERO, BlockPos.ZERO, 0, false, ruleSetIndex, ruleOverrideIndex);
     }
 
     public PacketRegionProtector(FriendlyByteBuf buf) {
@@ -62,6 +69,7 @@ public class PacketRegionProtector {
         regionOffset = new BlockPos(buf.readInt(), buf.readInt(), buf.readInt());
         regionEdge = new BlockPos(buf.readInt(), buf.readInt(), buf.readInt());
         priority = buf.readInt();
+        global = buf.readBoolean();
         ruleSetIndex = buf.readInt();
         ruleOverrideIndex = buf.readByte();
     }
@@ -78,6 +86,7 @@ public class PacketRegionProtector {
         buf.writeInt(regionEdge.getY());
         buf.writeInt(regionEdge.getZ());
         buf.writeInt(priority);
+        buf.writeBoolean(global);
         buf.writeInt(ruleSetIndex);
         buf.writeByte(ruleOverrideIndex);
     }
@@ -104,6 +113,11 @@ public class PacketRegionProtector {
                     //Handles syncing priority.
                     else if (command.equalsIgnoreCase("syncpriority")) {
                         regionProtector.setPriority(priority);
+                    }
+
+                    else if (command.equalsIgnoreCase("syncglobal")) {
+                        regionProtector.setGlobal(global);
+                        LogHelper.log(CCReference.MOD_NAME, global);
                     }
 
                     //Handles syncing rule.

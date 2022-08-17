@@ -4,6 +4,7 @@ import com.tm.calemicore.util.Location;
 import com.tm.calemicore.util.helper.LogHelper;
 import com.tm.calemicrime.blockentity.BlockEntityRegionProtector;
 import com.tm.calemicrime.blockentity.BlockEntityRentAcceptor;
+import com.tm.calemicrime.file.PreventBlockPlaceListFile;
 import com.tm.calemicrime.main.CCReference;
 import com.tm.calemicrime.util.RegionRuleSet;
 import com.tm.calemieconomy.blockentity.BlockEntityTradingPost;
@@ -42,6 +43,7 @@ public class RegionProtectorEvents {
         Location location = new Location(event.getEntity().getLevel(), event.getPos());
 
         if (event.getEntity() instanceof Player player) {
+
             handleEventCancellation(event, event.getWorld(), player, location, 1);
         }
     }
@@ -159,7 +161,7 @@ public class RegionProtectorEvents {
 
         for (BlockEntityRegionProtector regionProtector : BlockEntityRegionProtector.getRegionProtectors()) {
 
-            if (!regionProtector.isRemoved() && regionProtector.getRegion().contains(location.getVector())) {
+            if (!regionProtector.isRemoved() && (regionProtector.getRegion().contains(location.getVector()) || regionProtector.isGlobal())) {
                 regionProtectorsAffectingLocation.add(regionProtector);
             }
         }

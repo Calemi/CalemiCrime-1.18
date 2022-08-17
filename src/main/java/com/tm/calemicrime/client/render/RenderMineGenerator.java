@@ -23,7 +23,7 @@ public class RenderMineGenerator implements BlockEntityRenderer<BlockEntityMineG
     @Override
     public void render(BlockEntityMineGenerator mineGenerator, float partialTicks, PoseStack poseStack, MultiBufferSource buffer, int packedLight, int packedOverlay) {
 
-        if (Minecraft.getInstance().player.isCreative()) {
+        if (Minecraft.getInstance().player.isCreative() && Minecraft.getInstance().getEntityRenderDispatcher().shouldRenderHitBoxes()) {
 
             if (mineGenerator != null && mineGenerator.getRegionOffset() != null && mineGenerator.getRegionSize() != null) {
                 VertexConsumer vertexconsumer = buffer.getBuffer(RenderType.lines());
