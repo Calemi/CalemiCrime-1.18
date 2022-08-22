@@ -41,18 +41,24 @@ public class RegionRuleSet {
 
     public enum RuleOverrideType {
 
-        OFF ((byte)0),
-        ALLOW ((byte)1),
-        PREVENT ((byte)2);
+        OFF ((byte)0, "off"),
+        ALLOW ((byte)1, "allow"),
+        PREVENT ((byte)2, "prevent");
 
         private final byte index;
+        private final String name;
 
-        RuleOverrideType(byte index) {
+        RuleOverrideType(byte index, String name) {
             this.index = index;
+            this.name = name;
         }
 
         public byte getIndex() {
             return index;
+        }
+
+        public String getName() {
+            return name;
         }
 
         public static RuleOverrideType fromIndex(byte index) {

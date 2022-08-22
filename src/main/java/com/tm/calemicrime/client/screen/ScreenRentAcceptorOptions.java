@@ -48,7 +48,7 @@ public class ScreenRentAcceptorOptions extends ScreenBase {
             regionRuleSetButtons[i] = addRenderableWidget(new SmoothButton(getScreenX() + btnXOffset, getScreenY() + btnYOffset + (btnYSpace * i), 50, getRuleButtonKey(i), (btn) -> toggleRule(fi)));
         }
 
-        maxRentTimeBox = initField(rentAcceptor.getMaxRentTime(), editBoxXOffset, editBoxYOffset);
+        maxRentTimeBox = initField(rentAcceptor.getMaxRentTime() / 72000, editBoxXOffset, editBoxYOffset);
         costToFillRentTimeBox = initField(rentAcceptor.getCostToFillRentTime(), editBoxXOffset, editBoxYOffset + editBoxYSpace);
     }
 
@@ -78,13 +78,13 @@ public class ScreenRentAcceptorOptions extends ScreenBase {
 
     private void confirmEditBoxes() {
 
-        int maxRentTicks = parseInteger(maxRentTimeBox.getValue());
+        int maxRentHours = parseInteger(maxRentTimeBox.getValue());
         int costPerHour = parseInteger(costToFillRentTimeBox.getValue());
 
-        maxRentTimeBox.setValue("" + maxRentTicks);
+        maxRentTimeBox.setValue("" + maxRentHours);
         costToFillRentTimeBox.setValue("" + costPerHour);
 
-        CCPacketHandler.INSTANCE.sendToServer(new PacketRentAcceptor("syncoptions", rentAcceptor.getBlockPos(), maxRentTicks, costPerHour, 0, 0));
+        CCPacketHandler.INSTANCE.sendToServer(new PacketRentAcceptor("syncoptions", rentAcceptor.getBlockPos(), maxRentHours * 72000, costPerHour, 0, 0));
     }
 
     private int parseInteger(String value) {

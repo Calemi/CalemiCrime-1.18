@@ -9,7 +9,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.network.NetworkEvent;
-import org.jline.utils.Log;
 
 import java.util.function.Supplier;
 
@@ -21,6 +20,7 @@ public class PacketRegionProtector {
     private BlockPos regionEdge;
     private int priority;
     private boolean global;
+    private int regionTypeIndex;
     private int ruleSetIndex;
     private byte ruleOverrideIndex;
 
@@ -33,49 +33,52 @@ public class PacketRegionProtector {
      * @param regionOffset The Location of the region's offset.
      * @param regionEdge The Location of the region's edge.
      * @param priority The number of priority.
+     * @param regionTypeIndex The region type.
      * @param ruleSetIndex The rule set index.
      * @param ruleOverrideIndex The index of type of override for the rule.
      */
-    public PacketRegionProtector(String command, BlockPos pos, BlockPos regionOffset, BlockPos regionEdge, int priority, boolean global, int ruleSetIndex, byte ruleOverrideIndex) {
+    public PacketRegionProtector(String command, BlockPos pos, BlockPos regionOffset, BlockPos regionEdge, int priority, boolean global, int regionTypeIndex, int ruleSetIndex, byte ruleOverrideIndex) {
         this.command = command;
         this.pos = pos;
         this.regionOffset = regionOffset;
         this.regionEdge = regionEdge;
         this.priority = priority;
         this.global = global;
+        this.regionTypeIndex = regionTypeIndex;
         this.ruleSetIndex = ruleSetIndex;
         this.ruleOverrideIndex = ruleOverrideIndex;
     }
 
     public PacketRegionProtector(String command, BlockPos pos, BlockPos regionOffset, BlockPos regionEdge) {
-        this(command, pos, regionOffset, regionEdge, 0, false, 0, (byte)0);
+        this(command, pos, regionOffset, regionEdge, 0, false, 0, 0, (byte)0);
     }
 
     public PacketRegionProtector(String command, BlockPos pos, int priority) {
-        this(command, pos, BlockPos.ZERO, BlockPos.ZERO, priority,  false, 0, (byte)0);
+        this(command, pos, BlockPos.ZERO, BlockPos.ZERO, priority,  false, 0, 0, (byte)0);
     }
 
-    public PacketRegionProtector(String command, BlockPos pos, boolean global) {
-        this(command, pos, BlockPos.ZERO, BlockPos.ZERO, 0,  global, 0, (byte)0);
+    public PacketRegionProtector(String command, BlockPos pos, boolean global, int regionTypeIndex) {
+        this(command, pos, BlockPos.ZERO, BlockPos.ZERO, 0,  global, regionTypeIndex, 0, (byte)0);
     }
 
     public PacketRegionProtector(String command, BlockPos pos, int ruleSetIndex, byte ruleOverrideIndex) {
-        this(command, pos, BlockPos.ZERO, BlockPos.ZERO, 0, false, ruleSetIndex, ruleOverrideIndex);
+        this(command, pos, BlockPos.ZERO, BlockPos.ZERO, 0, false, 0, ruleSetIndex, ruleOverrideIndex);
     }
 
     public PacketRegionProtector(FriendlyByteBuf buf) {
-        command = buf.readUtf(13).trim();
+        command = buf.readUtf(14).trim();
         pos = new BlockPos(buf.readInt(), buf.readInt(), buf.readInt());
         regionOffset = new BlockPos(buf.readInt(), buf.readInt(), buf.readInt());
         regionEdge = new BlockPos(buf.readInt(), buf.readInt(), buf.readInt());
         priority = buf.readInt();
         global = buf.readBoolean();
+        regionTypeIndex = buf.readInt();
         ruleSetIndex = buf.readInt();
         ruleOverrideIndex = buf.readByte();
     }
 
     public void toBytes (FriendlyByteBuf buf) {
-        buf.writeUtf(command, 13);
+        buf.writeUtf(command, 14);
         buf.writeInt(pos.getX());
         buf.writeInt(pos.getY());
         buf.writeInt(pos.getZ());
@@ -87,6 +90,7 @@ public class PacketRegionProtector {
         buf.writeInt(regionEdge.getZ());
         buf.writeInt(priority);
         buf.writeBoolean(global);
+        buf.writeInt(regionTypeIndex);
         buf.writeInt(ruleSetIndex);
         buf.writeByte(ruleOverrideIndex);
     }
@@ -118,6 +122,10 @@ public class PacketRegionProtector {
                     else if (command.equalsIgnoreCase("syncglobal")) {
                         regionProtector.setGlobal(global);
                         LogHelper.log(CCReference.MOD_NAME, global);
+                    }
+
+                    else if (command.equalsIgnoreCase("syncregiontype")) {
+                        regionProtector.setRegionType(BlockEntityRegionProtector.RegionType.fromIndex(regionTypeIndex));
                     }
 
                     //Handles syncing rule.

@@ -1,11 +1,9 @@
 package com.tm.calemicrime.client.screen;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.tm.calemicore.util.helper.LogHelper;
 import com.tm.calemicore.util.screen.ScreenBase;
 import com.tm.calemicore.util.screen.widget.SmoothButton;
 import com.tm.calemicrime.blockentity.BlockEntityRegionProtector;
-import com.tm.calemicrime.main.CCReference;
 import com.tm.calemicrime.packet.CCPacketHandler;
 import com.tm.calemicrime.packet.PacketRegionProtector;
 import com.tm.calemicrime.util.RegionRuleSet;
@@ -35,6 +33,8 @@ public class ScreenRegionProtectorOptions extends ScreenBase {
     private EditBox regionSizeXBox;
     private EditBox regionSizeYBox;
     private EditBox regionSizeZBox;
+
+    private SmoothButton regionTypeBtn;
 
     public ScreenRegionProtectorOptions(Player player, InteractionHand hand, BlockEntityRegionProtector regionProtector) {
         super(player, hand);
@@ -70,6 +70,8 @@ public class ScreenRegionProtectorOptions extends ScreenBase {
         regionSizeXBox = initField(regionProtector.getRegionSize().x, editBoxXOffset, editBoxYOffset + editBoxYSpace * 2);
         regionSizeYBox = initField(regionProtector.getRegionSize().y, editBoxXOffset + editBoxXSpace, editBoxYOffset + editBoxYSpace * 2);
         regionSizeZBox = initField(regionProtector.getRegionSize().z, editBoxXOffset + editBoxXSpace * 2, editBoxYOffset + editBoxYSpace * 2);
+
+        regionTypeBtn = addRenderableWidget(new SmoothButton(getScreenX(), getScreenY() + 70, 75, getRegionTypeButtonKey(), (btn) -> toggleRegionType()));
     }
 
     private EditBox initField (int value, int x, int y) {
@@ -86,18 +88,16 @@ public class ScreenRegionProtectorOptions extends ScreenBase {
     }
 
     private String getRuleButtonKey(int ruleSetIndex) {
-
         RegionRuleSet.RuleOverrideType ruleOverrideType = regionProtector.getRegionRuleSet().ruleSets[ruleSetIndex];
-
-        return switch (ruleOverrideType) {
-            case PREVENT -> "screen.regionprotector.btn.rule.prevent";
-            case ALLOW -> "screen.regionprotector.btn.rule.allow";
-            case OFF -> "screen.regionprotector.btn.rule.off";
-        };
+        return "screen.regionprotector.btn.rule." + ruleOverrideType.getName();
     }
 
     private String getGlobalButtonKey() {
         return regionProtector.isGlobal() ? "screen.regionprotector.btn.global.true" : "screen.regionprotector.btn.global.false";
+    }
+
+    private String getRegionTypeButtonKey() {
+        return "screen.regionprotector.btn.regiontype." + regionProtector.getRegionType().getName();
     }
 
     private void confirmEditBoxes() {
@@ -153,7 +153,18 @@ public class ScreenRegionProtectorOptions extends ScreenBase {
         final boolean newValue = !regionProtector.isGlobal();
 
         regionProtector.setGlobal(newValue);
-        CCPacketHandler.INSTANCE.sendToServer(new PacketRegionProtector("syncglobal", regionProtector.getBlockPos(), newValue));
+        CCPacketHandler.INSTANCE.sendToServer(new PacketRegionProtector("syncglobal", regionProtector.getBlockPos(), newValue, 0));
+    }
+
+    private void toggleRegionType() {
+
+        int regionTypeIndex = regionProtector.getRegionType().getIndex();
+
+        regionTypeIndex++;
+        regionTypeIndex %= 3;
+
+        regionProtector.setRegionType(BlockEntityRegionProtector.RegionType.fromIndex(regionTypeIndex));
+        CCPacketHandler.INSTANCE.sendToServer(new PacketRegionProtector("syncregiontype", regionProtector.getBlockPos(), false, regionTypeIndex));
     }
 
     @Override
@@ -179,6 +190,8 @@ public class ScreenRegionProtectorOptions extends ScreenBase {
         regionSizeZBox.tick();
 
         priorityBox.tick();
+
+        regionTypeBtn.setMessage(new TranslatableComponent(getRegionTypeButtonKey()));
     }
 
     @Override
@@ -232,6 +245,9 @@ public class ScreenRegionProtectorOptions extends ScreenBase {
 
         TranslatableComponent pvpTxt = new TranslatableComponent("screen.regionprotector.txt.rule.pvp");
         minecraft.font.draw(poseStack, pvpTxt, regionRuleSetBtns[5].x - minecraft.font.width(pvpTxt) - buttonOffset, regionRuleSetBtns[5].y + buttonOffset, 0xFFFFFF);
+
+        TranslatableComponent regionTxt = new TranslatableComponent("screen.regionprotector.txt.regiontype");
+        minecraft.font.draw(poseStack, regionTxt, regionTypeBtn.x - minecraft.font.width(regionTxt) - buttonOffset, regionTypeBtn.y + buttonOffset, 0xFFFFFF);
     }
 
     @Override

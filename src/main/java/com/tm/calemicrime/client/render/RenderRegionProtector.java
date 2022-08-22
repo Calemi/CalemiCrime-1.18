@@ -3,6 +3,7 @@ package com.tm.calemicrime.client.render;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.tm.calemicrime.blockentity.BlockEntityRegionProtector;
+import com.tm.calemicrime.util.RegionRuleSet;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -29,11 +30,25 @@ public class RenderRegionProtector implements BlockEntityRenderer<BlockEntityReg
                     return;
                 }
 
+                Vec3 color = new Vec3(1, 1, 1);
+
+                if (regionProtector.getRegionRuleSet().ruleSets[5] == RegionRuleSet.RuleOverrideType.ALLOW) {
+                    color = new Vec3(1, 0, 0);
+                }
+
+                else if (regionProtector.getRegionType() == BlockEntityRegionProtector.RegionType.RESIDENTIAL) {
+                    color = new Vec3(0, 1, 0);
+                }
+
+                else if (regionProtector.getRegionType() == BlockEntityRegionProtector.RegionType.COMMERCIAL) {
+                    color = new Vec3(0, 0, 1);
+                }
+
                 VertexConsumer vertexconsumer = buffer.getBuffer(RenderType.lines());
                 LevelRenderer.renderLineBox(poseStack, vertexconsumer,
                         regionProtector.getRegionOffset().x, regionProtector.getRegionOffset().y, regionProtector.getRegionOffset().z,
-                        regionProtector.getRegionOffset().x + regionProtector.getRegionSize().x, regionProtector.getRegionOffset().y + regionProtector.getRegionSize().y, regionProtector.getRegionOffset().z + regionProtector.getRegionSize().z,
-                        1F, 1F, 1F, 1F);
+                        regionProtector.getRegionOffset().x + regionProtector.getRegionSize().x, regionProtector.getRegionOffset().y + regionProtector.getRegionSize().y, (float) (regionProtector.getRegionOffset().z + regionProtector.getRegionSize().z),
+                        (float)color.x, (float)color.y, (float)color.z, 1F);
             }
         }
     }

@@ -41,7 +41,8 @@ public class ScreenRentAcceptor extends ScreenContainerBase<MenuRentAcceptor> {
     protected void init() {
         super.init();
 
-        addRenderableWidget(new SmoothButton(getScreenX() + 62, getScreenY() + 17, 52, "screen.rent_acceptor.btn.payrent", (btn) -> payRent()));
+        addRenderableWidget(new SmoothButton(getScreenX() + 53, getScreenY() + 17, 52, "screen.rent_acceptor.btn.payrent", (btn) -> payRent()));
+        addRenderableWidget(new SmoothButton(getScreenX() + 117, getScreenY() + 17, 52, "screen.rent_acceptor.btn.stoprent", (btn) -> stopRent()));
     }
 
     private void payRent () {
@@ -74,6 +75,11 @@ public class ScreenRentAcceptor extends ScreenContainerBase<MenuRentAcceptor> {
                 CCPacketHandler.INSTANCE.sendToServer(new PacketRentAcceptor("refillrentbank", rentAcceptor.getBlockPos(), 0, 0,0, rentAcceptor.getBank().getCurrency()));
             }
         }
+    }
+
+    private void stopRent () {
+        rentAcceptor.emptyRentTime();
+        CCPacketHandler.INSTANCE.sendToServer(new PacketRentAcceptor("stoprent", rentAcceptor.getBlockPos()));
     }
 
     @Override

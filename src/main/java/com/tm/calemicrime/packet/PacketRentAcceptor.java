@@ -55,6 +55,10 @@ public class PacketRentAcceptor {
         this(command, pos, maxRentTicks, costPerHour, 0, (byte)0, walletCurrency, bankCurrency);
     }
 
+    public PacketRentAcceptor(String command, BlockPos pos) {
+        this(command, pos, 0, 0, 0, (byte)0, 0, 0);
+    }
+
     public PacketRentAcceptor(FriendlyByteBuf buf) {
         command = buf.readUtf(16).trim();
         pos = new BlockPos(buf.readInt(), buf.readInt(), buf.readInt());
@@ -118,6 +122,10 @@ public class PacketRentAcceptor {
 
                         rentAcceptor.refillRentTime();
                         rentAcceptor.setResidentTeam(TeamManager.INSTANCE.getPlayerTeam(player));
+                    }
+
+                    else if (command.equalsIgnoreCase("stoprent")) {
+                        rentAcceptor.emptyRentTime();
                     }
 
                     rentAcceptor.markUpdated();

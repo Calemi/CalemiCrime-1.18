@@ -23,11 +23,13 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.UUID;
+
 public class BlockEntityRentAcceptor extends BlockEntityContainerBase implements ICurrencyNetworkUnit {
 
     private Location bankLocation;
 
-    private Team residentTeam;
+    private UUID residentTeamID;
 
     private int maxRentTime = 20 * 60 * 60;
     private int remainingRentTime = 0;
@@ -44,11 +46,15 @@ public class BlockEntityRentAcceptor extends BlockEntityContainerBase implements
     }
 
     public Team getResidentTeam() {
-        return residentTeam;
+        return TeamManager.INSTANCE.getTeamByID(residentTeamID);
     }
 
     public void setResidentTeam(Team value) {
-        residentTeam = value;
+        residentTeamID = value.getId();
+    }
+
+    public void clearResidentTeam() {
+        residentTeamID = null;
     }
 
     public int getMaxRentTime() {
@@ -90,6 +96,10 @@ public class BlockEntityRentAcceptor extends BlockEntityContainerBase implements
         setRemainingRentTime(getMaxRentTime());
     }
 
+    public void emptyRentTime() {
+        setRemainingRentTime(0);
+    }
+
     public String getFormattedTime(int ticks) {
 
         int timeInSeconds = ticks / (20) % 60;
@@ -112,7 +122,7 @@ public class BlockEntityRentAcceptor extends BlockEntityContainerBase implements
         }
 
         else if (rentAcceptor.getResidentTeam() != null) {
-            rentAcceptor.setResidentTeam(null);
+            rentAcceptor.clearResidentTeam();
         }
     }
 
@@ -166,7 +176,7 @@ public class BlockEntityRentAcceptor extends BlockEntityContainerBase implements
     public void load(CompoundTag tag) {
         super.load(tag);
 
-        if (tag.hasUUID("ResidentTeam")) residentTeam = TeamManager.INSTANCE.getTeamByID(tag.getUUID("ResidentTeam"));
+        if (tag.hasUUID("ResidentTeam")) residentTeamID = tag.getUUID("ResidentTeam");
 
         maxRentTime = tag.getInt("MaxRentTime");
         remainingRentTime = tag.getInt("RemainingRentTime");
@@ -179,7 +189,7 @@ public class BlockEntityRentAcceptor extends BlockEntityContainerBase implements
     protected void saveAdditional(CompoundTag tag) {
         super.saveAdditional(tag);
 
-        if (residentTeam != null) tag.putUUID("ResidentTeam", residentTeam.getId());
+        if (residentTeamID != null) tag.putUUID("ResidentTeam", residentTeamID);
 
         tag.putInt("MaxRentTime", maxRentTime);
         tag.putInt("RemainingRentTime", remainingRentTime);

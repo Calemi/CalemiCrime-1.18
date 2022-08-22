@@ -1,9 +1,0 @@
-[v1.0.2]
--Added file to prevent block placing.
--Added global feature to the Region Protector.
-
-[v1.0.1]
--Added Road Lines
-
-[v1.0.0]
--Initial Build

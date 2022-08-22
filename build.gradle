@@ -124,6 +124,9 @@ dependencies {
 
     implementation fg.deobf("curse.maven:flywheel-486392:${flywheel_file_id}")
     implementation fg.deobf("curse.maven:create-328085:${create_file_id}")
+
+    implementation fg.deobf("curse.maven:framework-549225:${framework_file_id}")
+    implementation fg.deobf("curse.maven:gunmod-289479:${gunmod_file_id}")
 }
 
 jar {
@@ -158,6 +161,8 @@ curseforge {
             requiredDependency 'tinkers-construct'
             requiredDependency 'flywheel'
             requiredDependency 'create'
+            requiredDependency 'framework'
+            requiredDependency 'mrcrayfishs-gun-mod'
         }
     }
 }

@@ -2,9 +2,7 @@ package com.tm.calemicrime.blockentity;
 
 import com.tm.calemicore.util.Location;
 import com.tm.calemicore.util.blockentity.BlockEntityBase;
-import com.tm.calemicore.util.helper.LogHelper;
 import com.tm.calemicrime.init.InitBlockEntityTypes;
-import com.tm.calemicrime.main.CCReference;
 import com.tm.calemicrime.util.RegionRuleSet;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -25,6 +23,7 @@ public class BlockEntityRegionProtector extends BlockEntityBase {
     private Location regionSize = new Location(getLevel(), 16, 16, 16);
     private int priority = 0;
     private boolean global;
+    private RegionType regionType = RegionType.NONE;
 
     private final RegionRuleSet regionRuleSet = new RegionRuleSet();
 
@@ -82,6 +81,14 @@ public class BlockEntityRegionProtector extends BlockEntityBase {
         global = value;
     }
 
+    public RegionType getRegionType() {
+        return regionType;
+    }
+
+    public void setRegionType(RegionType value) {
+        regionType = value;
+    }
+
     public BlockEntityRentAcceptor getRentAcceptor() {
         return rentAcceptor;
     }
@@ -136,6 +143,8 @@ public class BlockEntityRegionProtector extends BlockEntityBase {
         priority = tag.getInt("Priority");
         global = tag.getBoolean("Global");
 
+        regionType = RegionType.fromIndex(tag.getInt("regionType"));
+
         regionRuleSet.loadFromNBT(tag);
     }
 
@@ -154,6 +163,39 @@ public class BlockEntityRegionProtector extends BlockEntityBase {
         tag.putInt("Priority", priority);
         tag.putBoolean("Global", global);
 
+        tag.putInt("regionType", regionType.getIndex());
+
         regionRuleSet.saveToNBT(tag);
+    }
+
+    public enum RegionType {
+
+        NONE(0, "none"),
+        RESIDENTIAL(1, "residential"),
+        COMMERCIAL(2, "commercial");
+
+        private final int index;
+        private final String name;
+
+        RegionType(int index, String name) {
+            this.index = index;
+            this.name = name;
+        }
+
+        public int getIndex() {
+            return index;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public static RegionType fromIndex(int index) {
+            return switch (index) {
+                case 1 -> RESIDENTIAL;
+                case 2 -> COMMERCIAL;
+                default -> NONE;
+            };
+        }
     }
 }
