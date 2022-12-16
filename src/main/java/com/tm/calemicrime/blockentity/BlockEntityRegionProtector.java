@@ -6,6 +6,7 @@ import com.tm.calemicrime.init.InitBlockEntityTypes;
 import com.tm.calemicrime.util.RegionRuleSet;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Vec3i;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -51,6 +52,18 @@ public class BlockEntityRegionProtector extends BlockEntityBase {
         Vec3 end = new Vec3(getLocation().x + getRegionOffset().x + getRegionSize().x, getLocation().y + getRegionOffset().y + getRegionSize().y, getLocation().z + getRegionOffset().z + getRegionSize().z);
 
         return new AABB(start, end);
+    }
+
+    public void setRegion(AABB aabb) {
+
+        Vec3i start = new Vec3i(aabb.minX, aabb.minY, aabb.minZ);
+        Vec3i end = new Vec3i(aabb.maxX + 1, aabb.maxY + 1, aabb.maxZ + 1);
+
+        end = end.subtract(start);
+        start = start.subtract(new Vec3i(getLocation().x, getLocation().y, getLocation().z));
+
+        setRegionOffset(new Location(level, new BlockPos(start)));
+        setRegionSize(new Location(level, new BlockPos(end)));
     }
 
     public int getPriority() {
@@ -170,16 +183,18 @@ public class BlockEntityRegionProtector extends BlockEntityBase {
 
     public enum RegionType {
 
-        NONE(0, "none"),
-        RESIDENTIAL(1, "residential"),
-        COMMERCIAL(2, "commercial");
+        NONE(0, "none", 999),
+        RESIDENTIAL(1, "residential", 3),
+        COMMERCIAL(2, "commercial", 5);
 
         private final int index;
         private final String name;
+        private final int rentMax;
 
-        RegionType(int index, String name) {
+        RegionType(int index, String name, int rentMax) {
             this.index = index;
             this.name = name;
+            this.rentMax = rentMax;
         }
 
         public int getIndex() {
@@ -188,6 +203,10 @@ public class BlockEntityRegionProtector extends BlockEntityBase {
 
         public String getName() {
             return name;
+        }
+
+        public int getRentMax() {
+            return rentMax;
         }
 
         public static RegionType fromIndex(int index) {

@@ -55,18 +55,23 @@ public class BlockRentAcceptor extends BaseEntityBlock {
             }
 
             else {
+
                 if (!level.isClientSide()) {
 
-                    Team team = rentAcceptor.getResidentTeam();
+                    TeamManager manager = TeamManager.INSTANCE;
 
-                    if (team == null || TeamManager.INSTANCE.getPlayerTeam((ServerPlayer) player) == team) {
-                        NetworkHooks.openGui((ServerPlayer) player, rentAcceptor, pos);
-                    }
+                    if (manager != null) {
 
-                    else {
+                        Team team = rentAcceptor.getResidentTeamServer(manager);
 
-                        player.sendMessage(new TextComponent(ChatFormatting.RED + "This plot is owned by: " + team.getDisplayName()), Util.NIL_UUID);
-                        player.sendMessage(new TextComponent(ChatFormatting.RED + "Time left on their rent: ").append(rentAcceptor.getFormattedTime(rentAcceptor.getRemainingRentTime())), Util.NIL_UUID);
+                        if (team == null || team.isMember(player.getUUID())) {
+                            NetworkHooks.openGui((ServerPlayer) player, rentAcceptor, pos);
+                        }
+
+                        else {
+                            player.sendMessage(new TextComponent(ChatFormatting.RED + "This plot is owned by: " + team.getDisplayName()), Util.NIL_UUID);
+                            player.sendMessage(new TextComponent(ChatFormatting.RED + "Time left on their rent: ").append(rentAcceptor.getFormattedTime(rentAcceptor.getRemainingRentTime())), Util.NIL_UUID);
+                        }
                     }
                 }
             }

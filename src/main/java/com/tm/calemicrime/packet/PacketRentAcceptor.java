@@ -18,6 +18,7 @@ public class PacketRentAcceptor {
     private BlockPos pos;
     private int maxRentTicks;
     private int costPerHour;
+    private String type;
     private int ruleSetIndex;
     private byte ruleOverrideIndex;
     private int walletCurrency;
@@ -25,22 +26,12 @@ public class PacketRentAcceptor {
 
     public PacketRentAcceptor() {}
 
-    /**
-     * Used to sync the data of the Rent Acceptor.
-     * @param command Used to determine the type of packet to send.
-     * @param pos The Block position of the Tile Entity.
-     * @param maxRentTicks The max time of rent in ticks.
-     * @param costPerHour The cost of currency per hour of rent.
-     * @param ruleSetIndex The rule set index.
-     * @param ruleOverrideIndex The index of type of override for the rule.
-     * @param walletCurrency The Bank's Wallet's stored currency.
-     * @param bankCurrency The Bank's stored currency.
-     */
-    public PacketRentAcceptor(String command, BlockPos pos, int maxRentTicks, int costPerHour, int ruleSetIndex, byte ruleOverrideIndex, int walletCurrency, int bankCurrency) {
+    public PacketRentAcceptor(String command, BlockPos pos, int maxRentTicks, int costPerHour, String type, int ruleSetIndex, byte ruleOverrideIndex, int walletCurrency, int bankCurrency) {
         this.command = command;
         this.pos = pos;
         this.maxRentTicks = maxRentTicks;
         this.costPerHour = costPerHour;
+        this.type = type;
         this.ruleSetIndex = ruleSetIndex;
         this.ruleOverrideIndex = ruleOverrideIndex;
         this.bankCurrency = bankCurrency;
@@ -48,15 +39,15 @@ public class PacketRentAcceptor {
     }
 
     public PacketRentAcceptor(String command, BlockPos pos, int ruleSetIndex, byte ruleOverrideIndex) {
-        this(command, pos, 0, 0, ruleSetIndex, ruleOverrideIndex, 0, 0);
+        this(command, pos, 0, 0, "", ruleSetIndex, ruleOverrideIndex, 0, 0);
     }
 
-    public PacketRentAcceptor(String command, BlockPos pos, int maxRentTicks, int costPerHour, int walletCurrency, int bankCurrency) {
-        this(command, pos, maxRentTicks, costPerHour, 0, (byte)0, walletCurrency, bankCurrency);
+    public PacketRentAcceptor(String command, BlockPos pos, int maxRentTicks, int costPerHour, String type, int walletCurrency, int bankCurrency) {
+        this(command, pos, maxRentTicks, costPerHour, type, 0, (byte)0, walletCurrency, bankCurrency);
     }
 
     public PacketRentAcceptor(String command, BlockPos pos) {
-        this(command, pos, 0, 0, 0, (byte)0, 0, 0);
+        this(command, pos, 0, 0, "", 0, (byte)0, 0, 0);
     }
 
     public PacketRentAcceptor(FriendlyByteBuf buf) {
@@ -64,6 +55,7 @@ public class PacketRentAcceptor {
         pos = new BlockPos(buf.readInt(), buf.readInt(), buf.readInt());
         maxRentTicks = buf.readInt();
         costPerHour = buf.readInt();
+        type = buf.readUtf(50).trim();
         ruleSetIndex = buf.readInt();
         ruleOverrideIndex = buf.readByte();
         walletCurrency = buf.readInt();
@@ -77,6 +69,7 @@ public class PacketRentAcceptor {
         buf.writeInt(pos.getZ());
         buf.writeInt(maxRentTicks);
         buf.writeInt(costPerHour);
+        buf.writeUtf(type, 50);
         buf.writeInt(ruleSetIndex);
         buf.writeByte(ruleOverrideIndex);
         buf.writeInt(walletCurrency);
@@ -99,6 +92,7 @@ public class PacketRentAcceptor {
                     if (command.equalsIgnoreCase("syncoptions")) {
                         rentAcceptor.setMaxRentTime(maxRentTicks);
                         rentAcceptor.setCostToFillRentTime(costPerHour);
+                        rentAcceptor.setRentAcceptorType(type);
                     }
 
                     //Handles syncing rule.

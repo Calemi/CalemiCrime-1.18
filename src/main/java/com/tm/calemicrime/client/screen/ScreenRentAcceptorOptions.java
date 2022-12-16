@@ -24,6 +24,7 @@ public class ScreenRentAcceptorOptions extends ScreenBase {
 
     private EditBox maxRentTimeBox;
     private EditBox costToFillRentTimeBox;
+    private EditBox typeBox;
 
     public ScreenRentAcceptorOptions(Player player, InteractionHand hand, BlockEntityRentAcceptor rentAcceptor) {
         super(player, hand);
@@ -40,7 +41,7 @@ public class ScreenRentAcceptorOptions extends ScreenBase {
         int btnYSpace = 20;
 
         int editBoxXOffset = 30;
-        int editBoxYOffset = -13;
+        int editBoxYOffset = 1;
         int editBoxYSpace = 30;
 
         for (int i = 0; i < regionRuleSetButtons.length; i++) {
@@ -48,17 +49,18 @@ public class ScreenRentAcceptorOptions extends ScreenBase {
             regionRuleSetButtons[i] = addRenderableWidget(new SmoothButton(getScreenX() + btnXOffset, getScreenY() + btnYOffset + (btnYSpace * i), 50, getRuleButtonKey(i), (btn) -> toggleRule(fi)));
         }
 
-        maxRentTimeBox = initField(rentAcceptor.getMaxRentTime() / 72000, editBoxXOffset, editBoxYOffset);
-        costToFillRentTimeBox = initField(rentAcceptor.getCostToFillRentTime(), editBoxXOffset, editBoxYOffset + editBoxYSpace);
+        maxRentTimeBox = initField("" + (rentAcceptor.getMaxRentTime() / 72000), editBoxXOffset, editBoxYOffset - editBoxYSpace);
+        costToFillRentTimeBox = initField("" + (rentAcceptor.getCostToFillRentTime()), editBoxXOffset, editBoxYOffset);
+        typeBox = initField(rentAcceptor.getRentAcceptorType(), editBoxXOffset, editBoxYOffset + editBoxYSpace);
     }
 
-    private EditBox initField (int value, int x, int y) {
+    private EditBox initField (String value, int x, int y) {
 
         if (minecraft != null) {
             EditBox editBox = new EditBox(minecraft.font, getScreenX() + x - 20, getScreenY() + y - 7, 100, 12, new TextComponent(""));
             addWidget(editBox);
             editBox.setMaxLength(15);
-            editBox.setValue("" + value);
+            editBox.setValue(value);
             return editBox;
         }
 
@@ -84,7 +86,7 @@ public class ScreenRentAcceptorOptions extends ScreenBase {
         maxRentTimeBox.setValue("" + maxRentHours);
         costToFillRentTimeBox.setValue("" + costPerHour);
 
-        CCPacketHandler.INSTANCE.sendToServer(new PacketRentAcceptor("syncoptions", rentAcceptor.getBlockPos(), maxRentHours * 72000, costPerHour, 0, 0));
+        CCPacketHandler.INSTANCE.sendToServer(new PacketRentAcceptor("syncoptions", rentAcceptor.getBlockPos(), maxRentHours * 72000, costPerHour, typeBox.getValue(), 0, 0));
     }
 
     private int parseInteger(String value) {
@@ -120,6 +122,7 @@ public class ScreenRentAcceptorOptions extends ScreenBase {
 
         maxRentTimeBox.tick();
         costToFillRentTimeBox.tick();
+        typeBox.tick();
     }
 
     @Override
@@ -130,6 +133,7 @@ public class ScreenRentAcceptorOptions extends ScreenBase {
 
         maxRentTimeBox.render(poseStack, mouseX, mouseY, 0);
         costToFillRentTimeBox.render(poseStack, mouseX, mouseY, 0);
+        typeBox.render(poseStack, mouseX, mouseY, 0);
 
         int editBoxYOffset = 11;
 
@@ -138,6 +142,9 @@ public class ScreenRentAcceptorOptions extends ScreenBase {
 
         TranslatableComponent costPerHourText = new TranslatableComponent("screen.rent_acceptor.txt.costtofillrenttime");
         minecraft.font.draw(poseStack, costPerHourText, costToFillRentTimeBox.x, costToFillRentTimeBox.y - editBoxYOffset, 0xFFFFFF);
+
+        TranslatableComponent typeText = new TranslatableComponent("screen.rent_acceptor.txt.type");
+        minecraft.font.draw(poseStack, typeText, typeBox.x, typeBox.y - editBoxYOffset, 0xFFFFFF);
 
         int buttonOffset = 4;
 
@@ -163,13 +170,8 @@ public class ScreenRentAcceptorOptions extends ScreenBase {
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
 
-        //Escape Key
-        if (keyCode == 256) {
-            minecraft.player.closeContainer();
-        }
-
         //Enter Key
-        else if (keyCode == 257) {
+        if (keyCode == 257) {
             confirmEditBoxes();
         }
 
@@ -188,7 +190,7 @@ public class ScreenRentAcceptorOptions extends ScreenBase {
 
     @Override
     protected boolean canCloseWithInvKey() {
-        return true;
+        return !typeBox.isFocused();
     }
 
     @Override

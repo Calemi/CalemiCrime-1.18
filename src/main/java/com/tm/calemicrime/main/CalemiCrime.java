@@ -4,11 +4,9 @@ import com.tm.calemicrime.client.render.RenderMineGenerator;
 import com.tm.calemicrime.client.render.RenderRegionProtector;
 import com.tm.calemicrime.client.screen.ScreenMineGenerator;
 import com.tm.calemicrime.client.screen.ScreenRentAcceptor;
-import com.tm.calemicrime.event.FilePreventionEvents;
-import com.tm.calemicrime.event.MiscPreventionEvents;
-import com.tm.calemicrime.event.RegionProtectorEvents;
-import com.tm.calemicrime.event.ToxicItemEvents;
+import com.tm.calemicrime.event.*;
 import com.tm.calemicrime.file.PreventBlockPlaceListFile;
+import com.tm.calemicrime.file.RentAcceptorTypesFile;
 import com.tm.calemicrime.init.*;
 import com.tm.calemicrime.packet.CCPacketHandler;
 import com.tm.calemicrime.tab.CCTab;
@@ -56,10 +54,13 @@ public class CalemiCrime {
 
         InitItems.init();
         InitBlockEntityTypes.BLOCK_ENTITY_TYPES.register(MOD_EVENT_BUS);
+        InitRecipes.RECIPES.register(MOD_EVENT_BUS);
         InitFluids.FLUIDS.register(MOD_EVENT_BUS);
         InitMenuTypes.MENU_TYPES.register(MOD_EVENT_BUS);
+        InitMobEffects.MOB_EFFECTS.register(MOD_EVENT_BUS);
 
         PreventBlockPlaceListFile.init();
+        RentAcceptorTypesFile.init();
     }
 
     private void onCommonSetup(final FMLCommonSetupEvent event) {
@@ -68,6 +69,7 @@ public class CalemiCrime {
         MinecraftForge.EVENT_BUS.register(new MiscPreventionEvents());
         MinecraftForge.EVENT_BUS.register(new ToxicItemEvents());
         MinecraftForge.EVENT_BUS.register(new FilePreventionEvents());
+        MinecraftForge.EVENT_BUS.register(new DrugEvents());
     }
 
     private void onClientSetup(final FMLClientSetupEvent event) {

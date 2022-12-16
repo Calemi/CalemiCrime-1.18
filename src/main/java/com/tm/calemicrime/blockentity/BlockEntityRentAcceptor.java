@@ -9,6 +9,8 @@ import com.tm.calemicrime.util.RegionRuleSet;
 import com.tm.calemieconomy.blockentity.BlockEntityBank;
 import com.tm.calemieconomy.blockentity.ICurrencyNetworkUnit;
 import com.tm.calemieconomy.util.helper.NetworkHelper;
+import dev.ftb.mods.ftbteams.data.ClientTeam;
+import dev.ftb.mods.ftbteams.data.ClientTeamManager;
 import dev.ftb.mods.ftbteams.data.Team;
 import dev.ftb.mods.ftbteams.data.TeamManager;
 import net.minecraft.core.BlockPos;
@@ -20,12 +22,16 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.UUID;
 
 public class BlockEntityRentAcceptor extends BlockEntityContainerBase implements ICurrencyNetworkUnit {
+
+    private static final ArrayList<BlockEntityRentAcceptor> rentAcceptors = new ArrayList<>();
 
     private Location bankLocation;
 
@@ -34,6 +40,7 @@ public class BlockEntityRentAcceptor extends BlockEntityContainerBase implements
     private int maxRentTime = 20 * 60 * 60;
     private int remainingRentTime = 0;
     private int costToFillRentTime = 1;
+    private String rentType = "";
 
     private final RegionRuleSet regionRuleSetOverride = new RegionRuleSet();
 
@@ -41,12 +48,24 @@ public class BlockEntityRentAcceptor extends BlockEntityContainerBase implements
         super(InitBlockEntityTypes.RENT_ACCEPTOR.get(), pos, state);
     }
 
+    public static ArrayList<BlockEntityRentAcceptor> getRentAcceptors() {
+        return rentAcceptors;
+    }
+
     public RegionRuleSet getRegionRuleSetOverride() {
         return regionRuleSetOverride;
     }
 
-    public Team getResidentTeam() {
-        return TeamManager.INSTANCE.getTeamByID(residentTeamID);
+    public UUID getResidentTeamID() {
+        return residentTeamID;
+    }
+
+    public Team getResidentTeamServer(TeamManager manager) {
+        return manager.getTeamByID(residentTeamID);
+    }
+
+    public ClientTeam getResidentTeamClient(ClientTeamManager manager) {
+        return manager.getTeam(residentTeamID);
     }
 
     public void setResidentTeam(Team value) {
@@ -100,6 +119,14 @@ public class BlockEntityRentAcceptor extends BlockEntityContainerBase implements
         setRemainingRentTime(0);
     }
 
+    public String getRentAcceptorType() {
+        return rentType;
+    }
+
+    public void setRentAcceptorType(String value) {
+        rentType = value;
+    }
+
     public String getFormattedTime(int ticks) {
 
         int timeInSeconds = ticks / (20) % 60;
@@ -114,6 +141,21 @@ public class BlockEntityRentAcceptor extends BlockEntityContainerBase implements
 
         if (rentAcceptor.getRemainingRentTime() > 0) {
 
+            if (!level.isClientSide()) {
+
+                TeamManager manager = TeamManager.INSTANCE;
+
+                if (manager != null && rentAcceptor.getResidentTeamServer(manager) == null) {
+                    rentAcceptor.emptyRentTime();
+                    return;
+                }
+
+                if (level.getGameTime() % 20 == 0) {
+                    addRentAcceptorToList(rentAcceptor);
+                    cleanRegionProtectorList();
+                }
+            }
+
             if (rentAcceptor.getRemainingRentTime() > rentAcceptor.getMaxRentTime()) {
                 rentAcceptor.setRemainingRentTime(rentAcceptor.getMaxRentTime());
             }
@@ -121,9 +163,20 @@ public class BlockEntityRentAcceptor extends BlockEntityContainerBase implements
             rentAcceptor.setRemainingRentTime(rentAcceptor.getRemainingRentTime() - 1);
         }
 
-        else if (rentAcceptor.getResidentTeam() != null) {
+        else if (rentAcceptor.getResidentTeamID() != null) {
             rentAcceptor.clearResidentTeam();
         }
+    }
+
+    private static void addRentAcceptorToList(BlockEntityRentAcceptor rentAcceptor) {
+
+        if (!rentAcceptors.contains(rentAcceptor)) {
+            rentAcceptors.add(rentAcceptor);
+        }
+    }
+
+    public static void cleanRegionProtectorList() {
+        rentAcceptors.removeIf(BlockEntity::isRemoved);
     }
 
     /**
@@ -181,6 +234,7 @@ public class BlockEntityRentAcceptor extends BlockEntityContainerBase implements
         maxRentTime = tag.getInt("MaxRentTime");
         remainingRentTime = tag.getInt("RemainingRentTime");
         costToFillRentTime = tag.getInt("CostToFillRentTime");
+        rentType = tag.contains("RentType") ? tag.getString("RentType") : "";
 
         regionRuleSetOverride.loadFromNBT(tag);
     }
@@ -194,6 +248,7 @@ public class BlockEntityRentAcceptor extends BlockEntityContainerBase implements
         tag.putInt("MaxRentTime", maxRentTime);
         tag.putInt("RemainingRentTime", remainingRentTime);
         tag.putInt("CostToFillRentTime", costToFillRentTime);
+        tag.putString("RentType", rentType);
 
         regionRuleSetOverride.saveToNBT(tag);
     }

@@ -48,9 +48,4 @@ public class MiscPreventionEvents {
             }
         }
     }
-
-    @SubscribeEvent
-    public void onMobGrief(SaplingGrowTreeEvent event) {
-        event.setCanceled(true);
-    }
 }
