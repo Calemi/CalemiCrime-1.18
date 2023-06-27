@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:smelting",
+  "ingredient": {
+    "tag": "forge:seeds"
+  },
+  "result": "calemicrime:dried_seeds",
+  "experience": 0.15,
+  "cookingtime": 200
+}

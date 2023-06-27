@@ -1,8 +1,8 @@
 package com.tm.calemicrime.init;
 
+import com.tm.calemicrime.main.CCReference;
 import com.tm.calemicrime.menu.MenuMineGenerator;
 import com.tm.calemicrime.menu.MenuRentAcceptor;
-import com.tm.calemieconomy.main.CEReference;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
@@ -20,7 +20,7 @@ import java.util.function.Supplier;
  */
 public class InitMenuTypes {
 
-    public static final DeferredRegister<MenuType<?>> MENU_TYPES = DeferredRegister.create(ForgeRegistries.CONTAINERS, CEReference.MOD_ID);
+    public static final DeferredRegister<MenuType<?>> MENU_TYPES = DeferredRegister.create(ForgeRegistries.CONTAINERS, CCReference.MOD_ID);
 
     public static final RegistryObject<MenuType<MenuRentAcceptor>> RENT_ACCEPTOR = MENU_TYPES.register("rent_acceptor", regBlockMenu(MenuRentAcceptor::new));
     public static final RegistryObject<MenuType<MenuMineGenerator>> MINE_GENERATOR = MENU_TYPES.register("mine_generator", regBlockMenu(MenuMineGenerator::new));

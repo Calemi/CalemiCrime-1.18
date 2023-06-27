@@ -2,7 +2,7 @@
   "type": "tconstruct:melting",
 
   "ingredient": {
-    "item": "calemicrime:ergotamine"
+    "item": "calemicrime:ergotamine_bottle"
   },
 
   "result": {

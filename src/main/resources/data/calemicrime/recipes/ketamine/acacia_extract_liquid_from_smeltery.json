@@ -1,0 +1,15 @@
+{
+  "type": "tconstruct:melting",
+
+  "ingredient": {
+    "item": "calemicrime:acacia_extract_bottle"
+  },
+
+  "result": {
+    "fluid": "calemicrime:acacia_extract",
+    "amount": 250
+  },
+
+  "temperature": 1000,
+  "time": 80
+}

@@ -8,7 +8,7 @@
   "cast_consumed": true,
 
   "fluid": {
-    "tag": "calemicrime:methylamine",
+    "name": "calemicrime:methylamine",
     "amount": 1000
   },
 

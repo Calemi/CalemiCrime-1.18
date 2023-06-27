@@ -2,7 +2,8 @@
   "type": "create:mixing",
   "ingredients": [
     {
-      "item": "calemicrime:sweetened_acacia_extract"
+      "fluid": "calemicrime:sweetened_acacia_extract",
+      "amount": 250
     },
     {
       "item": "calemicrime:silica_gel"

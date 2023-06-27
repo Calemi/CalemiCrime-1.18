@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "facing=down": {
+      "model": "calemicrime:block/bullet_hole",
+      "x": 180
+    },
+    "facing=east": {
+      "model": "calemicrime:block/bullet_hole",
+      "x": 90,
+      "y": 90
+    },
+    "facing=north": {
+      "model": "calemicrime:block/bullet_hole",
+      "x": 90
+    },
+    "facing=south": {
+      "model": "calemicrime:block/bullet_hole",
+      "x": 90,
+      "y": 180
+    },
+    "facing=up": {
+      "model": "calemicrime:block/bullet_hole"
+    },
+    "facing=west": {
+      "model": "calemicrime:block/bullet_hole",
+      "x": 90,
+      "y": 270
+    }
+  }
+}

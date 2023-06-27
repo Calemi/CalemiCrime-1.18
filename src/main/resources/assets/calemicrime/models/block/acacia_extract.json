@@ -1,0 +1,7 @@
+{
+  "loader": "mantle:fluid_texture",
+  "textures": {
+    "still": "calemicrime:blocks/acacia_extract_still",
+    "flowing": "calemicrime:blocks/acacia_extract_flowing"
+  }
+}

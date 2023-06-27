@@ -18,7 +18,7 @@ public class BlockRoadLine extends HorizontalDirectionalBlock {
     protected static final VoxelShape AABB = Block.box(0, 0, 0, 16, 1, 16);
 
     public BlockRoadLine() {
-        super(BlockBehaviour.Properties.of(Material.STONE).instabreak().sound(SoundType.STONE).noOcclusion());
+        super(BlockBehaviour.Properties.of(Material.STONE).instabreak().sound(SoundType.STONE).noOcclusion().noCollission());
     }
 
     @Override

@@ -6,4 +6,5 @@ public interface IItemDrug {
 
     int getDuration();
     void onConsumed(Player player, int additiveDuration);
+    void onExpired(Player player);
 }

@@ -8,7 +8,7 @@
   "cast_consumed": true,
 
   "fluid": {
-    "tag": "calemicrime:methylsulfonylmethane",
+    "name": "calemicrime:methylsulfonylmethane",
     "amount": 1000
   },
 

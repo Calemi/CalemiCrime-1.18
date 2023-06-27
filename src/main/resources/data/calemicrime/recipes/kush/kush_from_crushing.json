@@ -2,16 +2,12 @@
   "type": "create:crushing",
   "ingredients": [
     {
-      "item": "calemicrime:cannabis_leaf"
+      "item": "calemicrime:dried_cannabis_leaf"
     }
   ],
   "results": [
     {
       "item": "calemicrime:kush"
-    },
-    {
-      "item": "calemicrime:kush",
-      "chance": 0.75
     }
   ],
   "processingTime": 200

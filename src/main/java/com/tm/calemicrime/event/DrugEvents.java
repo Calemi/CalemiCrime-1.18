@@ -1,7 +1,9 @@
 package com.tm.calemicrime.event;
 
+import com.tm.calemicore.util.helper.LogHelper;
 import com.tm.calemicrime.effect.DrugHighEffect;
 import com.tm.calemicrime.item.drug.IItemDrug;
+import com.tm.calemicrime.main.CCReference;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.GameRenderer;
@@ -9,6 +11,7 @@ import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.Item;
@@ -17,6 +20,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
+import net.minecraftforge.event.entity.living.PotionEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 public class DrugEvents {
@@ -28,16 +32,19 @@ public class DrugEvents {
 
         if (nbt.contains("Drug")) {
 
-            Item item = Registry.ITEM.get(new ResourceLocation(nbt.getString("Drug")));
+            for (String string : nbt.getString("Drug").split("%")) {
 
-            if (item instanceof IItemDrug drug) {
+                Item item = Registry.ITEM.get(new ResourceLocation(string));
 
-                FoodProperties properties = event.getItem().getFoodProperties(event.getEntityLiving());
+                if (item instanceof IItemDrug drug) {
 
-                float saturationRestored = properties.getSaturationModifier() * 2 * properties.getNutrition();
-                float totalRestored = properties.getNutrition() + saturationRestored;
+                    FoodProperties properties = event.getItem().getFoodProperties(event.getEntityLiving());
 
-                drug.onConsumed((Player)event.getEntityLiving(), (int) ((totalRestored) * 40));
+                    float saturationRestored = properties.getSaturationModifier() * 2 * properties.getNutrition();
+                    float totalRestored = properties.getNutrition() + saturationRestored;
+
+                    drug.onConsumed((Player)event.getEntityLiving(), (int) ((totalRestored) * 40));
+                }
             }
         }
     }
@@ -60,6 +67,34 @@ public class DrugEvents {
             }
 
             clearShader();
+        }
+    }
+
+    @SubscribeEvent
+    public void onEffectExpire(PotionEvent.PotionExpiryEvent event) {
+
+        if (event.getEntityLiving() == null || event.getPotionEffect() == null) {
+            return;
+        }
+
+        LogHelper.log(CCReference.MOD_NAME, "EXPIRE");
+
+        if (event.getPotionEffect().getEffect() instanceof DrugHighEffect highEffect && event.getEntityLiving() instanceof Player player) {
+            highEffect.item.onExpired(player);
+        }
+    }
+
+    @SubscribeEvent
+    public void onEffectRemoved(PotionEvent.PotionRemoveEvent event) {
+
+        if (event.getEntityLiving() == null || event.getPotionEffect() == null) {
+            return;
+        }
+
+        LogHelper.log(CCReference.MOD_NAME, "REMOVE");
+
+        if (event.getPotionEffect().getEffect() instanceof DrugHighEffect highEffect && event.getEntityLiving() instanceof Player player) {
+            highEffect.item.onExpired(player);
         }
     }
 

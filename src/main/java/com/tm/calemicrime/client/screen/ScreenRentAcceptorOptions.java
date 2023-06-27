@@ -22,14 +22,18 @@ public class ScreenRentAcceptorOptions extends ScreenBase {
 
     private final SmoothButton[] regionRuleSetButtons;
 
+    private EditBox fileKeyBox;
     private EditBox maxRentTimeBox;
     private EditBox costToFillRentTimeBox;
     private EditBox typeBox;
 
+    private SmoothButton autoResetPlotBtn;
+    private EditBox plotResetTimeBox;
+
     public ScreenRentAcceptorOptions(Player player, InteractionHand hand, BlockEntityRentAcceptor rentAcceptor) {
         super(player, hand);
         this.rentAcceptor = rentAcceptor;
-        regionRuleSetButtons = new SmoothButton[rentAcceptor.getRegionRuleSetOverride().ruleSets.length];
+        regionRuleSetButtons = new SmoothButton[rentAcceptor.regionRuleSetOverride.ruleSets.length];
     }
 
     @Override
@@ -41,7 +45,7 @@ public class ScreenRentAcceptorOptions extends ScreenBase {
         int btnYSpace = 20;
 
         int editBoxXOffset = 30;
-        int editBoxYOffset = 1;
+        int editBoxYOffset = -40;
         int editBoxYSpace = 30;
 
         for (int i = 0; i < regionRuleSetButtons.length; i++) {
@@ -49,18 +53,22 @@ public class ScreenRentAcceptorOptions extends ScreenBase {
             regionRuleSetButtons[i] = addRenderableWidget(new SmoothButton(getScreenX() + btnXOffset, getScreenY() + btnYOffset + (btnYSpace * i), 50, getRuleButtonKey(i), (btn) -> toggleRule(fi)));
         }
 
-        maxRentTimeBox = initField("" + (rentAcceptor.getMaxRentTime() / 72000), editBoxXOffset, editBoxYOffset - editBoxYSpace);
-        costToFillRentTimeBox = initField("" + (rentAcceptor.getCostToFillRentTime()), editBoxXOffset, editBoxYOffset);
-        typeBox = initField(rentAcceptor.getRentAcceptorType(), editBoxXOffset, editBoxYOffset + editBoxYSpace);
+        fileKeyBox = initField(rentAcceptor.fileKey, editBoxXOffset, editBoxYOffset);
+        maxRentTimeBox = initField(rentAcceptor.maxRentHours, editBoxXOffset, editBoxYOffset + editBoxYSpace);
+        costToFillRentTimeBox = initField(rentAcceptor.costToFillRentTime, editBoxXOffset, editBoxYOffset + (editBoxYSpace * 2));
+        typeBox = initField(rentAcceptor.rentType, editBoxXOffset, editBoxYOffset + (editBoxYSpace * 3));
+
+        autoResetPlotBtn = addRenderableWidget(new SmoothButton(getScreenX() + btnXOffset, getScreenY() + btnYOffset + (btnYSpace * 6), 50, getAutoResetPlotButtonKey(), (btn) -> toggleAutoPlotReset()));
+        plotResetTimeBox = initField(rentAcceptor.plotResetTimeSeconds, editBoxXOffset, editBoxYOffset + (editBoxYSpace * 4));
     }
 
-    private EditBox initField (String value, int x, int y) {
+    private EditBox initField (Object value, int x, int y) {
 
         if (minecraft != null) {
             EditBox editBox = new EditBox(minecraft.font, getScreenX() + x - 20, getScreenY() + y - 7, 100, 12, new TextComponent(""));
             addWidget(editBox);
-            editBox.setMaxLength(15);
-            editBox.setValue(value);
+            editBox.setMaxLength(30);
+            editBox.setValue("" + value);
             return editBox;
         }
 
@@ -69,7 +77,7 @@ public class ScreenRentAcceptorOptions extends ScreenBase {
 
     private String getRuleButtonKey(int ruleSetIndex) {
 
-        RegionRuleSet.RuleOverrideType ruleOverrideType = rentAcceptor.getRegionRuleSetOverride().ruleSets[ruleSetIndex];
+        RegionRuleSet.RuleOverrideType ruleOverrideType = rentAcceptor.regionRuleSetOverride.ruleSets[ruleSetIndex];
 
         return switch (ruleOverrideType) {
             case PREVENT -> "screen.regionprotector.btn.rule.prevent";
@@ -78,15 +86,21 @@ public class ScreenRentAcceptorOptions extends ScreenBase {
         };
     }
 
+    private String getAutoResetPlotButtonKey() {
+        return rentAcceptor.autoPlotReset ? "screen.regionprotector.btn.true" : "screen.regionprotector.btn.false";
+    }
+
     private void confirmEditBoxes() {
 
         int maxRentHours = parseInteger(maxRentTimeBox.getValue());
-        int costPerHour = parseInteger(costToFillRentTimeBox.getValue());
+        long costToFill = parseLong(costToFillRentTimeBox.getValue());
 
         maxRentTimeBox.setValue("" + maxRentHours);
-        costToFillRentTimeBox.setValue("" + costPerHour);
+        costToFillRentTimeBox.setValue("" + costToFill);
 
-        CCPacketHandler.INSTANCE.sendToServer(new PacketRentAcceptor("syncoptions", rentAcceptor.getBlockPos(), maxRentHours * 72000, costPerHour, typeBox.getValue(), 0, 0));
+        int plotResetTime = parseInteger(plotResetTimeBox.getValue());
+
+        CCPacketHandler.INSTANCE.sendToServer(new PacketRentAcceptor("syncoptions", rentAcceptor.getBlockPos(), maxRentHours, costToFill, typeBox.getValue(), fileKeyBox.getValue(), plotResetTime));
     }
 
     private int parseInteger(String value) {
@@ -97,15 +111,29 @@ public class ScreenRentAcceptorOptions extends ScreenBase {
         }
     }
 
+    private long parseLong(String value) {
+        try {
+            return Long.parseLong(value);
+        } catch (NumberFormatException numberformatexception) {
+            return 0;
+        }
+    }
+
+
     private void toggleRule(int ruleSetIndex) {
 
-        byte ruleOverrideIndex = rentAcceptor.getRegionRuleSetOverride().ruleSets[ruleSetIndex].getIndex();
+        byte ruleOverrideIndex = rentAcceptor.regionRuleSetOverride.ruleSets[ruleSetIndex].getIndex();
 
         ruleOverrideIndex++;
         ruleOverrideIndex %= 3;
 
-        rentAcceptor.getRegionRuleSetOverride().ruleSets[ruleSetIndex] = RegionRuleSet.RuleOverrideType.fromIndex(ruleOverrideIndex);
+        rentAcceptor.regionRuleSetOverride.ruleSets[ruleSetIndex] = RegionRuleSet.RuleOverrideType.fromIndex(ruleOverrideIndex);
         CCPacketHandler.INSTANCE.sendToServer(new PacketRentAcceptor("syncrule", rentAcceptor.getBlockPos(), ruleSetIndex, ruleOverrideIndex));
+    }
+
+    private void toggleAutoPlotReset() {
+        rentAcceptor.autoPlotReset = !rentAcceptor.autoPlotReset;
+        CCPacketHandler.INSTANCE.sendToServer(new PacketRentAcceptor("syncautoplotreset", rentAcceptor.getBlockPos(), rentAcceptor.autoPlotReset));
     }
 
     @Override
@@ -123,6 +151,10 @@ public class ScreenRentAcceptorOptions extends ScreenBase {
         maxRentTimeBox.tick();
         costToFillRentTimeBox.tick();
         typeBox.tick();
+        fileKeyBox.tick();
+        plotResetTimeBox.tick();
+
+        autoResetPlotBtn.setMessage(new TranslatableComponent(getAutoResetPlotButtonKey()));
     }
 
     @Override
@@ -131,11 +163,16 @@ public class ScreenRentAcceptorOptions extends ScreenBase {
     @Override
     protected void drawGuiForeground(PoseStack poseStack, int mouseX, int mouseY) {
 
+        fileKeyBox.render(poseStack, mouseX, mouseY, 0);
         maxRentTimeBox.render(poseStack, mouseX, mouseY, 0);
         costToFillRentTimeBox.render(poseStack, mouseX, mouseY, 0);
         typeBox.render(poseStack, mouseX, mouseY, 0);
+        plotResetTimeBox.render(poseStack, mouseX, mouseY, 0);
 
         int editBoxYOffset = 11;
+
+        TranslatableComponent fileKeyText = new TranslatableComponent("screen.rent_acceptor.txt.filekey");
+        minecraft.font.draw(poseStack, fileKeyText, fileKeyBox.x, fileKeyBox.y - editBoxYOffset, 0xFFFFFF);
 
         TranslatableComponent maxRentTicksText = new TranslatableComponent("screen.rent_acceptor.txt.maxrenttime");
         minecraft.font.draw(poseStack, maxRentTicksText, maxRentTimeBox.x, maxRentTimeBox.y - editBoxYOffset, 0xFFFFFF);
@@ -145,6 +182,9 @@ public class ScreenRentAcceptorOptions extends ScreenBase {
 
         TranslatableComponent typeText = new TranslatableComponent("screen.rent_acceptor.txt.type");
         minecraft.font.draw(poseStack, typeText, typeBox.x, typeBox.y - editBoxYOffset, 0xFFFFFF);
+
+        TextComponent plotResetTime = new TextComponent("Plot Reset Time (Seconds)");
+        minecraft.font.draw(poseStack, plotResetTime, plotResetTimeBox.x, plotResetTimeBox.y - editBoxYOffset, 0xFFFFFF);
 
         int buttonOffset = 4;
 
@@ -165,6 +205,9 @@ public class ScreenRentAcceptorOptions extends ScreenBase {
 
         TranslatableComponent pvpText = new TranslatableComponent("screen.regionprotector.txt.rule.pvp");
         minecraft.font.draw(poseStack, pvpText, regionRuleSetButtons[4].x - minecraft.font.width(pvpText) - buttonOffset, regionRuleSetButtons[5].y + buttonOffset, 0xFFFFFF);
+
+        TextComponent autoPlotResetText = new TextComponent("Auto Plot Reset");
+        minecraft.font.draw(poseStack, autoPlotResetText, autoResetPlotBtn.x - minecraft.font.width(autoPlotResetText) - buttonOffset, autoResetPlotBtn.y + buttonOffset, 0xFFFFFF);
     }
 
     @Override
@@ -190,7 +233,7 @@ public class ScreenRentAcceptorOptions extends ScreenBase {
 
     @Override
     protected boolean canCloseWithInvKey() {
-        return !typeBox.isFocused();
+        return !typeBox.isFocused() && !fileKeyBox.isFocused();
     }
 
     @Override

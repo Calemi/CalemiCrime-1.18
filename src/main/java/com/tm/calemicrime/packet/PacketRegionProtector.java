@@ -23,21 +23,11 @@ public class PacketRegionProtector {
     private int regionTypeIndex;
     private int ruleSetIndex;
     private byte ruleOverrideIndex;
+    private String plotName;
 
     public PacketRegionProtector() {}
 
-    /**
-     * Used to sync the data of the Trading Post.
-     * @param command Used to determine the type of packet to send.
-     * @param pos The Block position of the Tile Entity.
-     * @param regionOffset The Location of the region's offset.
-     * @param regionEdge The Location of the region's edge.
-     * @param priority The number of priority.
-     * @param regionTypeIndex The region type.
-     * @param ruleSetIndex The rule set index.
-     * @param ruleOverrideIndex The index of type of override for the rule.
-     */
-    public PacketRegionProtector(String command, BlockPos pos, BlockPos regionOffset, BlockPos regionEdge, int priority, boolean global, int regionTypeIndex, int ruleSetIndex, byte ruleOverrideIndex) {
+    public PacketRegionProtector(String command, BlockPos pos, BlockPos regionOffset, BlockPos regionEdge, int priority, boolean global, int regionTypeIndex, int ruleSetIndex, byte ruleOverrideIndex, String plotName) {
         this.command = command;
         this.pos = pos;
         this.regionOffset = regionOffset;
@@ -47,22 +37,31 @@ public class PacketRegionProtector {
         this.regionTypeIndex = regionTypeIndex;
         this.ruleSetIndex = ruleSetIndex;
         this.ruleOverrideIndex = ruleOverrideIndex;
+        this.plotName = plotName;
     }
 
     public PacketRegionProtector(String command, BlockPos pos, BlockPos regionOffset, BlockPos regionEdge) {
-        this(command, pos, regionOffset, regionEdge, 0, false, 0, 0, (byte)0);
+        this(command, pos, regionOffset, regionEdge, 0, false, 0, 0, (byte)0, "");
     }
 
     public PacketRegionProtector(String command, BlockPos pos, int priority) {
-        this(command, pos, BlockPos.ZERO, BlockPos.ZERO, priority,  false, 0, 0, (byte)0);
+        this(command, pos, BlockPos.ZERO, BlockPos.ZERO, priority,  false, 0, 0, (byte)0, "");
     }
 
     public PacketRegionProtector(String command, BlockPos pos, boolean global, int regionTypeIndex) {
-        this(command, pos, BlockPos.ZERO, BlockPos.ZERO, 0,  global, regionTypeIndex, 0, (byte)0);
+        this(command, pos, BlockPos.ZERO, BlockPos.ZERO, 0,  global, regionTypeIndex, 0, (byte)0, "");
     }
 
     public PacketRegionProtector(String command, BlockPos pos, int ruleSetIndex, byte ruleOverrideIndex) {
-        this(command, pos, BlockPos.ZERO, BlockPos.ZERO, 0, false, 0, ruleSetIndex, ruleOverrideIndex);
+        this(command, pos, BlockPos.ZERO, BlockPos.ZERO, 0, false, 0, ruleSetIndex, ruleOverrideIndex, "");
+    }
+
+    public PacketRegionProtector(String command, BlockPos pos) {
+        this(command, pos, BlockPos.ZERO, BlockPos.ZERO, 0, false, 0, 0, (byte)0, "");
+    }
+
+    public PacketRegionProtector(String command, BlockPos pos, String plotName) {
+        this(command, pos, BlockPos.ZERO, BlockPos.ZERO, 0, false, 0, 0, (byte)0, plotName);
     }
 
     public PacketRegionProtector(FriendlyByteBuf buf) {
@@ -75,6 +74,7 @@ public class PacketRegionProtector {
         regionTypeIndex = buf.readInt();
         ruleSetIndex = buf.readInt();
         ruleOverrideIndex = buf.readByte();
+        plotName = buf.readUtf(100).trim();
     }
 
     public void toBytes (FriendlyByteBuf buf) {
@@ -93,6 +93,7 @@ public class PacketRegionProtector {
         buf.writeInt(regionTypeIndex);
         buf.writeInt(ruleSetIndex);
         buf.writeByte(ruleOverrideIndex);
+        buf.writeUtf(plotName, 100);
     }
 
     public void handle (Supplier<NetworkEvent.Context> ctx) {
@@ -110,27 +111,36 @@ public class PacketRegionProtector {
 
                     //Handles syncing locations.
                     if (command.equalsIgnoreCase("synclocations")) {
-                        regionProtector.setRegionOffset(new Location(player.getLevel(), regionOffset));
-                        regionProtector.setRegionSize(new Location(player.getLevel(), regionEdge));
+                        regionProtector.regionOffset = new Location(player.getLevel(), regionOffset);
+                        regionProtector.regionSize = new Location(player.getLevel(), regionEdge);
                     }
 
                     //Handles syncing priority.
                     else if (command.equalsIgnoreCase("syncpriority")) {
-                        regionProtector.setPriority(priority);
+                        regionProtector.priority = priority;
                     }
 
                     else if (command.equalsIgnoreCase("syncglobal")) {
-                        regionProtector.setGlobal(global);
+                        regionProtector.global = global;
                         LogHelper.log(CCReference.MOD_NAME, global);
                     }
 
                     else if (command.equalsIgnoreCase("syncregiontype")) {
-                        regionProtector.setRegionType(BlockEntityRegionProtector.RegionType.fromIndex(regionTypeIndex));
+                        regionProtector.regionType = BlockEntityRegionProtector.RegionType.fromIndex(regionTypeIndex);
                     }
 
                     //Handles syncing rule.
                     else if (command.equalsIgnoreCase("syncrule")) {
-                        regionProtector.getRegionRuleSet().ruleSets[ruleSetIndex] = RegionRuleSet.RuleOverrideType.fromIndex(ruleOverrideIndex);
+                        regionProtector.regionRuleSet.ruleSets[ruleSetIndex] = RegionRuleSet.RuleOverrideType.fromIndex(ruleOverrideIndex);
+                    }
+
+                    else if (command.equalsIgnoreCase("saveplot")) {
+                        regionProtector.savePlot();
+                        regionProtector.lastSaveTime = System.currentTimeMillis();
+                    }
+
+                    else if (command.equalsIgnoreCase("loadplot")) {
+                        regionProtector.loadPlot(player.getLevel());
                     }
 
                     regionProtector.markUpdated();

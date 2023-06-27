@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "calemicrime:cracked_taniun"
+    },
+    {
+      "item": "calemicrime:cracked_taniun"
+    },
+    {
+      "item": "calemicrime:cracked_taniun"
+    },
+    {
+      "item": "calemicrime:cracked_taniun"
+    },
+    {
+      "item": "calemicrime:cracked_taniun"
+    },
+    {
+      "item": "calemicrime:bag"
+    }
+  ],
+  "result": {
+    "item": "calemicrime:teenth_of_taniun"
+  }
+}

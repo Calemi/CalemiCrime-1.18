@@ -1,6 +1,7 @@
 ## Based on GitHub's Eclipse .gitignore
 
 run/
+build/
 server/
 out/
 classes/

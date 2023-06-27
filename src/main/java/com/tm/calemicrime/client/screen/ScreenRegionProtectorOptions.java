@@ -16,6 +16,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
+import java.util.Date;
+
 @OnlyIn(Dist.CLIENT)
 public class ScreenRegionProtectorOptions extends ScreenBase {
 
@@ -39,7 +41,7 @@ public class ScreenRegionProtectorOptions extends ScreenBase {
     public ScreenRegionProtectorOptions(Player player, InteractionHand hand, BlockEntityRegionProtector regionProtector) {
         super(player, hand);
         this.regionProtector = regionProtector;
-        regionRuleSetBtns = new SmoothButton[regionProtector.getRegionRuleSet().ruleSets.length];
+        regionRuleSetBtns = new SmoothButton[regionProtector.regionRuleSet.ruleSets.length];
     }
 
     @Override
@@ -55,29 +57,36 @@ public class ScreenRegionProtectorOptions extends ScreenBase {
         int editBoxXSpace = 45;
         int editBoxYSpace = 30;
 
+        regionTypeBtn = addRenderableWidget(new SmoothButton(getScreenX(), getScreenY() - 80, 75, getRegionTypeButtonKey(), (btn) -> toggleRegionType()));
+
         for (int i = 0; i < regionRuleSetBtns.length; i++) {
             final int fi = i;
             regionRuleSetBtns[i] = addRenderableWidget(new SmoothButton(getScreenX() + btnXOffset, getScreenY() + btnYOffset + (btnYSpace * i), 50, getRuleButtonKey(i), (btn) -> toggleRule(fi)));
         }
 
-        priorityBox = initField(regionProtector.getPriority(), editBoxXOffset, editBoxYOffset - editBoxYSpace);
+        priorityBox = initField(regionProtector.priority, editBoxXOffset, editBoxYOffset - editBoxYSpace);
         globalBtn = addRenderableWidget(new SmoothButton(getScreenX() + editBoxXOffset - 21, getScreenY() + editBoxYOffset - 7, 50, getGlobalButtonKey(), (btn) -> toggleGlobal()));
 
-        regionOffsetXBox = initField(regionProtector.getRegionOffset().x, editBoxXOffset, editBoxYOffset + editBoxYSpace);
-        regionOffsetYBox = initField(regionProtector.getRegionOffset().y, editBoxXOffset + editBoxXSpace, editBoxYOffset + editBoxYSpace);
-        regionOffsetZBox = initField(regionProtector.getRegionOffset().z, editBoxXOffset + editBoxXSpace * 2, editBoxYOffset + editBoxYSpace);
+        regionOffsetXBox = initField(regionProtector.regionOffset.x, editBoxXOffset, editBoxYOffset + editBoxYSpace);
+        regionOffsetYBox = initField(regionProtector.regionOffset.y, editBoxXOffset + editBoxXSpace, editBoxYOffset + editBoxYSpace);
+        regionOffsetZBox = initField(regionProtector.regionOffset.z, editBoxXOffset + editBoxXSpace * 2, editBoxYOffset + editBoxYSpace);
 
-        regionSizeXBox = initField(regionProtector.getRegionSize().x, editBoxXOffset, editBoxYOffset + editBoxYSpace * 2);
-        regionSizeYBox = initField(regionProtector.getRegionSize().y, editBoxXOffset + editBoxXSpace, editBoxYOffset + editBoxYSpace * 2);
-        regionSizeZBox = initField(regionProtector.getRegionSize().z, editBoxXOffset + editBoxXSpace * 2, editBoxYOffset + editBoxYSpace * 2);
+        regionSizeXBox = initField(regionProtector.regionSize.x, editBoxXOffset, editBoxYOffset + editBoxYSpace * 2);
+        regionSizeYBox = initField(regionProtector.regionSize.y, editBoxXOffset + editBoxXSpace, editBoxYOffset + editBoxYSpace * 2);
+        regionSizeZBox = initField(regionProtector.regionSize.z, editBoxXOffset + editBoxXSpace * 2, editBoxYOffset + editBoxYSpace * 2);
 
-        regionTypeBtn = addRenderableWidget(new SmoothButton(getScreenX(), getScreenY() + 70, 75, getRegionTypeButtonKey(), (btn) -> toggleRegionType()));
+        SmoothButton savePlotBtn = addRenderableWidget(new SmoothButton((getScreenX() - 35) - 40, getScreenY() + 65, 70, "screen.regionprotector.btn.saveplot", (btn) -> savePlot()));
+        SmoothButton loadPlotBtn = addRenderableWidget(new SmoothButton((getScreenX() - 35) + 40, getScreenY() + 65, 70, "screen.regionprotector.btn.loadplot", (btn) -> loadPlot()));
     }
 
-    private EditBox initField (int value, int x, int y) {
+    private EditBox initField (Object value, int x, int y) {
+        return initField(value, x, y, 40);
+    }
+
+    private EditBox initField (Object value, int x, int y, int width) {
 
         if (minecraft != null) {
-            EditBox editBox = new EditBox(minecraft.font, getScreenX() + x - 20, getScreenY() + y - 7, 40, 12, new TextComponent(""));
+            EditBox editBox = new EditBox(minecraft.font, getScreenX() + x - 20, getScreenY() + y - 7, width, 12, new TextComponent(""));
             addWidget(editBox);
             editBox.setMaxLength(15);
             editBox.setValue("" + value);
@@ -88,16 +97,16 @@ public class ScreenRegionProtectorOptions extends ScreenBase {
     }
 
     private String getRuleButtonKey(int ruleSetIndex) {
-        RegionRuleSet.RuleOverrideType ruleOverrideType = regionProtector.getRegionRuleSet().ruleSets[ruleSetIndex];
+        RegionRuleSet.RuleOverrideType ruleOverrideType = regionProtector.regionRuleSet.ruleSets[ruleSetIndex];
         return "screen.regionprotector.btn.rule." + ruleOverrideType.getName();
     }
 
     private String getGlobalButtonKey() {
-        return regionProtector.isGlobal() ? "screen.regionprotector.btn.global.true" : "screen.regionprotector.btn.global.false";
+        return regionProtector.global ? "screen.regionprotector.btn.true" : "screen.regionprotector.btn.false";
     }
 
     private String getRegionTypeButtonKey() {
-        return "screen.regionprotector.btn.regiontype." + regionProtector.getRegionType().getName();
+        return "screen.regionprotector.btn.regiontype." + regionProtector.regionType.getName();
     }
 
     private void confirmEditBoxes() {
@@ -139,32 +148,40 @@ public class ScreenRegionProtectorOptions extends ScreenBase {
 
     private void toggleRule(int ruleSetIndex) {
 
-        byte ruleOverrideIndex = regionProtector.getRegionRuleSet().ruleSets[ruleSetIndex].getIndex();
+        byte ruleOverrideIndex = regionProtector.regionRuleSet.ruleSets[ruleSetIndex].getIndex();
 
         ruleOverrideIndex++;
         ruleOverrideIndex %= 3;
 
-        regionProtector.getRegionRuleSet().ruleSets[ruleSetIndex] = RegionRuleSet.RuleOverrideType.fromIndex(ruleOverrideIndex);
+        regionProtector.regionRuleSet.ruleSets[ruleSetIndex] = RegionRuleSet.RuleOverrideType.fromIndex(ruleOverrideIndex);
         CCPacketHandler.INSTANCE.sendToServer(new PacketRegionProtector("syncrule", regionProtector.getBlockPos(), ruleSetIndex, ruleOverrideIndex));
     }
 
     private void toggleGlobal() {
 
-        final boolean newValue = !regionProtector.isGlobal();
+        final boolean newValue = !regionProtector.global;
 
-        regionProtector.setGlobal(newValue);
+        regionProtector.global = newValue;
         CCPacketHandler.INSTANCE.sendToServer(new PacketRegionProtector("syncglobal", regionProtector.getBlockPos(), newValue, 0));
     }
 
     private void toggleRegionType() {
 
-        int regionTypeIndex = regionProtector.getRegionType().getIndex();
+        int regionTypeIndex = regionProtector.regionType.getIndex();
 
         regionTypeIndex++;
         regionTypeIndex %= 3;
 
-        regionProtector.setRegionType(BlockEntityRegionProtector.RegionType.fromIndex(regionTypeIndex));
+        regionProtector.regionType = BlockEntityRegionProtector.RegionType.fromIndex(regionTypeIndex);
         CCPacketHandler.INSTANCE.sendToServer(new PacketRegionProtector("syncregiontype", regionProtector.getBlockPos(), false, regionTypeIndex));
+    }
+
+    private void savePlot() {
+        CCPacketHandler.INSTANCE.sendToServer(new PacketRegionProtector("saveplot", regionProtector.getBlockPos()));
+    }
+
+    private void loadPlot() {
+        CCPacketHandler.INSTANCE.sendToServer(new PacketRegionProtector("loadplot", regionProtector.getBlockPos()));
     }
 
     @Override
@@ -203,7 +220,7 @@ public class ScreenRegionProtectorOptions extends ScreenBase {
         int editBoxYOffset = 11;
         int buttonOffset = 4;
 
-        if (!regionProtector.isGlobal()) {
+        if (!regionProtector.global) {
 
             regionOffsetXBox.render(poseStack, mouseX, mouseY, 0);
             regionOffsetYBox.render(poseStack, mouseX, mouseY, 0);
@@ -248,6 +265,12 @@ public class ScreenRegionProtectorOptions extends ScreenBase {
 
         TranslatableComponent regionTxt = new TranslatableComponent("screen.regionprotector.txt.regiontype");
         minecraft.font.draw(poseStack, regionTxt, regionTypeBtn.x - minecraft.font.width(regionTxt) - buttonOffset, regionTypeBtn.y + buttonOffset, 0xFFFFFF);
+
+        if (regionProtector.lastSaveTime != 0) {
+            Date date = new Date(regionProtector.lastSaveTime);
+            TextComponent lastSaveText = new TextComponent("Last Save: " + date.toString());
+            minecraft.font.draw(poseStack, lastSaveText, getScreenX() - (minecraft.font.width(lastSaveText) / 2), getScreenY() + 85, 0xFFFFFF);
+        }
     }
 
     @Override

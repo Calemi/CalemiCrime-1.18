@@ -6,13 +6,12 @@
     },
     {
       "fluid": "calemicrime:ergotamine",
-      "nbt": {},
       "amount": 250
     }
   ],
   "results": [
     {
-      "item": "calemicrime:ergotamine"
+      "item": "calemicrime:ergotamine_bottle"
     }
   ]
 }

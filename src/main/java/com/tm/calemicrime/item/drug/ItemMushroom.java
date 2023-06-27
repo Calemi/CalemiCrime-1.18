@@ -3,6 +3,7 @@ package com.tm.calemicrime.item.drug;
 import com.tm.calemicrime.block.base.BlockItemBase;
 import com.tm.calemicrime.init.InitItems;
 import com.tm.calemicrime.init.InitMobEffects;
+import com.tm.calemicrime.main.CCConfig;
 import com.tm.calemicrime.main.CalemiCrime;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
@@ -20,7 +21,7 @@ public class ItemMushroom extends BlockItemBase implements IItemDrug {
 
     @Override
     public int getDuration() {
-        return 90 * 20;
+        return CCConfig.drugs.mushroomEffectDuration.get() * 20;
     }
 
     @Override
@@ -30,7 +31,14 @@ public class ItemMushroom extends BlockItemBase implements IItemDrug {
     }
 
     @Override
+    public void onExpired(Player player) {
+        player.addEffect(new MobEffectInstance(MobEffects.CONFUSION, CCConfig.drugs.drugWithdrawEffectDuration.get() * 20));
+        player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, CCConfig.drugs.drugWithdrawEffectDuration.get() * 20, 2));
+    }
+
+    @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+        onConsumed(player, 0);
         player.getCooldowns().addCooldown(this, getDuration() - (10 * 20));
         player.getItemInHand(hand).shrink(1);
         return InteractionResultHolder.success(player.getItemInHand(hand));

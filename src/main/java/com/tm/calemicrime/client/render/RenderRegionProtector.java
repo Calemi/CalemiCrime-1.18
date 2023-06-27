@@ -24,30 +24,34 @@ public class RenderRegionProtector implements BlockEntityRenderer<BlockEntityReg
 
         if (Minecraft.getInstance().getEntityRenderDispatcher().shouldRenderHitBoxes()) {
 
-            if (regionProtector != null && regionProtector.getRegionOffset() != null && regionProtector.getRegionSize() != null) {
+            if (regionProtector != null && regionProtector.regionOffset != null && regionProtector.regionSize != null) {
 
-                if (regionProtector.isGlobal()) {
+                if (regionProtector.global) {
                     return;
                 }
 
                 Vec3 color = new Vec3(1, 1, 1);
 
-                if (regionProtector.getRegionRuleSet().ruleSets[5] == RegionRuleSet.RuleOverrideType.ALLOW) {
+                if (regionProtector.regionRuleSet.ruleSets[5] == RegionRuleSet.RuleOverrideType.ALLOW) {
                     color = new Vec3(1, 0, 0);
                 }
 
-                else if (regionProtector.getRegionType() == BlockEntityRegionProtector.RegionType.RESIDENTIAL) {
+                else if (regionProtector.regionType == BlockEntityRegionProtector.RegionType.RESIDENTIAL) {
                     color = new Vec3(0, 1, 0);
                 }
 
-                else if (regionProtector.getRegionType() == BlockEntityRegionProtector.RegionType.COMMERCIAL) {
+                else if (regionProtector.regionType == BlockEntityRegionProtector.RegionType.COMMERCIAL) {
                     color = new Vec3(0, 0, 1);
+                }
+
+                if (regionProtector.rentAcceptor != null && regionProtector.rentAcceptor.getRemainingRentSeconds() > 0) {
+                    color = color.multiply(0.4F, 0.4F, 0.4F);
                 }
 
                 VertexConsumer vertexconsumer = buffer.getBuffer(RenderType.lines());
                 LevelRenderer.renderLineBox(poseStack, vertexconsumer,
-                        regionProtector.getRegionOffset().x, regionProtector.getRegionOffset().y, regionProtector.getRegionOffset().z,
-                        regionProtector.getRegionOffset().x + regionProtector.getRegionSize().x, regionProtector.getRegionOffset().y + regionProtector.getRegionSize().y, (float) (regionProtector.getRegionOffset().z + regionProtector.getRegionSize().z),
+                        regionProtector.regionOffset.x, regionProtector.regionOffset.y, regionProtector.regionOffset.z,
+                        regionProtector.regionOffset.x + regionProtector.regionSize.x, regionProtector.regionOffset.y + regionProtector.regionSize.y, (float) (regionProtector.regionOffset.z + regionProtector.regionSize.z),
                         (float)color.x, (float)color.y, (float)color.z, 1F);
             }
         }

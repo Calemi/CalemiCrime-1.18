@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
-    "#calemicrime:ergotamine"
+    "calemicrime:flowing_ergotamine",
+    "calemicrime:ergotamine"
   ]
 }

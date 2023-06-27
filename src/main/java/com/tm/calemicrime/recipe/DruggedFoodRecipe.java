@@ -41,14 +41,13 @@ public class DruggedFoodRecipe extends CustomRecipe {
             }
         }
 
-        return foodCount == 1 && drugCount == 1;
+        return foodCount == 1 && drugCount >= 1;
     }
 
     @Override
     public ItemStack assemble(CraftingContainer inv) {
 
         ItemStack food = ItemStack.EMPTY;
-        String drug = "";
 
         for (int i = 0; i < inv.getContainerSize(); i++) {
 
@@ -58,17 +57,25 @@ public class DruggedFoodRecipe extends CustomRecipe {
                 food = stackInSlot.copy();
                 food.setCount(1);
             }
-
-            else if (stackInSlot.getItem() instanceof IItemDrug) {
-                drug = stackInSlot.getItem().getRegistryName().toString();
-            }
         }
 
-        if (!food.isEmpty() && !drug.isEmpty()) {
+        if (!food.isEmpty()) {
 
-            CompoundTag nbt = food.getOrCreateTag();
-            nbt.putString("Drug", drug);
-            food.setTag(nbt);
+            for (int i = 0; i < inv.getContainerSize(); i++) {
+
+                ItemStack stackInSlot = inv.getItem(i);
+
+                if (stackInSlot.getItem() instanceof IItemDrug) {
+
+                    CompoundTag nbt = food.getOrCreateTag();
+
+                    String drugString = nbt.getString("Drug");
+                    drugString += stackInSlot.getItem().getRegistryName().toString() + "%";
+                    nbt.putString("Drug", drugString);
+
+                    food.setTag(nbt);
+                }
+            }
         }
 
         return food;

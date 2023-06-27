@@ -3,53 +3,54 @@ package com.tm.calemicrime.blockentity;
 import com.tm.calemicore.util.Location;
 import com.tm.calemicore.util.blockentity.BlockEntityBase;
 import com.tm.calemicrime.init.InitBlockEntityTypes;
+import com.tm.calemicrime.main.CCConfig;
+import com.tm.calemicrime.main.CCReference;
 import com.tm.calemicrime.util.RegionRuleSet;
+import net.minecraft.ResourceLocationException;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.Clearable;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureManager;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
 public class BlockEntityRegionProtector extends BlockEntityBase {
 
-    private static final ArrayList<BlockEntityRegionProtector> regionProtectors = new ArrayList<>();
+    public static final ArrayList<BlockEntityRegionProtector> regionProtectors = new ArrayList<>();
 
-    private Location regionOffset = new Location(getLevel(), 0, 0, 0);
-    private Location regionSize = new Location(getLevel(), 16, 16, 16);
-    private int priority = 0;
-    private boolean global;
-    private RegionType regionType = RegionType.NONE;
+    public Location regionOffset = new Location(getLevel(), 0, 0, 0);
+    public Location regionSize = new Location(getLevel(), 16, 16, 16);
+    public int priority = 0;
+    public boolean global;
+    public RegionType regionType = RegionType.NONE;
+    public final RegionRuleSet regionRuleSet = new RegionRuleSet();
 
-    private final RegionRuleSet regionRuleSet = new RegionRuleSet();
+    public long lastSaveTime = 0;
 
-    private BlockEntityRentAcceptor rentAcceptor;
+    public BlockEntityRentAcceptor rentAcceptor;
 
     public BlockEntityRegionProtector(BlockPos pos, BlockState state) {
         super(InitBlockEntityTypes.REGION_PROTECTOR.get(), pos, state);
     }
 
-    public static ArrayList<BlockEntityRegionProtector> getRegionProtectors() {
-        return regionProtectors;
-    }
-
-    public Location getRegionOffset() {
-        return regionOffset;
-    }
-
-    public Location getRegionSize() {
-        return regionSize;
-    }
-
     public AABB getRegion() {
 
-        Vec3 start = new Vec3(getLocation().x + getRegionOffset().x, getLocation().y + getRegionOffset().y, getLocation().z + getRegionOffset().z);
-        Vec3 end = new Vec3(getLocation().x + getRegionOffset().x + getRegionSize().x, getLocation().y + getRegionOffset().y + getRegionSize().y, getLocation().z + getRegionOffset().z + getRegionSize().z);
+        Vec3 start = new Vec3(getLocation().x + regionOffset.x, getLocation().y + regionOffset.y, getLocation().z + regionOffset.z);
+        Vec3 end = new Vec3(getLocation().x + regionOffset.x + regionSize.x, getLocation().y + regionOffset.y + regionSize.y, getLocation().z + regionOffset.z + regionSize.z);
 
         return new AABB(start, end);
     }
@@ -62,48 +63,12 @@ public class BlockEntityRegionProtector extends BlockEntityBase {
         end = end.subtract(start);
         start = start.subtract(new Vec3i(getLocation().x, getLocation().y, getLocation().z));
 
-        setRegionOffset(new Location(level, new BlockPos(start)));
-        setRegionSize(new Location(level, new BlockPos(end)));
+        regionOffset = new Location(level, new BlockPos(start));
+        regionSize = new Location(level, new BlockPos(end));
     }
 
-    public int getPriority() {
-        return priority;
-    }
-
-    public boolean isGlobal() {
-        return global;
-    }
-
-    public RegionRuleSet getRegionRuleSet() {
-        return regionRuleSet;
-    }
-
-    public void setRegionOffset(Location value) {
-        regionOffset = value;
-    }
-
-    public void setRegionSize(Location value) {
-        regionSize = value;
-    }
-
-    public void setPriority(int value) {
-        priority = value;
-    }
-
-    public void setGlobal(boolean value) {
-        global = value;
-    }
-
-    public RegionType getRegionType() {
-        return regionType;
-    }
-
-    public void setRegionType(RegionType value) {
-        regionType = value;
-    }
-
-    public BlockEntityRentAcceptor getRentAcceptor() {
-        return rentAcceptor;
+    private ResourceLocation getPlotResourceLocation() {
+        return new ResourceLocation(CCReference.MOD_ID, "plots/x" + getLocation().x + "y" + getLocation().y + "z" + getLocation().z);
     }
 
     public static void tick(Level level, BlockPos pos, BlockState state, BlockEntityRegionProtector regionProtector) {
@@ -113,8 +78,9 @@ public class BlockEntityRegionProtector extends BlockEntityBase {
             if (!level.isClientSide()) {
                 addRegionProtectorToList(regionProtector);
                 cleanRegionProtectorList();
-                regionProtector.checkForRentAcceptors();
             }
+
+            regionProtector.checkForRentAcceptors();
         }
     }
 
@@ -146,6 +112,95 @@ public class BlockEntityRegionProtector extends BlockEntityBase {
         return getRegion();
     }
 
+    public boolean savePlot() {
+
+        if (level.isClientSide) {
+            return false;
+        }
+
+        if (getRegion().getXsize() * getRegion().getYsize() * getRegion().getZsize() > CCConfig.server.maximumPlotSaveVolume.get()) {
+            return false;
+        }
+
+        Location location = getLocation();
+        ResourceLocation structureName = getPlotResourceLocation();
+
+        BlockPos blockpos = getBlockPos().offset(regionOffset.getBlockPos());
+        ServerLevel serverlevel = (ServerLevel) level;
+
+        StructureManager structuremanager = serverlevel.getStructureManager();
+        StructureTemplate structuretemplate;
+
+        try {
+            structuretemplate = structuremanager.getOrCreate(structureName);
+        }
+
+        catch (ResourceLocationException resourcelocationexception1) {
+            return false;
+        }
+
+        Vec3i regionSizeVec = new Vec3i(regionSize.x, regionSize.y, regionSize.z);
+
+        structuretemplate.fillFromWorld(level, blockpos, regionSizeVec, true, Blocks.STRUCTURE_VOID);
+        structuretemplate.setAuthor("Admin");
+
+        try {
+            return structuremanager.save(structureName);
+        }
+
+        catch (ResourceLocationException resourcelocationexception) {
+            return false;
+        }
+    }
+
+    public boolean loadPlot(ServerLevel serverLevel) {
+
+        ResourceLocation structureName = getPlotResourceLocation();
+        StructureManager structuremanager = serverLevel.getStructureManager();
+
+        Optional<StructureTemplate> optional;
+        try {
+            optional = structuremanager.get(structureName);
+        }
+
+        catch (ResourceLocationException resourcelocationexception) {
+            return false;
+        }
+
+        return optional.isPresent() && loadPlot(serverLevel, optional.get());
+    }
+
+    private boolean loadPlot(ServerLevel serverLevel, StructureTemplate structureTemplate) {
+
+        BlockPos blockpos = getBlockPos();
+        Vec3i regionSizeVec = new Vec3i(regionSize.x, regionSize.y, regionSize.z);
+        Vec3i templateSize = structureTemplate.getSize();
+
+        if (!regionSizeVec.equals(templateSize)) {
+            return false;
+        }
+
+        StructurePlaceSettings structureplacesettings = new StructurePlaceSettings();
+
+        BlockPos blockpos1 = blockpos.offset(regionOffset.getBlockPos());
+
+        for (BlockPos pos : BlockPos.betweenClosed((int) getRegion().minX, (int) getRegion().minY, (int) getRegion().minZ, (int) getRegion().maxX, (int) getRegion().maxY, (int) getRegion().maxZ)) {
+
+            BlockEntity blockentity = serverLevel.getBlockEntity(pos);
+            Clearable.tryClear(blockentity);
+        }
+
+        serverLevel.getAllEntities().forEach((entity) -> {
+            if (entity != null && getRegion().contains(entity.position()) && !(entity instanceof Player)) {
+                entity.kill();
+            }
+        });
+
+        structureTemplate.placeInWorld(serverLevel, blockpos1, blockpos1, structureplacesettings, serverLevel.getRandom(), 2);
+
+        return true;
+    }
+
     @Override
     public void load(CompoundTag tag) {
         super.load(tag);
@@ -157,6 +212,8 @@ public class BlockEntityRegionProtector extends BlockEntityBase {
         global = tag.getBoolean("Global");
 
         regionType = RegionType.fromIndex(tag.getInt("regionType"));
+
+        lastSaveTime = tag.getLong("LastSaveTime");
 
         regionRuleSet.loadFromNBT(tag);
     }
@@ -178,23 +235,23 @@ public class BlockEntityRegionProtector extends BlockEntityBase {
 
         tag.putInt("regionType", regionType.getIndex());
 
+        tag.putLong("LastSaveTime", lastSaveTime);
+
         regionRuleSet.saveToNBT(tag);
     }
 
     public enum RegionType {
 
-        NONE(0, "none", 999),
-        RESIDENTIAL(1, "residential", 3),
-        COMMERCIAL(2, "commercial", 5);
+        NONE(0, "none"),
+        RESIDENTIAL(1, "residential"),
+        COMMERCIAL(2, "commercial");
 
         private final int index;
         private final String name;
-        private final int rentMax;
 
-        RegionType(int index, String name, int rentMax) {
+        RegionType(int index, String name) {
             this.index = index;
             this.name = name;
-            this.rentMax = rentMax;
         }
 
         public int getIndex() {
@@ -203,10 +260,6 @@ public class BlockEntityRegionProtector extends BlockEntityBase {
 
         public String getName() {
             return name;
-        }
-
-        public int getRentMax() {
-            return rentMax;
         }
 
         public static RegionType fromIndex(int index) {

@@ -1,0 +1,21 @@
+{
+  "type": "create:mixing",
+  "ingredients": [
+    {
+      "item": "calemicrime:heroin"
+    },
+    {
+      "item": "tconstruct:necronium_bone"
+    },
+    {
+      "fluid": "tconstruct:molten_obsidian",
+      "amount": 250
+    }
+  ],
+  "results": [
+    {
+      "item": "calemicrime:black_tar_heroin"
+    }
+  ],
+  "heatRequirement": "superheated"
+}

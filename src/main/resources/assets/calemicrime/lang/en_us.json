@@ -2,17 +2,20 @@
   "block.calemicrime.region_protector": "Region Protector",
   "block.calemicrime.rent_acceptor": "Rent Acceptor",
   "block.calemicrime.mine_generator": "Mine Generator",
-
+  "block.calemicrime.radiation_projector": "Radiation Projector",
+  "block.calemicrime.drying_rack": "Drying Rack",
 
 
   "screen.regionprotector.btn.rule.off": "OFF",
   "screen.regionprotector.btn.rule.allow": "ALLOW",
   "screen.regionprotector.btn.rule.prevent": "PREVENT",
-  "screen.regionprotector.btn.global.true": "TRUE",
-  "screen.regionprotector.btn.global.false": "FALSE",
+  "screen.regionprotector.btn.true": "TRUE",
+  "screen.regionprotector.btn.false": "FALSE",
   "screen.regionprotector.btn.regiontype.none": "NONE",
   "screen.regionprotector.btn.regiontype.residential": "RESIDENTIAL",
   "screen.regionprotector.btn.regiontype.commercial": "COMMERCIAL",
+  "screen.regionprotector.btn.saveplot": "Save Plot",
+  "screen.regionprotector.btn.loadplot": "Load Plot",
   "screen.regionprotector.txt.priority": "Priority",
   "screen.regionprotector.txt.regionoffset": "Region Offset",
   "screen.regionprotector.txt.regionsize": "Region Size",
@@ -30,6 +33,7 @@
   "screen.rent_acceptor.txt.maxrenttime": "Max Rent Time (hours)",
   "screen.rent_acceptor.txt.costtofillrenttime": "Cost To Fill Rent Time",
   "screen.rent_acceptor.txt.type": "Rent Type",
+  "screen.rent_acceptor.txt.filekey": "File Key",
   "container.mine_generator": "Mine Generator",
 
 
@@ -37,8 +41,9 @@
   "item.calemicrime.gas_mask": "Gas Mask",
   "item.calemicrime.bag": "Plastic Bag",
   "item.calemicrime.road_kit": "Road Kit",
+
   "item.calemicrime.pseudoephedrine": "Pseudoephedrine",
-  "item.calemicrime.methylsulfonylmethane": "Methylsulfonylmethane",
+  "item.calemicrime.methylsulfonylmethane_bottle": "Methylsulfonylmethane",
 
   "item.calemicrime.unprocessed_meth": "Unprocessed Meth",
   "item.calemicrime.unprocessed_p2p_meth": "Unprocessed P2P Meth",
@@ -46,29 +51,50 @@
   "item.calemicrime.meth": "Meth",
   "item.calemicrime.p2p_meth": "P2P Meth",
 
+  "item.calemicrime.teenth_of_taniun": "Teenth of Taniun",
   "item.calemicrime.teenth_of_meth": "Teenth of Meth",
   "item.calemicrime.teenth_of_biker_meth": "Teenth of Biker Meth",
   "item.calemicrime.teenth_of_kush": "Teenth of Kush",
   "item.calemicrime.teenth_of_heroin": "Teenth of Heroin",
+  "item.calemicrime.teenth_of_black_tar_heroin": "Teenth of Black Tar Heroin",
   "item.calemicrime.teenth_of_cocaine": "Teenth of Cocaine",
+
+  "item.calemicrime.dried_seeds": "Dried Seeds",
+  "item.calemicrime.taniun_soaked_seeds": "Taniun Soaked Seeds",
+  "item.calemicrime.cracked_taniun": "Cracked Taniun",
 
   "item.calemicrime.silica_dust": "Silica Dust",
   "item.calemicrime.silica_gel": "Silica Gel",
-  "item.calemicrime.acacia_extract": "Acacia Extract",
-  "item.calemicrime.sweetened_acacia_extract": "Sweetened Acacia Extract",
+  "item.calemicrime.acacia_extract_bottle": "Acacia Extract",
+  "item.calemicrime.sweetened_acacia_extract_bottle": "Sweetened Acacia Extract",
   "item.calemicrime.ketamine": "Ketamine",
 
   "item.calemicrime.cannabis_leaf": "Cannabis Leaf",
+  "item.calemicrime.dried_cannabis_leaf": "Dried Cannabis Leaf",
   "item.calemicrime.kush": "Kush",
 
   "item.calemicrime.ergot": "Ergot",
-  "item.calemicrime.ergotamine": "Ergotamine",
+  "item.calemicrime.ergotamine_bottle": "Ergotamine",
   "item.calemicrime.lsd": "LSD (Acid)",
 
   "item.calemicrime.heroin": "Heroin",
 
+  "item.calemicrime.black_tar_heroin": "Black Tar Heroin",
+
   "item.calemicrime.coca_leaf": "Coca Leaf",
   "item.calemicrime.cocaine": "Cocaine",
+  
+  "item.calemicrime.morphine_bottle": "Morphine",
+  
+  "item.calemicrime.loot_box": "Loot Box",
+  "item.calemicrime.cape": "Cape",
+  
+  "item.calemicrime.buddycard_binder_crime": "Buddycard Binder",
+  "item.calemicrime.buddycard_pack_crime": "Buddycard Pack",
+  "block.calemicrime.buddycard_booster_box_crime": "Buddycard Booster Box",
+  "item.calemicrime.buddysteel_medal_crime": "Buddysteel Medal",
+  
+  "item.calemicrime.buddycard_crime1": "Taniun",
 
   "block.calemicrime.sheet_of_meth": "Sheet of Meth",
   "block.calemicrime.sheet_of_p2p_meth": "Sheet of P2P Meth",
@@ -78,32 +104,56 @@
   "block.calemicrime.psilocybin_mushroom": "Psilocybin (Magic) Mushroom",
 
   "block.calemicrime.road_line_1": "White Road Line (Side)",
+  "block.calemicrime.road_line_1_slope": "White Sloped Road Line (Side)",
+  "block.calemicrime.road_line_1_slope_mirror": "White Sloped Road Line (Side Mirrored)",
   "block.calemicrime.road_line_2": "Yellow Road Line (Side)",
+  "block.calemicrime.road_line_2_slope": "Yellow Sloped Road Line (Side)",
+  "block.calemicrime.road_line_2_slope_mirror": "Yellow Sloped Road Line (Side Mirrored)",
   "block.calemicrime.road_line_3": "White Road Line (Side Dotted)",
   "block.calemicrime.road_line_4": "White Road Line (Dashes)",
   "block.calemicrime.road_line_5": "White Road Line (Outer Corner)",
   "block.calemicrime.road_line_6": "Yellow Road Line (Outer Corner)",
   "block.calemicrime.road_line_7": "White Road Line (Inner Corner)",
   "block.calemicrime.road_line_8": "Yellow Road Line (Inner Corner)",
+  
+  "block.calemicrime.bullet_hole": "Bullet Hole",
 
 
+  "fluid.calemicrime.taniun_solution": "Taniun Solution",
+  "item.calemicrime.taniun_solution_bucket": "Taniun Solution Bucket",
   "fluid.calemicrime.methylsulfonylmethane": "Methylsulfonylmethane",
   "item.calemicrime.methylsulfonylmethane_bucket": "Methylsulfonylmethane Bucket",
   "fluid.calemicrime.methylamine": "Methylamine",
   "item.calemicrime.methylamine_bucket": "Methylamine Bucket",
   "fluid.calemicrime.ergotamine": "Ergotamine",
   "item.calemicrime.ergotamine_bucket": "Ergotamine Bucket",
+  "fluid.calemicrime.acacia_extract": "Acacia Extract",
+  "item.calemicrime.acacia_extract_bucket": "Acacia Extract Bucket",
+  "fluid.calemicrime.sweetened_acacia_extract": "Sweetened Acacia Extract",
+  "item.calemicrime.sweetened_acacia_extract_bucket": "Sweetened Acacia Extract Bucket",
+  "fluid.calemicrime.morphine": "Morphine",
+  "item.calemicrime.morphine_bucket": "Morphine",
 
 
+  "effect.calemicrime.taniun_high": "Taniun High",
   "effect.calemicrime.meth_high": "Meth High",
   "effect.calemicrime.biker_meth_high": "Biker Meth High",
   "effect.calemicrime.kush_high": "Kush High",
   "effect.calemicrime.heroin_high": "Heroin High",
+  "effect.calemicrime.black_tar_heroin_high": "Black Tar Heroin High",
   "effect.calemicrime.cocaine_high": "Cocaine High",
   "effect.calemicrime.ketamine_high": "Ketamine High",
   "effect.calemicrime.lsd_high": "LSD High",
   "effect.calemicrime.mushroom_high": "Mushroom High",
 
+  "death.attack.black_tar_expire": "%1$s felt the withdrawal effects of Black Tar Heroin",
+  "death.attack.radiation": "%1$s died by radiation poisoning",
+  
+  "item.buddycards.buddycard.set_crime": "Crime Set",
 
-  "itemGroup.calemicrime.tabMain": "Calemi's Organized Crime"
+  "itemGroup.calemicrime.tabMain": "Calemi's Organized Crime",
+  "curios.identifier.cape" : "Cape",
+  
+  "ftbquests.task.calemicrime.sell" : "Items Sold",
+  "ftbquests.task.calemicrime.buy" : "Items Bought"
 }

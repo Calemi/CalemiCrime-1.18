@@ -6,13 +6,12 @@
     },
     {
       "fluid": "calemicrime:methylsulfonylmethane",
-      "nbt": {},
       "amount": 250
     }
   ],
   "results": [
     {
-      "item": "calemicrime:methylsulfonylmethane"
+      "item": "calemicrime:methylsulfonylmethane_bottle"
     }
   ]
 }

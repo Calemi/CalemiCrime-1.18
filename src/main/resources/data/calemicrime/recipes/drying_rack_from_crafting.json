@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "S S",
+    "XXX"
+  ],
+  "key": {
+    "S": {
+      "item": "minecraft:stick"
+    },
+    "X": {
+      "tag": "minecraft:wooden_slabs"
+    }
+  },
+  "result": {
+    "item": "calemicrime:drying_rack"
+  }
+}

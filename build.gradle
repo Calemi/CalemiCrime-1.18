@@ -1,6 +1,7 @@
 buildscript {
     repositories {
         maven { url = 'https://maven.minecraftforge.net' }
+        maven { url = "https://repo.spongepowered.org/maven" }
         maven { url = 'https://maven.parchmentmc.org' }
         maven { url = "https://plugins.gradle.org/m2/" }
         mavenCentral()
@@ -9,6 +10,7 @@ buildscript {
         classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
         classpath 'org.parchmentmc:librarian:1.+'
         classpath "gradle.plugin.com.matthewprenger:CurseGradle:1.4.0"
+        classpath 'org.spongepowered:mixingradle:0.7-SNAPSHOT'
     }
 }
 
@@ -17,6 +19,7 @@ apply plugin: 'org.parchmentmc.librarian.forgegradle'
 apply plugin: "com.matthewprenger.cursegradle"
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
+apply plugin: "org.spongepowered.mixin"
 
 version = "${mod_version}"
 group = 'com.tm.' + mod_id
@@ -24,7 +27,16 @@ archivesBaseName = mod_id
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
-println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
+mixin {
+    add sourceSets.main, "calemicrime.refmap.json"
+    config 'calemicrime.mixins.json'
+
+    debug.verbose = true
+    debug.export = true
+}
+
+sourceSets.main.resources { srcDir 'src/generated/resources' }
+
 minecraft {
 
     mappings channel: 'parchment', version: "1.18.1-2022.03.06-1.18.2"
@@ -32,14 +44,15 @@ minecraft {
     runs {
         client {
             workingDirectory project.file('run')
+
             property 'forge.logging.markers', 'REGISTRIES'
             property 'forge.logging.console.level', 'debug'
+            property 'forge.enabledGameTestNamespaces', 'calemicrime'
 
-            property 'mixin.env.remapRefMap', 'true'
-            property 'mixin.env.refMapRemappingFile', "${buildDir}/createSrgToMcp/output.srg"
+            arg "-mixin.config=${mod_id}.mixins.json"
 
             mods {
-                calemicrime {
+                "${mod_id}" {
                     source sourceSets.main
                 }
             }
@@ -47,14 +60,15 @@ minecraft {
 
         server {
             workingDirectory project.file('run')
+
             property 'forge.logging.markers', 'REGISTRIES'
             property 'forge.logging.console.level', 'debug'
+            property 'forge.enabledGameTestNamespaces', 'calemicrime'
 
-            property 'mixin.env.remapRefMap', 'true'
-            property 'mixin.env.refMapRemappingFile', "${buildDir}/createSrgToMcp/output.srg"
+            arg "-mixin.config=${mod_id}.mixins.json"
 
             mods {
-                calemicrime {
+                "${mod_id}" {
                     source sourceSets.main
                 }
             }
@@ -64,19 +78,16 @@ minecraft {
             workingDirectory project.file('run')
             property 'forge.logging.markers', 'REGISTRIES'
             property 'forge.logging.console.level', 'debug'
-            args '--mod', 'examplemod', '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
+            args '--mod', 'calemicrime', '--all', '--output', file('src/generated/resources/')
 
             mods {
-                calemicrime {
+                "${mod_id}" {
                     source sourceSets.main
                 }
             }
         }
     }
 }
-
-sourceSets.main.resources { srcDir 'src/generated/resources' }
-
 
 repositories {
 
@@ -96,6 +107,11 @@ repositories {
     }
 
     maven {
+        name = 'Sponge Snapshots'
+        url = 'https://repo.spongepowered.org/repository/maven-public/'
+    }
+
+    maven {
         name = "Calemi Core Maven"
         url = "https://www.cursemaven.com"
     }
@@ -104,6 +120,9 @@ repositories {
 dependencies {
 
     minecraft 'net.minecraftforge:forge:' + minecraft_version + '-' + forge_version
+
+    compileOnly group: 'org.spongepowered', name: 'mixin', version: '0.8.4'
+    annotationProcessor 'org.spongepowered:mixin:0.8.4:processor'
 
     compileOnly fg.deobf("mezz.jei:jei-${minecraft_version}:${jei_version}:api")
     // at runtime, use the full JEI jar
@@ -114,10 +133,13 @@ dependencies {
 
     implementation fg.deobf("curse.maven:calemicore-573646:${core_file_id}")
     implementation fg.deobf("curse.maven:calemieconomy-579403:${economy_file_id}")
+    implementation fg.deobf("curse.maven:playingcards-417119:${playing_cards_file_id}")
 
     implementation fg.deobf("curse.maven:architectury-419699:${architectury_file_id}")
     implementation fg.deobf("curse.maven:ftb-library-404465:${ftb_library_file_id}")
     implementation fg.deobf("curse.maven:ftb-teams-404468:${ftb_teams_file_id}")
+    implementation fg.deobf("curse.maven:ftb-itemfilters-309674:${ftb_itemfilters_file_id}")
+    implementation fg.deobf("curse.maven:ftb-quests-289412:${ftb_quests_file_id}")
 
     implementation fg.deobf("curse.maven:mantle-74924:${mantle_file_id}")
     implementation fg.deobf("curse.maven:tinkers-74072:${tinkers_file_id}")
@@ -125,8 +147,28 @@ dependencies {
     implementation fg.deobf("curse.maven:flywheel-486392:${flywheel_file_id}")
     implementation fg.deobf("curse.maven:create-328085:${create_file_id}")
 
+    implementation fg.deobf("curse.maven:cofh_core-69162:${cofh_file_id}")
+    implementation fg.deobf("curse.maven:thermal_expansion-69163:${thermal_expansion_file_id}")
+    implementation fg.deobf("curse.maven:thermal_foundation-222880:${thermal_foundation_file_id}")
+    implementation fg.deobf("curse.maven:thermal_dynamics-227443:${thermal_dynamics_file_id}")
+    implementation fg.deobf("curse.maven:thermal_integration-626708:${thermal_integration_file_id}")
+    implementation fg.deobf("curse.maven:thermal_innovation-291737:${thermal_innovation_file_id}")
+
     implementation fg.deobf("curse.maven:framework-549225:${framework_file_id}")
     implementation fg.deobf("curse.maven:gunmod-289479:${gunmod_file_id}")
+
+    implementation fg.deobf("curse.maven:nifty-228189:${nifty_file_id}")
+
+    implementation fg.deobf("curse.maven:car-267458:${car_file_id}")
+
+    implementation fg.deobf("curse.maven:simple_planes-388908:${simple_planes_file_id}")
+
+    implementation fg.deobf("curse.maven:sophisticated_core-618298:${sophisticated_core_file_id}")
+    implementation fg.deobf("curse.maven:sophisticated_backpacks-422301:${sophisticated_backpacks_file_id}")
+
+    implementation fg.deobf("curse.maven:buddycards-425991:${buddycards_file_id}")
+
+    implementation fg.deobf("curse.maven:flashnpcs-517167:${flashnpcs_file_id}")
 }
 
 jar {
@@ -153,7 +195,7 @@ curseforge {
         releaseType = 'release'
         addGameVersion "${minecraft_version}"
         relations {
-            requiredDependency 'calemi-core'
+            requiredDependency 'ccore'
             requiredDependency 'architectury-api'
             requiredDependency 'ftb-library-forge'
             requiredDependency 'ftb-teams-forge'
@@ -163,6 +205,8 @@ curseforge {
             requiredDependency 'create'
             requiredDependency 'framework'
             requiredDependency 'mrcrayfishs-gun-mod'
+            requiredDependency 'ultimate-car-mod'
+            requiredDependency 'simple-planes'
         }
     }
 }

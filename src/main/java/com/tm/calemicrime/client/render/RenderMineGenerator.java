@@ -30,7 +30,7 @@ public class RenderMineGenerator implements BlockEntityRenderer<BlockEntityMineG
                 LevelRenderer.renderLineBox(poseStack, vertexconsumer,
                         mineGenerator.getRegionOffset().x, mineGenerator.getRegionOffset().y, mineGenerator.getRegionOffset().z,
                         mineGenerator.getRegionOffset().x + mineGenerator.getRegionSize().x, mineGenerator.getRegionOffset().y + mineGenerator.getRegionSize().y, mineGenerator.getRegionOffset().z + mineGenerator.getRegionSize().z,
-                        1F, 1F, 1F, 1F);
+                        1F, 1F, 0F, 1F);
             }
         }
     }

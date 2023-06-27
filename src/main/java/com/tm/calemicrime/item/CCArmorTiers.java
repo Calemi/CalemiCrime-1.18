@@ -12,7 +12,7 @@ import java.util.function.Supplier;
 
 public enum CCArmorTiers implements ArmorMaterial {
 
-    BLESSED_NIGHT (CCReference.MOD_ID + ":gas_mask", 5, new int[]{2, 5, 6, 3}, 15, SoundEvents.ARMOR_EQUIP_IRON, 0.0F, 0.0F, () -> {return Ingredient.of(Items.IRON_INGOT); });
+    GAS_MASK(CCReference.MOD_ID + ":gas_mask", 5, new int[]{2, 5, 6, 3}, 15, SoundEvents.ARMOR_EQUIP_IRON, 0.0F, 0.0F, () -> {return Ingredient.of(Items.IRON_INGOT); });
 
     private static final int[] MAX_DAMAGE_ARRAY = new int[]{11, 16, 15, 13};
     private final String name;

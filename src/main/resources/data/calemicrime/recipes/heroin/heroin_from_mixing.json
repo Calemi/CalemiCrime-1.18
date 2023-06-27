@@ -5,9 +5,8 @@
       "item": "minecraft:poppy"
     },
     {
-      "fluid": "tconstruct:molten_brass",
-      "nbt": {},
-      "amount": 1000
+      "fluid": "thermal:refined_fuel",
+      "amount": 250
     }
   ],
   "results": [

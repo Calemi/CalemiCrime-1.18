@@ -2,27 +2,23 @@ package com.tm.calemicrime.client.screen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.tm.calemicore.util.helper.LogHelper;
 import com.tm.calemicore.util.helper.MathHelper;
 import com.tm.calemicore.util.helper.ScreenHelper;
 import com.tm.calemicore.util.screen.ScreenContainerBase;
 import com.tm.calemicore.util.screen.ScreenRect;
 import com.tm.calemicore.util.screen.widget.SmoothButton;
 import com.tm.calemicrime.blockentity.BlockEntityRentAcceptor;
-import com.tm.calemicrime.file.RentAcceptorTypesFile;
 import com.tm.calemicrime.main.CCReference;
 import com.tm.calemicrime.menu.MenuRentAcceptor;
 import com.tm.calemicrime.packet.CCPacketHandler;
+import com.tm.calemicrime.packet.PacketCalculateRentAcceptorCount;
+import com.tm.calemicrime.packet.PacketCalculateRentAcceptorLimit;
 import com.tm.calemicrime.packet.PacketRentAcceptor;
 import com.tm.calemieconomy.item.ItemWallet;
 import com.tm.calemieconomy.util.helper.CurrencyHelper;
-import com.tm.calemieconomy.util.helper.ScreenTabs;
-import dev.ftb.mods.ftbteams.data.ClientTeam;
-import dev.ftb.mods.ftbteams.data.ClientTeamManager;
-import net.minecraft.ChatFormatting;
-import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
@@ -33,11 +29,12 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 @OnlyIn(Dist.CLIENT)
 public class ScreenRentAcceptor extends ScreenContainerBase<MenuRentAcceptor> {
 
-    ClientTeamManager manager = ClientTeamManager.INSTANCE;
     private final BlockEntityRentAcceptor rentAcceptor;
 
-    private int typeCount = 0;
-    private int typeLimit = 0;
+    public int typeCount = -1;
+    public int typeLimit = -1;
+
+    public String teamName = "";
 
     public ScreenRentAcceptor(MenuRentAcceptor menu, Inventory playerInv, Component useless) {
         super(menu, playerInv, menu.getBlockEntity().getDisplayName());
@@ -51,91 +48,41 @@ public class ScreenRentAcceptor extends ScreenContainerBase<MenuRentAcceptor> {
     protected void init() {
         super.init();
 
-        addRenderableWidget(new SmoothButton(getScreenX() + 53, getScreenY() + 17, 52, "screen.rent_acceptor.btn.payrent", (btn) -> payRent()));
-        addRenderableWidget(new SmoothButton(getScreenX() + 117, getScreenY() + 17, 52, "screen.rent_acceptor.btn.stoprent", (btn) -> stopRent()));
+        addRenderableWidget(new SmoothButton(getScreenX() + 8, getScreenY() + 17, 70, "screen.rent_acceptor.btn.payrent", (btn) -> payRent()));
+        addRenderableWidget(new SmoothButton(getScreenX() + 98, getScreenY() + 17, 70, "screen.rent_acceptor.btn.stoprent", (btn) -> stopRent()));
 
-        typeCount = countTypes();
-        typeLimit = RentAcceptorTypesFile.getLimit(rentAcceptor.getRentAcceptorType());
+        calculateCount();
+        calculateLimit();
     }
 
-    private void payRent () {
+    @Override
+    protected void containerTick() {
+        super.containerTick();
 
-        if (manager == null) {
-            return;
-        }
-
-        typeCount = countTypes();
-        typeLimit = RentAcceptorTypesFile.getLimit(rentAcceptor.getRentAcceptorType());
-
-        LogHelper.log(CCReference.MOD_NAME, "Current count of type: " + typeCount);
-        LogHelper.log(CCReference.MOD_NAME, "Limit of type: " + typeLimit);
-
-        if (rentAcceptor.getRemainingRentTime() <= 0 && typeCount >= typeLimit) {
-            Minecraft.getInstance().player.sendMessage(new TextComponent(ChatFormatting.RED + "You have reached your limit for this rent type!"), Util.NIL_UUID);
-            Minecraft.getInstance().player.sendMessage(new TextComponent(ChatFormatting.RED + "Limit for [" + rentAcceptor.getRentAcceptorType() + "] is " + typeLimit), Util.NIL_UUID);
-            return;
-        }
-
-        ItemStack walletStack = rentAcceptor.getItem(0);
-
-        //TRY WALLET
-        if (walletStack.getItem() instanceof ItemWallet wallet) {
-
-            int walletCurrency = wallet.getCurrency(walletStack);
-
-            if (walletCurrency >= rentAcceptor.getCostToRefillRentTime()) {
-
-                if (rentAcceptor.getRemainingRentTime() <= 0) {
-                    typeCount++;
-                }
-
-                wallet.withdrawCurrency(walletStack, rentAcceptor.getCostToRefillRentTime());
-                rentAcceptor.refillRentTime();
-
-                CCPacketHandler.INSTANCE.sendToServer(new PacketRentAcceptor("refillrentwallet", rentAcceptor.getBlockPos(), 0, 0, "", wallet.getCurrency(walletStack), 0));
-            }
-        }
-
-        else if (rentAcceptor.getBank() != null) {
-
-            int bankCurrency = rentAcceptor.getBank().getCurrency();
-
-            if (bankCurrency >= rentAcceptor.getCostToRefillRentTime()) {
-
-                if (rentAcceptor.getRemainingRentTime() <= 0) {
-                    typeCount++;
-                }
-
-                rentAcceptor.getBank().withdrawCurrency(rentAcceptor.getCostToRefillRentTime());
-                rentAcceptor.refillRentTime();
-
-                CCPacketHandler.INSTANCE.sendToServer(new PacketRentAcceptor("refillrentbank", rentAcceptor.getBlockPos(), 0, 0, "", 0, rentAcceptor.getBank().getCurrency()));
-            }
+        if (Minecraft.getInstance().level.getGameTime() % 20 == 0) {
+            calculateCount();
+            calculateLimit();
         }
     }
 
-    private int countTypes()  {
+    private void payRent() {
 
-        int count = 0;
-
-        for (BlockEntityRentAcceptor rentAcceptorList : BlockEntityRentAcceptor.getRentAcceptors()) {
-
-            if (rentAcceptorList.getRentAcceptorType().equals(rentAcceptor.getRentAcceptorType())) {
-
-                if (rentAcceptorList.getResidentTeamClient(manager) == manager.selfTeam) {
-                    count++;
-                }
-            }
+        if (typeCount == -1 || typeLimit == -1) {
+            return;
         }
 
-        return count;
+        CCPacketHandler.INSTANCE.sendToServer(new PacketRentAcceptor("payRent", rentAcceptor.getBlockPos(), 0, 0, "", "", 0));
+    }
+
+    private void calculateCount()  {
+        CCPacketHandler.INSTANCE.sendToServer(new PacketCalculateRentAcceptorCount(rentAcceptor.rentType));
+    }
+
+    private void calculateLimit()  {
+        CCPacketHandler.INSTANCE.sendToServer(new PacketCalculateRentAcceptorLimit(rentAcceptor.rentType));
     }
 
     private void stopRent () {
-
-        if (rentAcceptor.getRemainingRentTime() > 0) {
-            typeCount--;
-        }
 
         rentAcceptor.emptyRentTime();
         CCPacketHandler.INSTANCE.sendToServer(new PacketRentAcceptor("stoprent", rentAcceptor.getBlockPos()));
@@ -148,7 +95,7 @@ public class ScreenRentAcceptor extends ScreenContainerBase<MenuRentAcceptor> {
         //Time Left Bar
         poseStack.pushPose();
         RenderSystem.setShaderTexture(0, textureLocation);
-        ScreenRect rectTimeLeft = new ScreenRect(getScreenX() + 8, getScreenY() + 40, MathHelper.scaleInt(rentAcceptor.getRemainingRentTime(), rentAcceptor.getMaxRentTime(), 161), 7);
+        ScreenRect rectTimeLeft = new ScreenRect(getScreenX() + 8, getScreenY() + 40, MathHelper.scaleInt(rentAcceptor.getRemainingRentSeconds(), rentAcceptor.getMaxRentSeconds(), 161), 7);
         ScreenHelper.drawRect(0, 136, rectTimeLeft, 0);
         poseStack.popPose();
     }
@@ -157,39 +104,53 @@ public class ScreenRentAcceptor extends ScreenContainerBase<MenuRentAcceptor> {
     public void render(PoseStack poseStack, int mouseX, int mouseY, float partialTick) {
         super.render(poseStack, mouseX, mouseY, partialTick);
 
-        ScreenHelper.drawCenteredString(poseStack, getScreenX() + getXSize() / 2, getScreenY() - 10, 0, 0xFFFFFF, new TextComponent(rentAcceptor.getRentAcceptorType() + ": " + typeCount + " / " + typeLimit));
+        ScreenHelper.drawCenteredString(poseStack, getScreenX() + getXSize() / 2, getScreenY() - 10, 0, 0xFFFFFF, new TextComponent(rentAcceptor.rentType + ": " + typeCount + " / " + typeLimit));
 
-        //Bank Currency Tab
-        if (rentAcceptor.getBank() != null) {
-            ScreenTabs.addCurrencyTab(poseStack, getScreenX(), getScreenY() + 5, mouseX, mouseY, rentAcceptor.getBank());
+        if (rentAcceptor.autoPlotReset && rentAcceptor.getTimeUntilPlotReset() > 0 && rentAcceptor.getTimeUntilPlotReset() < rentAcceptor.plotResetTimeSeconds) {
+            ScreenHelper.drawCenteredString(poseStack, getScreenX() + getXSize() / 2, getScreenY() - 20, 0, 0xFFFFFF, new TextComponent("Plot will reset in: " + rentAcceptor.getFormattedTime(rentAcceptor.getTimeUntilPlotReset())));
         }
 
-        if (manager != null) {
+        if (!rentAcceptor.residentTeamName.equals("")) {
 
-            //Team Tab
-            ClientTeam residentTeam = rentAcceptor.getResidentTeamClient(manager);
+            poseStack.pushPose();
+            RenderSystem.setShaderTexture(0, textureLocation);
+            int nameSize = minecraft.font.width(rentAcceptor.residentTeamName) + 8;
+            ScreenRect rectTimeLeft = new ScreenRect(getScreenX() + (getXSize() / 2) - (nameSize / 2), getScreenY() + getYSize(), nameSize, 11);
+            ScreenHelper.drawExpandableRect(0, 143, rectTimeLeft, 160, 11, 0);
+            poseStack.popPose();
 
-            if (residentTeam != null) {
+            ScreenHelper.drawCenteredString(poseStack, getScreenX() + getXSize() / 2, getScreenY() + getYSize() + 1, 0, 4210752, new TextComponent(rentAcceptor.residentTeamName));
+        }
 
-                poseStack.pushPose();
-                RenderSystem.setShaderTexture(0, textureLocation);
-                int nameSize = minecraft.font.width(residentTeam.getDisplayName()) + 8;
-                ScreenRect rectTimeLeft = new ScreenRect(getScreenX() + (getXSize() / 2) - (nameSize / 2), getScreenY() + getYSize(), nameSize, 11);
-                ScreenHelper.drawExpandableRect(0, 143, rectTimeLeft, 160, 11, 0);
-                poseStack.popPose();
+        MutableComponent currentCurrency = new TextComponent("");
 
-                ScreenHelper.drawCenteredString(poseStack, getScreenX() + getXSize() / 2, getScreenY() + getYSize() + 1, 0, 4210752, new TextComponent(residentTeam.getDisplayName()));
-            }
+        ItemStack walletStack = CurrencyHelper.getCurrentWallet(Minecraft.getInstance().player);
+
+        if (!walletStack.isEmpty() && walletStack.getItem() instanceof ItemWallet wallet) {
+            currentCurrency.append("Wallet: ").append(CurrencyHelper.formatCurrency(wallet.getCurrency(walletStack), true));
+        }
+
+        //Bank Currency Tab
+        else if (rentAcceptor.getBank() != null) {
+            currentCurrency.append("Bank: ").append(CurrencyHelper.formatCurrency(rentAcceptor.getBank().getCurrency(), true));
+        }
+
+        else {
+            currentCurrency.append("No currency holder found!");
         }
 
         //Amount to Refill Hover Box
-        ScreenRect rectHoverRefill = new ScreenRect(getScreenX() + 62, getScreenY() + 17, 52, 16);
-        ScreenHelper.drawHoveringTextBox(poseStack, rectHoverRefill, 0, mouseX, mouseY, 0xFFFFFF, new TextComponent("Cost to Refill Time: ").append(CurrencyHelper.formatCurrency(rentAcceptor.getCostToRefillRentTime())));
+        ScreenRect rectHoverRefill = new ScreenRect(getScreenX() + 8, getScreenY() + 17, 70, 16);
+
+        ScreenHelper.drawHoveringTextBox(poseStack, rectHoverRefill, 0, mouseX, mouseY, 0xFFFFFF,
+                currentCurrency,
+                new TextComponent("Cost to Refill Time: ").append(CurrencyHelper.formatCurrency(rentAcceptor.getCostToRefillRentTime(), true)));
+
 
         //Time Left Hover Box
         ScreenRect rectHoverTimeLeft = new ScreenRect(getScreenX() + 8, getScreenY() + 40, 160, 7);
         ScreenHelper.drawHoveringTextBox(poseStack, rectHoverTimeLeft, 0, mouseX, mouseY, 0xFFFFFF,
-                new TextComponent("Remaining: ").append(rentAcceptor.getFormattedTime(rentAcceptor.getRemainingRentTime())),
-                new TextComponent("Max:        ").append(rentAcceptor.getFormattedTime(rentAcceptor.getMaxRentTime())));
+                new TextComponent("Remaining: ").append(rentAcceptor.getFormattedTime(rentAcceptor.getRemainingRentSeconds())),
+                new TextComponent("Max:        ").append(rentAcceptor.getFormattedTime(rentAcceptor.getMaxRentSeconds())));
     }
 }

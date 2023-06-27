@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "calemicrime:black_tar_heroin"
+    },
+    {
+      "item": "calemicrime:bag"
+    }
+  ],
+  "result": {
+    "item": "calemicrime:teenth_of_black_tar_heroin"
+  }
+}

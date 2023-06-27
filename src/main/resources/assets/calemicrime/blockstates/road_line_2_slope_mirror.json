@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "calemicrime:block/road_line_2_slope_mirror",
+      "y": 270
+    },
+    "facing=north": {
+      "model": "calemicrime:block/road_line_2_slope_mirror",
+      "y": 180
+    },
+    "facing=south": {
+      "model": "calemicrime:block/road_line_2_slope_mirror"
+    },
+    "facing=west": {
+      "model": "calemicrime:block/road_line_2_slope_mirror",
+      "y": 90
+    }
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "parent": "calemicrime:block/road_line_slope_base",
+  "textures": {
+    "particle": "calemicrime:blocks/road_line_1",
+    "0": "calemicrime:blocks/road_line_1"
+  }
+}

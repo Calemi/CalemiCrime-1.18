@@ -1,0 +1,32 @@
+{
+  "player.geiger_low": {
+    "category": "player",
+    "subtitle": "player.geiger_low.sub",
+    "sounds": [
+      {
+        "name": "calemicrime:player/geiger_low",
+        "stream": true
+      }
+    ]
+  },
+  "player.geiger_medium": {
+    "category": "player",
+    "subtitle": "player.geiger_medium.sub",
+    "sounds": [
+      {
+        "name": "calemicrime:player/geiger_medium",
+        "stream": true
+      }
+    ]
+  },
+  "player.geiger_high": {
+    "category": "player",
+    "subtitle": "player.geiger_high.sub",
+    "sounds": [
+      {
+        "name": "calemicrime:player/geiger_high",
+        "stream": true
+      }
+    ]
+  }
+}

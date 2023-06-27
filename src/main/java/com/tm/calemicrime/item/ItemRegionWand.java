@@ -2,6 +2,8 @@ package com.tm.calemicrime.item;
 
 import com.tm.calemicore.util.Location;
 import com.tm.calemicore.util.helper.SoundHelper;
+import com.tm.calemicrime.blockentity.BlockEntityMineGenerator;
+import com.tm.calemicrime.blockentity.BlockEntityRadiationProjector;
 import com.tm.calemicrime.blockentity.BlockEntityRegionProtector;
 import com.tm.calemicrime.main.CalemiCrime;
 import net.minecraft.ChatFormatting;
@@ -68,6 +70,16 @@ public class ItemRegionWand extends Item {
         if (position_1 != null && position_2 != null && location.getBlockEntity() instanceof BlockEntityRegionProtector regionProtector) {
             regionProtector.setRegion(new AABB(position_1.getBlockPos(), position_2.getBlockPos()));
             if (level.isClientSide()) player.sendMessage(new TextComponent(ChatFormatting.GREEN + "Transferred positions to Region Protector"), Util.NIL_UUID);
+        }
+
+        else if (position_1 != null && position_2 != null && location.getBlockEntity() instanceof BlockEntityMineGenerator mineGenerator) {
+            mineGenerator.setRegion(new AABB(position_1.getBlockPos(), position_2.getBlockPos()));
+            if (level.isClientSide()) player.sendMessage(new TextComponent(ChatFormatting.GREEN + "Transferred positions to Mine Generator"), Util.NIL_UUID);
+        }
+
+        else if (position_1 != null && position_2 != null && location.getBlockEntity() instanceof BlockEntityRadiationProjector radiationProjector) {
+            radiationProjector.setRegion(new AABB(position_1.getBlockPos(), position_2.getBlockPos()));
+            if (level.isClientSide()) player.sendMessage(new TextComponent(ChatFormatting.GREEN + "Transferred positions to Radiation Projector"), Util.NIL_UUID);
         }
 
         else if (player.isCrouching()) {

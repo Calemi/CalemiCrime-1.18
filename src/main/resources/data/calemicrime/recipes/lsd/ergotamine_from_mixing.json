@@ -1,0 +1,19 @@
+{
+  "type": "create:mixing",
+  "ingredients": [
+    {
+      "item": "calemicrime:ergot"
+    },
+    {
+      "fluid": "minecraft:water",
+      "amount": 1000
+    }
+  ],
+  "results": [
+    {
+      "fluid": "calemicrime:ergotamine",
+      "amount": 1000
+    }
+  ],
+  "heatRequirement": "heated"
+}

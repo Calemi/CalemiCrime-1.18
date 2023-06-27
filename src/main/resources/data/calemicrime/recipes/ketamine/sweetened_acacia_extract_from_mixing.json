@@ -1,0 +1,19 @@
+{
+  "type": "create:mixing",
+  "ingredients": [
+    {
+      "item": "minecraft:sugar"
+    },
+    {
+      "fluid": "calemicrime:acacia_extract",
+      "amount": 1000
+    }
+  ],
+  "results": [
+    {
+      "fluid": "calemicrime:sweetened_acacia_extract",
+      "amount": 1000
+    }
+  ],
+  "heatRequirement": "heated"
+}

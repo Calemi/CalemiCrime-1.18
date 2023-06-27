@@ -6,7 +6,7 @@ import com.tm.calemicore.util.helper.ItemHelper;
 import com.tm.calemicrime.blockentity.BlockEntityRentAcceptor;
 import com.tm.calemicrime.client.screen.ScreenRentAcceptorOptions;
 import com.tm.calemicrime.init.InitBlockEntityTypes;
-import dev.ftb.mods.ftbteams.data.Team;
+import com.tm.calemicrime.team.RegionTeam;
 import dev.ftb.mods.ftbteams.data.TeamManager;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
@@ -62,15 +62,15 @@ public class BlockRentAcceptor extends BaseEntityBlock {
 
                     if (manager != null) {
 
-                        Team team = rentAcceptor.getResidentTeamServer(manager);
+                        RegionTeam team = rentAcceptor.getResidentTeam();
 
-                        if (team == null || team.isMember(player.getUUID())) {
+                        if (team == null || team.isMember(player)) {
                             NetworkHooks.openGui((ServerPlayer) player, rentAcceptor, pos);
                         }
 
                         else {
-                            player.sendMessage(new TextComponent(ChatFormatting.RED + "This plot is owned by: " + team.getDisplayName()), Util.NIL_UUID);
-                            player.sendMessage(new TextComponent(ChatFormatting.RED + "Time left on their rent: ").append(rentAcceptor.getFormattedTime(rentAcceptor.getRemainingRentTime())), Util.NIL_UUID);
+                            player.sendMessage(new TextComponent(ChatFormatting.RED + "This plot is owned by the team: " + team.getName()), Util.NIL_UUID);
+                            player.sendMessage(new TextComponent(ChatFormatting.RED + "Time left on their rent: ").append(rentAcceptor.getFormattedTime(rentAcceptor.getRemainingRentSeconds())), Util.NIL_UUID);
                         }
                     }
                 }

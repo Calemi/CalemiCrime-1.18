@@ -1,0 +1,18 @@
+{
+  "replace": false,
+  "values": [
+    "calemicrime:taniun_solution",
+    "calemicrime:flowing_taniun_solution",
+    "calemicrime:flowing_acacia_extract",
+    "calemicrime:acacia_extract",
+    "calemicrime:flowing_sweetened_acacia_extract",
+    "calemicrime:sweetened_acacia_extract",
+    "calemicrime:flowing_ergotamine",
+    "calemicrime:ergotamine",
+    "calemicrime:flowing_methylsulfonylmethane",
+    "calemicrime:methylsulfonylmethane",
+    "calemicrime:flowing_methylamine",
+    "calemicrime:methylamine",
+    "calemicrime:morphine"
+  ]
+}

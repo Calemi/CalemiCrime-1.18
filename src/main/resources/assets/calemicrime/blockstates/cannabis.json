@@ -1,10 +1,28 @@
 {
   "variants": {
-    "mature=true": {
-      "model": "calemicrime:block/cannabis_mature"
-    },
-    "mature=false": {
+    "age=0": {
       "model": "calemicrime:block/cannabis_premature"
+    },
+    "age=1": {
+      "model": "calemicrime:block/cannabis_premature"
+    },
+    "age=2": {
+      "model": "calemicrime:block/cannabis_premature"
+    },
+    "age=3": {
+       "model": "calemicrime:block/cannabis_premature"
+    },
+    "age=4": {
+       "model": "calemicrime:block/cannabis_premature"
+    },
+    "age=5": {
+       "model": "calemicrime:block/cannabis_premature"
+    },
+    "age=6": {
+       "model": "calemicrime:block/cannabis_premature"
+    },
+    "age=7": {
+      "model": "calemicrime:block/cannabis_mature"
     }
   }
 }

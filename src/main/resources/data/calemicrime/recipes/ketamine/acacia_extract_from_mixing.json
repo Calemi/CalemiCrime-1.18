@@ -1,0 +1,19 @@
+{
+  "type": "create:mixing",
+  "ingredients": [
+    {
+      "item": "minecraft:acacia_log"
+    },
+    {
+      "fluid": "minecraft:water",
+      "amount": 1000
+    }
+  ],
+  "results": [
+    {
+      "fluid": "calemicrime:acacia_extract",
+      "amount": 1000
+    }
+  ],
+  "heatRequirement": "heated"
+}

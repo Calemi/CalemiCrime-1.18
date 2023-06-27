@@ -1,13 +1,11 @@
 package com.tm.calemicrime.event;
 
 import com.tm.calemicrime.init.InitFluids;
-import com.tm.calemicrime.item.ItemGasMask;
 import com.tm.calemicrime.item.ItemToxic;
+import com.tm.calemicrime.main.CalemiCrime;
+import com.tm.calemicrime.util.HazardHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.TextComponent;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.ItemStack;
@@ -24,7 +22,7 @@ public class ToxicItemEvents {
 
         if (isToxicItem(event.getItemStack())) {
             event.getToolTip().add(new TextComponent(ChatFormatting.GREEN + "TOXIC"));
-            event.getToolTip().add(new TextComponent(ChatFormatting.DARK_GRAY + "" + ChatFormatting.ITALIC + "Holding this item without a Gas Mask will poison you!"));
+            event.getToolTip().add(new TextComponent(ChatFormatting.DARK_GRAY + "" + ChatFormatting.ITALIC + "Holding this item without full set of Hazmat gear will poison you!"));
         }
     }
 
@@ -45,13 +43,19 @@ public class ToxicItemEvents {
     @SubscribeEvent
     public void onPlayerHoldingToxicItem(LivingEvent.LivingUpdateEvent event) {
 
-        if (event.getEntityLiving() instanceof Player player) {
+        if (event.getEntityLiving().getLevel().getGameTime() % 20 == 0) {
 
-            for (ItemStack stack : player.getInventory().items) {
+            if (event.getEntityLiving() instanceof Player player) {
 
-                if (isToxicItem(stack) && !(player.getItemBySlot(EquipmentSlot.HEAD).getItem() instanceof ItemGasMask)) {
-                    player.addEffect(new MobEffectInstance(MobEffects.POISON, 20 * 60));
-                    return;
+                for (ItemStack stack : player.getInventory().items) {
+
+                    float protection = HazardHelper.getHazardProtection(player);
+
+                    if (isToxicItem(stack) && protection < 1) {
+
+                        player.hurt(CalemiCrime.RADIATION, 1 - (1 * protection));
+                        return;
+                    }
                 }
             }
         }

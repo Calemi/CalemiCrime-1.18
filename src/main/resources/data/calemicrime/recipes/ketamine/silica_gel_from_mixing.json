@@ -6,7 +6,6 @@
     },
     {
       "fluid": "minecraft:water",
-      "nbt": {},
       "amount": 1000
     }
   ],

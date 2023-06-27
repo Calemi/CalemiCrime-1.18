@@ -1,0 +1,17 @@
+{
+  "type": "create:emptying",
+  "ingredients": [
+    {
+      "item": "calemicrime:morphine_bottle"
+    }
+  ],
+  "results": [
+    {
+      "item": "minecraft:glass_bottle"
+    },
+    {
+      "fluid": "calemicrime:morphine_extract",
+      "amount": 250
+    }
+  ]
+}

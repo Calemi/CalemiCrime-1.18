@@ -1,0 +1,23 @@
+{
+  "replace": false,
+  "values": [
+	"nifty:old_planks",
+	"nifty:flamingo",
+	"nifty:redoak_planks",
+	"nifty:maple_planks",
+	"nifty:plank_black",
+	"nifty:plank_brown",
+	"nifty:plank_blue",
+	"nifty:plank_lblue",
+	"nifty:plank_green",
+	"nifty:plank_lime",
+	"nifty:plank_yellow",
+	"nifty:plank_orange",
+	"nifty:plank_red",
+	"nifty:plank_pink",
+	"nifty:plank_purple",
+	"nifty:plank_magenta",
+	"nifty:plank_cyan",
+	"calemicrime:drying_rack"
+  ]
+}
