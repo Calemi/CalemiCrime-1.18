@@ -7,6 +7,9 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Player;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ItemBlackTarHeroin extends ItemDrug {
 
     @Override
@@ -15,10 +18,12 @@ public class ItemBlackTarHeroin extends ItemDrug {
     }
 
     @Override
-    public void onConsumed(Player player, int additiveDuration) {
-        player.addEffect(new MobEffectInstance(InitMobEffects.BLACK_TAR_HEROIN_HIGH.get(), getDuration() + additiveDuration));
-        player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST,  getDuration() + additiveDuration, 1));
-        player.addEffect(new MobEffectInstance(MobEffects.HEALTH_BOOST,  getDuration() + additiveDuration, 1));
+    public List<MobEffectInstance> getEffects(int additiveDuration) {
+        List<MobEffectInstance> effects = new ArrayList<>();
+        effects.add(new MobEffectInstance(InitMobEffects.BLACK_TAR_HEROIN_HIGH.get(), getDuration() + additiveDuration));
+        effects.add(new MobEffectInstance(MobEffects.DAMAGE_BOOST,  getDuration() + additiveDuration, 1));
+        effects.add(new MobEffectInstance(MobEffects.HEALTH_BOOST,  getDuration() + additiveDuration, 1));
+        return effects;
     }
 
     @Override

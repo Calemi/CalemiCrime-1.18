@@ -1,9 +1,12 @@
 package com.tm.calemicrime.event;
 
+import com.tm.calemicore.util.helper.LogHelper;
 import com.tm.calemicrime.init.InitFluids;
 import com.tm.calemicrime.item.ItemToxic;
+import com.tm.calemicrime.main.CCReference;
 import com.tm.calemicrime.main.CalemiCrime;
 import com.tm.calemicrime.util.HazardHelper;
+import com.tm.calemicrime.util.RegionHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.entity.player.Player;
@@ -43,19 +46,24 @@ public class ToxicItemEvents {
     @SubscribeEvent
     public void onPlayerHoldingToxicItem(LivingEvent.LivingUpdateEvent event) {
 
+        if (!(event.getEntityLiving() instanceof Player player)) {
+            return;
+        }
+
         if (event.getEntityLiving().getLevel().getGameTime() % 20 == 0) {
 
-            if (event.getEntityLiving() instanceof Player player) {
+            LogHelper.log(CCReference.MOD_NAME, RegionHelper.allProfiles);
 
-                for (ItemStack stack : player.getInventory().items) {
+            for (int slot = 0; slot < 41; slot++) {
 
-                    float protection = HazardHelper.getHazardProtection(player);
+                ItemStack stack = player.getInventory().getItem(slot);
 
-                    if (isToxicItem(stack) && protection < 1) {
+                float protection = HazardHelper.getHazardProtection(player);
 
-                        player.hurt(CalemiCrime.RADIATION, 1 - (1 * protection));
-                        return;
-                    }
+                if (isToxicItem(stack) && protection < 1) {
+
+                    player.hurt(CalemiCrime.RADIATION, 1 - (1 * protection));
+                    return;
                 }
             }
         }

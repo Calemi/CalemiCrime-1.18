@@ -4,10 +4,7 @@ import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.tm.calemicore.util.helper.LogHelper;
-import com.tm.calemicrime.blockentity.BlockEntityRentAcceptor;
 import com.tm.calemicrime.file.*;
-import com.tm.calemicrime.main.CCReference;
 import com.tm.calemicrime.team.RegionTeam;
 import com.tm.calemicrime.team.RegionTeamMember;
 import net.minecraft.ChatFormatting;
@@ -28,6 +25,7 @@ public class CrimeCommandsBase {
 
         plotCommand.requires(commandSource -> true)
                 .then(reload())
+                .then(UnstuckCommands.unstuck())
                 .then(PlotCommands.plots())
                 .then(TeamCommands.team());
 
@@ -41,12 +39,13 @@ public class CrimeCommandsBase {
             Player player = ctx.getSource().getPlayerOrException();
 
             LootBoxFile.init();
-            PreventBlockPlaceListFile.init();
-            PreventItemUseListFile.init();
             RentAcceptorTypesFile.init();
             PlotsFile.init();
             DryingRackRecipesFile.init();
             RegionTeamsFile.init();
+            UnstuckLocationsFile.init();
+            PlotBlockPlaceLimitFile.init();
+            DirtyFile.markDirty();
 
             for (RegionTeam team : RegionTeamsFile.teams) {
 
@@ -55,34 +54,24 @@ public class CrimeCommandsBase {
                 }
             }
 
-            for (BlockEntityRentAcceptor rentAcceptor : BlockEntityRentAcceptor.rentAcceptors) {
+            /*for (BlockEntityRentAcceptor rentAcceptor : BlockEntityRentAcceptor.rentAcceptors) {
 
                 LogHelper.log(CCReference.MOD_NAME, rentAcceptor.fileKey);
 
-                if (!rentAcceptor.fileKey.equals("")) {
-
-                    PlotsFile.PlotEntry entry = PlotsFile.list.get(rentAcceptor.fileKey);
-
-                    if (entry != null) {
-                        rentAcceptor.rentType = entry.getRentType();
-                        rentAcceptor.costToFillRentTime = entry.getRentCost();
-                        rentAcceptor.maxRentHours = entry.getRentTimeHours();
-                        rentAcceptor.autoPlotReset = entry.isAutoReset();
-                        rentAcceptor.plotResetTimeSeconds = entry.getResetTimeSeconds();
-                        rentAcceptor.markUpdated();
-                    }
-
-                    else if (!ctx.getSource().getPlayerOrException().getLevel().isClientSide()) {
-                        sendWarning(player, "Could not find plot entry: " + rentAcceptor.fileKey);
+                if (!rentAcceptor.injectValuesFromFile()) {
+                    if (!ctx.getSource().getPlayerOrException().getLevel().isClientSide()) {
+                        sendWarning(player, "Could not find plot entry in file: " + rentAcceptor.fileKey);
                     }
                 }
-            }
+            }*/
 
             sendSuccess(player, "Reload Complete!");
 
             return Command.SINGLE_SUCCESS;
         });
     }
+
+
 
     public static void sendSuccess(Player player, String msg) {
         player.sendMessage(new TextComponent(ChatFormatting.GREEN + msg), Util.NIL_UUID);

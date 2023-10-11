@@ -1,6 +1,41 @@
 {
-  "parent": "item/generated",
+  "parent": "calemicrime:item/cape_model",
   "textures": {
-    "layer0": "calemicrime:items/cape"
-  }
+    "layer0": "calemicrime:cape/cape_0"
+  },
+  "overrides": [
+    { "predicate": { "calemicrime:pattern": 0 }, "model": "calemicrime:item/cape_0" },
+    { "predicate": { "calemicrime:pattern": 1 }, "model": "calemicrime:item/cape_1" },
+    { "predicate": { "calemicrime:pattern": 2 }, "model": "calemicrime:item/cape_2" },
+    { "predicate": { "calemicrime:pattern": 3 }, "model": "calemicrime:item/cape_3" },
+    { "predicate": { "calemicrime:pattern": 4 }, "model": "calemicrime:item/cape_4" },
+    { "predicate": { "calemicrime:pattern": 5 }, "model": "calemicrime:item/cape_5" },
+    { "predicate": { "calemicrime:pattern": 6 }, "model": "calemicrime:item/cape_6" },
+    { "predicate": { "calemicrime:pattern": 7 }, "model": "calemicrime:item/cape_7" },
+    { "predicate": { "calemicrime:pattern": 8 }, "model": "calemicrime:item/cape_8" },
+    { "predicate": { "calemicrime:pattern": 9 }, "model": "calemicrime:item/cape_9" },
+    { "predicate": { "calemicrime:pattern": 10 }, "model": "calemicrime:item/cape_10" },
+    { "predicate": { "calemicrime:pattern": 11 }, "model": "calemicrime:item/cape_11" },
+    { "predicate": { "calemicrime:pattern": 12 }, "model": "calemicrime:item/cape_12" },
+    { "predicate": { "calemicrime:pattern": 13 }, "model": "calemicrime:item/cape_13" },
+    { "predicate": { "calemicrime:pattern": 14 }, "model": "calemicrime:item/cape_14" },
+    { "predicate": { "calemicrime:pattern": 15 }, "model": "calemicrime:item/cape_15" },
+    { "predicate": { "calemicrime:pattern": 16 }, "model": "calemicrime:item/cape_16" },
+    { "predicate": { "calemicrime:pattern": 17 }, "model": "calemicrime:item/cape_17" },
+    { "predicate": { "calemicrime:pattern": 18 }, "model": "calemicrime:item/cape_18" },
+    { "predicate": { "calemicrime:pattern": 19 }, "model": "calemicrime:item/cape_19" },
+    { "predicate": { "calemicrime:pattern": 20 }, "model": "calemicrime:item/cape_20" },
+    { "predicate": { "calemicrime:pattern": 21 }, "model": "calemicrime:item/cape_21" },
+    { "predicate": { "calemicrime:pattern": 22 }, "model": "calemicrime:item/cape_22" },
+    { "predicate": { "calemicrime:pattern": 23 }, "model": "calemicrime:item/cape_23" },
+    { "predicate": { "calemicrime:pattern": 24 }, "model": "calemicrime:item/cape_24" },
+    { "predicate": { "calemicrime:pattern": 25 }, "model": "calemicrime:item/cape_25" },
+    { "predicate": { "calemicrime:pattern": 26 }, "model": "calemicrime:item/cape_26" },
+    { "predicate": { "calemicrime:pattern": 27 }, "model": "calemicrime:item/cape_27" },
+    { "predicate": { "calemicrime:pattern": 28 }, "model": "calemicrime:item/cape_28" },
+    { "predicate": { "calemicrime:pattern": 29 }, "model": "calemicrime:item/cape_29" },
+    { "predicate": { "calemicrime:pattern": 30 }, "model": "calemicrime:item/cape_30" },
+    { "predicate": { "calemicrime:pattern": 31 }, "model": "calemicrime:item/cape_31" },
+    { "predicate": { "calemicrime:pattern": 32 }, "model": "calemicrime:item/cape_32" }
+  ]
 }

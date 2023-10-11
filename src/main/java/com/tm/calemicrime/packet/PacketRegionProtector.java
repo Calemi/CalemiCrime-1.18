@@ -4,6 +4,7 @@ import com.tm.calemicore.util.Location;
 import com.tm.calemicore.util.helper.LogHelper;
 import com.tm.calemicrime.blockentity.BlockEntityRegionProtector;
 import com.tm.calemicrime.main.CCReference;
+import com.tm.calemicrime.util.RegionProfile;
 import com.tm.calemicrime.util.RegionRuleSet;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
@@ -111,32 +112,31 @@ public class PacketRegionProtector {
 
                     //Handles syncing locations.
                     if (command.equalsIgnoreCase("synclocations")) {
-                        regionProtector.regionOffset = new Location(player.getLevel(), regionOffset);
-                        regionProtector.regionSize = new Location(player.getLevel(), regionEdge);
+                        regionProtector.profile.setOffset(new Location(player.getLevel(), regionOffset));
+                        regionProtector.profile.setSize(new Location(player.getLevel(), regionEdge));
                     }
 
                     //Handles syncing priority.
                     else if (command.equalsIgnoreCase("syncpriority")) {
-                        regionProtector.priority = priority;
+                        regionProtector.profile.setPriority(priority);
                     }
 
                     else if (command.equalsIgnoreCase("syncglobal")) {
-                        regionProtector.global = global;
+                        regionProtector.profile.setGlobal(global);
                         LogHelper.log(CCReference.MOD_NAME, global);
                     }
 
                     else if (command.equalsIgnoreCase("syncregiontype")) {
-                        regionProtector.regionType = BlockEntityRegionProtector.RegionType.fromIndex(regionTypeIndex);
+                        regionProtector.profile.setType(RegionProfile.Type.fromIndex(regionTypeIndex));
                     }
 
                     //Handles syncing rule.
                     else if (command.equalsIgnoreCase("syncrule")) {
-                        regionProtector.regionRuleSet.ruleSets[ruleSetIndex] = RegionRuleSet.RuleOverrideType.fromIndex(ruleOverrideIndex);
+                        regionProtector.profile.getRuleSet().ruleSets[ruleSetIndex] = RegionRuleSet.RuleOverrideType.fromIndex(ruleOverrideIndex);
                     }
 
                     else if (command.equalsIgnoreCase("saveplot")) {
                         regionProtector.savePlot();
-                        regionProtector.lastSaveTime = System.currentTimeMillis();
                     }
 
                     else if (command.equalsIgnoreCase("loadplot")) {

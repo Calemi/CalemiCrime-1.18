@@ -52,8 +52,6 @@ public class BlockRegionProtector extends BaseEntityBlock {
     public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
 
         if (!state.is(newState.getBlock())) {
-
-            BlockEntityRegionProtector.cleanRegionProtectorList();
             super.onRemove(state, level, pos, newState, isMoving);
         }
     }

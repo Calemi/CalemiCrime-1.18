@@ -1,10 +1,7 @@
 package com.tm.calemicrime.item;
 
-import com.tm.calemicore.util.helper.LoreHelper;
-import com.tm.calemicrime.compat.curios.CuriosIntegration;
+import com.tm.calemicrime.integration.curios.CuriosIntegration;
 import com.tm.calemicrime.main.CalemiCrime;
-import com.tm.calemieconomy.main.CalemiEconomy;
-import com.tm.calemieconomy.util.helper.CurrencyHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -26,6 +23,12 @@ public class ItemCape extends Item {
     }
 
     @Override
+    public Component getName(ItemStack stack) {
+        int patternID = stack.getOrCreateTag().getInt("Pattern");
+        return new TranslatableComponent("item.calemicrime.cape." + patternID);
+    }
+
+    /*@Override
     public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltipList, TooltipFlag advanced) {
 
         String texture = stack.getOrCreateTag().getString("Pattern");
@@ -35,7 +38,7 @@ public class ItemCape extends Item {
         }
 
         tooltipList.add(new TextComponent(ChatFormatting.GOLD + "Pattern: " + ChatFormatting.YELLOW + texture.toUpperCase()));
-    }
+    }*/
 
     @Override
     public ICapabilityProvider initCapabilities(ItemStack stack, @org.jetbrains.annotations.Nullable CompoundTag nbt) {

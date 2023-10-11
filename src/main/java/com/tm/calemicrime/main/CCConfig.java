@@ -18,6 +18,8 @@ public class CCConfig {
     public static class CategoryServer {
 
         public final ForgeConfigSpec.ConfigValue<Integer> maximumPlotSaveVolume;
+        public final ForgeConfigSpec.ConfigValue<Integer> combatLogTimeTicks;
+        public final ForgeConfigSpec.ConfigValue<Integer> hazmatSuitRadiationDamageChance;
 
         public CategoryServer (ForgeConfigSpec.Builder builder) {
 
@@ -26,6 +28,12 @@ public class CCConfig {
             maximumPlotSaveVolume = builder
                     .comment("Maximum Plot Save Volume")
                     .defineInRange("maximumPlotSaveVolume", 1000000, 0, Integer.MAX_VALUE);
+            combatLogTimeTicks = builder
+                    .comment("Combat Log Time in Ticks")
+                    .defineInRange("combatLogTimeTicks", 30 * 20, 0, Integer.MAX_VALUE);
+            hazmatSuitRadiationDamageChance = builder
+                    .comment("Hazmat Suit Radiation Damage Chance")
+                    .defineInRange("hazmatSuitRadiationDamageChance", 100, 0, Integer.MAX_VALUE);
 
             builder.pop();
         }
@@ -36,7 +44,7 @@ public class CCConfig {
         public final ForgeConfigSpec.ConfigValue<Integer> timeToConsumeDrug;
         public final ForgeConfigSpec.ConfigValue<Integer> drugWithdrawEffectDuration;
 
-        public final ForgeConfigSpec.ConfigValue<Integer> taniunSoakedSeedsCrackTime;
+        public final ForgeConfigSpec.ConfigValue<Integer> taniunSoakedSeedsCrackTimeTicks;
         public final ForgeConfigSpec.ConfigValue<Integer> taniunEffectDuration;
 
         public final ForgeConfigSpec.ConfigValue<Boolean> cannabisPlantRequireBonemeal;
@@ -69,16 +77,15 @@ public class CCConfig {
             timeToConsumeDrug = builder
                     .comment("Time to Consume Drug")
                     .defineInRange("timeToConsumeDrug", 2, 0, Integer.MAX_VALUE);
-
             drugWithdrawEffectDuration = builder
                     .comment("Drug Withdraw Effect Duration")
                     .defineInRange("drugWithdrawEffectDuration", 30, 0, Integer.MAX_VALUE);
 
             builder.push("Taniun");
 
-            taniunSoakedSeedsCrackTime = builder
-                    .comment("Taniun Soaked Seeds Crack Time")
-                    .defineInRange("driedSeedsConsumeLiquidChance", 5, 0, Integer.MAX_VALUE);
+            taniunSoakedSeedsCrackTimeTicks = builder
+                    .comment("Taniun Soaked Seeds Crack Time (Ticks)")
+                    .defineInRange("taniunSoakedSeedsCrackTimeTicks", 50, 0, Integer.MAX_VALUE);
             taniunEffectDuration = builder
                     .comment("Taniun Effect Duration")
                     .defineInRange("taniunEffectDuration", 60, 0, Integer.MAX_VALUE);

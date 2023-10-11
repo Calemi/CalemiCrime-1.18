@@ -3,8 +3,10 @@ package com.tm.calemicrime.client.render;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.tm.calemicrime.blockentity.BlockEntityRegionProtector;
+import com.tm.calemicrime.util.RegionProfile;
 import com.tm.calemicrime.util.RegionRuleSet;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -22,37 +24,49 @@ public class RenderRegionProtector implements BlockEntityRenderer<BlockEntityReg
     @Override
     public void render(BlockEntityRegionProtector regionProtector, float partialTicks, PoseStack poseStack, MultiBufferSource buffer, int packedLight, int packedOverlay) {
 
-        if (Minecraft.getInstance().getEntityRenderDispatcher().shouldRenderHitBoxes()) {
+        Minecraft mc = Minecraft.getInstance();
+        LocalPlayer player = mc.player;
 
-            if (regionProtector != null && regionProtector.regionOffset != null && regionProtector.regionSize != null) {
+        if (mc.getEntityRenderDispatcher().shouldRenderHitBoxes()) {
 
-                if (regionProtector.global) {
+            if (regionProtector != null && regionProtector.profile.getOffset() != null && regionProtector.profile.getSize() != null) {
+
+                if (regionProtector.profile.isGlobal()) {
                     return;
                 }
 
                 Vec3 color = new Vec3(1, 1, 1);
 
-                if (regionProtector.regionRuleSet.ruleSets[5] == RegionRuleSet.RuleOverrideType.ALLOW) {
+                if (regionProtector.profile.getRuleSet().ruleSets[5] == RegionRuleSet.RuleOverrideType.ALLOW) {
                     color = new Vec3(1, 0, 0);
                 }
 
-                else if (regionProtector.regionType == BlockEntityRegionProtector.RegionType.RESIDENTIAL) {
+                else if (regionProtector.profile.getType() == RegionProfile.Type.RESIDENTIAL) {
                     color = new Vec3(0, 1, 0);
                 }
 
-                else if (regionProtector.regionType == BlockEntityRegionProtector.RegionType.COMMERCIAL) {
+                else if (regionProtector.profile.getType() == RegionProfile.Type.COMMERCIAL) {
                     color = new Vec3(0, 0, 1);
                 }
 
-                if (regionProtector.rentAcceptor != null && regionProtector.rentAcceptor.getRemainingRentSeconds() > 0) {
+                if (regionProtector.profile.getRentAcceptor() != null && regionProtector.profile.getRentAcceptor().getRemainingRentSeconds() > 0) {
                     color = color.multiply(0.4F, 0.4F, 0.4F);
                 }
 
                 VertexConsumer vertexconsumer = buffer.getBuffer(RenderType.lines());
-                LevelRenderer.renderLineBox(poseStack, vertexconsumer,
-                        regionProtector.regionOffset.x, regionProtector.regionOffset.y, regionProtector.regionOffset.z,
-                        regionProtector.regionOffset.x + regionProtector.regionSize.x, regionProtector.regionOffset.y + regionProtector.regionSize.y, (float) (regionProtector.regionOffset.z + regionProtector.regionSize.z),
-                        (float)color.x, (float)color.y, (float)color.z, 1F);
+
+                if (regionProtector.profile.getType() != RegionProfile.Type.NONE || player.isCreative() || player.isSpectator()) {
+                    LevelRenderer.renderLineBox(poseStack, vertexconsumer,
+                            regionProtector.profile.getOffset().x, regionProtector.profile.getOffset().y, regionProtector.profile.getOffset().z,
+                            regionProtector.profile.getOffset().x + regionProtector.profile.getSize().x, regionProtector.profile.getOffset().y + regionProtector.profile.getSize().y, regionProtector.profile.getOffset().z + regionProtector.profile.getSize().z,
+                            (float)color.x, (float)color.y, (float)color.z, 1F);
+                }
+
+                if (player.isSpectator()) {
+                    LevelRenderer.renderLineBox(poseStack, vertexconsumer,
+                            0, 0, 0, 1, 1, 1,
+                            (float)color.x, (float)color.y, (float)color.z, 1F);
+                }
             }
         }
     }
@@ -69,6 +83,6 @@ public class RenderRegionProtector implements BlockEntityRenderer<BlockEntityReg
 
     @Override
     public int getViewDistance() {
-        return 96;
+        return 5000;
     }
 }

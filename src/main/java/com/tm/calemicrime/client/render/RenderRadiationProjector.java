@@ -26,13 +26,16 @@ public class RenderRadiationProjector implements BlockEntityRenderer<BlockEntity
 
         LocalPlayer player = Minecraft.getInstance().player;
 
-        if (player.isCreative() && Minecraft.getInstance().getEntityRenderDispatcher().shouldRenderHitBoxes()) {
+        if ((player.isCreative() || player.isSpectator()) && Minecraft.getInstance().getEntityRenderDispatcher().shouldRenderHitBoxes()) {
 
             if (radiationProjector != null && radiationProjector.getRegionOffset() != null && radiationProjector.getRegionSize() != null) {
                 VertexConsumer vertexconsumer = buffer.getBuffer(RenderType.lines());
                 LevelRenderer.renderLineBox(poseStack, vertexconsumer,
                         radiationProjector.getRegionOffset().x, radiationProjector.getRegionOffset().y, radiationProjector.getRegionOffset().z,
                         radiationProjector.getRegionOffset().x + radiationProjector.getRegionSize().x, radiationProjector.getRegionOffset().y + radiationProjector.getRegionSize().y, radiationProjector.getRegionOffset().z + radiationProjector.getRegionSize().z,
+                        0, 0.75F, 0F, 1F);
+                LevelRenderer.renderLineBox(poseStack, vertexconsumer,
+                        0, 0, 0, 1, 1, 1,
                         0, 0.75F, 0F, 1F);
             }
         }
@@ -70,6 +73,6 @@ public class RenderRadiationProjector implements BlockEntityRenderer<BlockEntity
 
     @Override
     public int getViewDistance() {
-        return 96;
+        return 5000;
     }
 }

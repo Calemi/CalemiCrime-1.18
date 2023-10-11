@@ -169,6 +169,10 @@ dependencies {
     implementation fg.deobf("curse.maven:buddycards-425991:${buddycards_file_id}")
 
     implementation fg.deobf("curse.maven:flashnpcs-517167:${flashnpcs_file_id}")
+
+    implementation fg.deobf("curse.maven:cosmetic_armor_reworked-237307:${cosmetic_armor_reworked_file_id}")
+
+    implementation fg.deobf("curse.maven:corpse-316582:${corpse_file_id}")
 }
 
 jar {

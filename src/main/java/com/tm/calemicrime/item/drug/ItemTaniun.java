@@ -6,6 +6,9 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Player;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ItemTaniun extends ItemDrug {
 
     @Override
@@ -14,15 +17,14 @@ public class ItemTaniun extends ItemDrug {
     }
 
     @Override
-    public void onConsumed(Player player, int additiveDuration) {
-        player.addEffect(new MobEffectInstance(InitMobEffects.TANIUN_HIGH.get(), getDuration() + additiveDuration));
-        player.addEffect(new MobEffectInstance(MobEffects.DIG_SPEED,  getDuration() + additiveDuration, 2));
-        player.addEffect(new MobEffectInstance(MobEffects.SATURATION,  getDuration() + additiveDuration, 2));
+    public List<MobEffectInstance> getEffects(int additiveDuration) {
+        List<MobEffectInstance> effects = new ArrayList<>();
+        effects.add(new MobEffectInstance(InitMobEffects.TANIUN_HIGH.get(), getDuration() + additiveDuration));
+        effects.add(new MobEffectInstance(MobEffects.DIG_SPEED,  getDuration() + additiveDuration, 2));
+        effects.add(new MobEffectInstance(MobEffects.SATURATION,  getDuration() + additiveDuration, 2));
+        return effects;
     }
 
     @Override
-    public void onExpired(Player player) {
-        player.addEffect(new MobEffectInstance(MobEffects.CONFUSION, CCConfig.drugs.drugWithdrawEffectDuration.get() * 20));
-        player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, CCConfig.drugs.drugWithdrawEffectDuration.get() * 20, 2));
-    }
+    public void onExpired(Player player) {}
 }

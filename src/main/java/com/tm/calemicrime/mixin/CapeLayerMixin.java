@@ -64,11 +64,7 @@ public abstract class CapeLayerMixin extends RenderLayer<AbstractClientPlayer, P
             return;
         }
 
-        String texture = slotResult.get().stack().getOrCreateTag().getString("Pattern");
-
-        if (texture.equals("")) {
-            texture = "normal_red";
-        }
+        int patternID = slotResult.get().stack().getOrCreateTag().getInt("Pattern");
 
         if (p_116618_.isModelPartShown(PlayerModelPart.CAPE)) {
 
@@ -100,7 +96,7 @@ public abstract class CapeLayerMixin extends RenderLayer<AbstractClientPlayer, P
             p_116615_.mulPose(Vector3f.ZP.rotationDegrees(f3 / 2.0F));
             p_116615_.mulPose(Vector3f.YP.rotationDegrees(180.0F - f3 / 2.0F));
 
-            VertexConsumer vertexconsumer = p_116616_.getBuffer(RenderType.entityTranslucent(new ResourceLocation(CCReference.MOD_ID, "textures/cape/" + texture.toLowerCase() + ".png")));
+            VertexConsumer vertexconsumer = p_116616_.getBuffer(RenderType.entityTranslucent(new ResourceLocation(CCReference.MOD_ID, "textures/cape/cape_" + patternID + ".png")));
             this.getParentModel().renderCloak(p_116615_, vertexconsumer, p_116617_, OverlayTexture.NO_OVERLAY);
             p_116615_.popPose();
             ci.cancel();

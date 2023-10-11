@@ -22,4 +22,6 @@ public class InitFluids {
     public static final FluidObject<ForgeFlowingFluid> ACACIA_EXTRACT = FLUIDS.register("acacia_extract", ModelFluidAttributes.builder().sound(SoundEvents.BUCKET_FILL, SoundEvents.BUCKET_EMPTY).density(1200).viscosity(1200).temperature(336), Material.WATER, 0);
     public static final FluidObject<ForgeFlowingFluid> SWEETENED_ACACIA_EXTRACT = FLUIDS.register("sweetened_acacia_extract", ModelFluidAttributes.builder().sound(SoundEvents.BUCKET_FILL, SoundEvents.BUCKET_EMPTY).density(1200).viscosity(1200).temperature(336), Material.WATER, 0);
     public static final FluidObject<ForgeFlowingFluid> MORPHINE = FLUIDS.register("morphine", ModelFluidAttributes.builder().sound(SoundEvents.BUCKET_FILL, SoundEvents.BUCKET_EMPTY).density(1200).viscosity(1200).temperature(336), Material.WATER, 0);
+    public static final FluidObject<ForgeFlowingFluid> AMMONIUM_SULFATE_SOLUTION = FLUIDS.register("ammonium_sulfate_solution", ModelFluidAttributes.builder().sound(SoundEvents.BUCKET_FILL, SoundEvents.BUCKET_EMPTY).density(1200).viscosity(1200).temperature(336), Material.WATER, 0);
+    public static final FluidObject<ForgeFlowingFluid> CRYSTAL_BLUE_DYE = FLUIDS.register("crystal_blue_dye", ModelFluidAttributes.builder().sound(SoundEvents.BUCKET_FILL, SoundEvents.BUCKET_EMPTY).density(1200).viscosity(1200).temperature(336), Material.WATER, 0);
 }

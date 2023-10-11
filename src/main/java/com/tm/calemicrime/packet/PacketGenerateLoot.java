@@ -35,8 +35,8 @@ public class PacketGenerateLoot {
 
             if (player != null) {
 
-                ItemStack[] stacks = new ItemStack[16];
-                int[] rarities = new int[16];
+                ItemStack[] stacks = new ItemStack[32];
+                int[] rarities = new int[32];
 
                 for (int i = 0; i < stacks.length; i++) {
                     LootBoxFile.LootEntry lootBoxEntry = LootBoxFile.getLootBoxReward(player, pool);

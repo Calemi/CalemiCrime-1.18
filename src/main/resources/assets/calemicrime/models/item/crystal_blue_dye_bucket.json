@@ -1,0 +1,6 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "calemicrime:items/crystal_blue_dye_bucket"
+  }
+}

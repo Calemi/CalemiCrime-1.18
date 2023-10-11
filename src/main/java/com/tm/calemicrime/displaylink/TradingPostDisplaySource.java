@@ -30,7 +30,7 @@ public class TradingPostDisplaySource  extends DisplaySource {
 
             String tradeType = post.buyMode ? "Buying: " : "Selling: ";
             text.add(new TextComponent(tradeType + post.tradeAmount + "x " + post.getStackForSale().getDisplayName().getString()));
-            text.add(new TextComponent("Price: " + CurrencyHelper.formatCurrency(post.tradePrice, true).getString()));
+            text.add(new TextComponent("Price: " + CurrencyHelper.formatCurrency(post.price.getPrice(), true).getString()));
 
             String locationLabel = displayLinkContext.sourceConfig().getString("Label");
             if (locationLabel.isEmpty()) {

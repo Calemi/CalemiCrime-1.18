@@ -9,11 +9,11 @@ import java.util.UUID;
 
 public class RegionTeamHelper {
 
-    public static RegionTeam getRegionTeam(UUID id) {
+    public static RegionTeam getTeam(UUID teamID) {
 
         for (RegionTeam team : RegionTeamsFile.teams) {
 
-            if (team.getId().equals(id)) {
+            if (team.getId().equals(teamID)) {
                 return team;
             }
         }
@@ -21,7 +21,7 @@ public class RegionTeamHelper {
         return null;
     }
 
-    public static RegionTeam getRegionTeam(String teamName) {
+    public static RegionTeam getTeam(String teamName) {
 
         for (RegionTeam team : RegionTeamsFile.teams) {
 
@@ -33,7 +33,7 @@ public class RegionTeamHelper {
         return null;
     }
 
-    public static RegionTeam getRegionTeam(Player player) {
+    public static RegionTeam getTeam(Player player) {
 
         for (RegionTeam team : RegionTeamsFile.teams) {
 
@@ -48,13 +48,28 @@ public class RegionTeamHelper {
         return null;
     }
 
-    public static boolean hasRegionTeam(Player player) {
-        return getRegionTeam(player) != null;
+    public static RegionTeam getTeamByPlayerID(UUID playerID) {
+
+        for (RegionTeam team : RegionTeamsFile.teams) {
+
+            for (RegionTeamMember teamMember : team.getMembers()) {
+
+                if (teamMember.getID().equals(playerID)) {
+                    return team;
+                }
+            }
+        }
+
+        return null;
     }
 
-    public static RegionTeamMember getRegionTeamMembership(Player player) {
+    public static boolean hasTeam(Player player) {
+        return getTeam(player) != null;
+    }
 
-        RegionTeam team = getRegionTeam(player);
+    public static RegionTeamMember getTeamMembership(Player player) {
+
+        RegionTeam team = getTeam(player);
 
         if (team == null) {
             return null;

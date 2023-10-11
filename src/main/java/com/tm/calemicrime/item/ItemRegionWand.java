@@ -6,6 +6,7 @@ import com.tm.calemicrime.blockentity.BlockEntityMineGenerator;
 import com.tm.calemicrime.blockentity.BlockEntityRadiationProjector;
 import com.tm.calemicrime.blockentity.BlockEntityRegionProtector;
 import com.tm.calemicrime.main.CalemiCrime;
+import com.tm.calemicrime.util.NotifyHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
@@ -68,18 +69,18 @@ public class ItemRegionWand extends Item {
         Location position_2 = getPosition(level, context.getItemInHand(), 2);
 
         if (position_1 != null && position_2 != null && location.getBlockEntity() instanceof BlockEntityRegionProtector regionProtector) {
-            regionProtector.setRegion(new AABB(position_1.getBlockPos(), position_2.getBlockPos()));
-            if (level.isClientSide()) player.sendMessage(new TextComponent(ChatFormatting.GREEN + "Transferred positions to Region Protector"), Util.NIL_UUID);
+            regionProtector.profile.setRegion(new AABB(position_1.getBlockPos(), position_2.getBlockPos()));
+            NotifyHelper.successHotbar(player, "Transferred positions to Region Protector");
         }
 
         else if (position_1 != null && position_2 != null && location.getBlockEntity() instanceof BlockEntityMineGenerator mineGenerator) {
             mineGenerator.setRegion(new AABB(position_1.getBlockPos(), position_2.getBlockPos()));
-            if (level.isClientSide()) player.sendMessage(new TextComponent(ChatFormatting.GREEN + "Transferred positions to Mine Generator"), Util.NIL_UUID);
+            NotifyHelper.successHotbar(player, "Transferred positions to Mine Generator");
         }
 
         else if (position_1 != null && position_2 != null && location.getBlockEntity() instanceof BlockEntityRadiationProjector radiationProjector) {
             radiationProjector.setRegion(new AABB(position_1.getBlockPos(), position_2.getBlockPos()));
-            if (level.isClientSide()) player.sendMessage(new TextComponent(ChatFormatting.GREEN + "Transferred positions to Radiation Projector"), Util.NIL_UUID);
+            NotifyHelper.successHotbar(player, "Transferred positions to Radiation Projector");
         }
 
         else if (player.isCrouching()) {
@@ -91,8 +92,6 @@ public class ItemRegionWand extends Item {
             setPosition(context.getItemInHand(), 1, location);
             if (level.isClientSide()) player.sendMessage(new TextComponent(ChatFormatting.GREEN + "Set Position 1 to " + location), Util.NIL_UUID);
         }
-
-        SoundHelper.playSimple(player, SoundEvents.UI_BUTTON_CLICK);
 
         return InteractionResult.SUCCESS;
     }

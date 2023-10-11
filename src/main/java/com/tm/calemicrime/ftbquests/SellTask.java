@@ -2,17 +2,29 @@ package com.tm.calemicrime.ftbquests;
 
 import com.tm.calemicrime.init.InitTaskTypes;
 import dev.ftb.mods.ftblibrary.config.ConfigGroup;
+import dev.ftb.mods.ftblibrary.icon.Icon;
+import dev.ftb.mods.ftblibrary.icon.IconAnimation;
+import dev.ftb.mods.ftblibrary.icon.ItemIcon;
 import dev.ftb.mods.ftblibrary.math.Bits;
+import dev.ftb.mods.ftbquests.item.FTBQuestsItems;
 import dev.ftb.mods.ftbquests.net.FTBQuestsNetHandler;
 import dev.ftb.mods.ftbquests.quest.Quest;
 import dev.ftb.mods.ftbquests.quest.task.Task;
 import dev.ftb.mods.ftbquests.quest.task.TaskType;
 import dev.ftb.mods.ftbquests.util.NBTUtils;
+import dev.latvian.mods.itemfilters.api.ItemFiltersAPI;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 public class SellTask extends Task {
 
@@ -81,5 +93,38 @@ public class SellTask extends Task {
         super.getConfig(config);
         config.addItemStack("item", item, v -> item = v, ItemStack.EMPTY, true, false).setNameKey("ftbquests.task.calemicrime.sell");
         config.addLong("count", count, v -> count = v, 1, 1, Long.MAX_VALUE).setNameKey("ftbquests.task.ftbquests.item.count");
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    public MutableComponent getAltTitle() {
+        return new TextComponent("Sell x" + count + " " + item.getHoverName().getString());
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    public Icon getAltIcon() {
+        List<Icon> icons = new ArrayList();
+        Iterator var2 = this.getValidDisplayItems().iterator();
+
+        while(var2.hasNext()) {
+            ItemStack stack = (ItemStack)var2.next();
+            ItemStack copy = stack.copy();
+            copy.setCount(1);
+            Icon icon = ItemIcon.getItemIcon(copy);
+            if (!icon.isEmpty()) {
+                icons.add(icon);
+            }
+        }
+
+        if (icons.isEmpty()) {
+            return ItemIcon.getItemIcon((Item) FTBQuestsItems.MISSING_ITEM.get());
+        } else {
+            return IconAnimation.fromList(icons, false);
+        }
+    }
+
+    public List<ItemStack> getValidDisplayItems() {
+        List<ItemStack> list = new ArrayList();
+        ItemFiltersAPI.getDisplayItemStacks(this.item, list);
+        return list;
     }
 }

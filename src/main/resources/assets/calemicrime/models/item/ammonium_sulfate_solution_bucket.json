@@ -1,0 +1,6 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "calemicrime:items/ammonium_sulfate_solution_bucket"
+  }
+}

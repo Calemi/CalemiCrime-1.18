@@ -12,13 +12,12 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.item.ShearsItem;
-import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.ItemLike;
-import net.minecraft.world.level.Level;
+import net.minecraft.world.level.*;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
@@ -28,13 +27,14 @@ import java.util.Random;
 
 public abstract class BlockBushPlant extends CropBlock implements BonemealableBlock {
 
+    public static final BooleanProperty ROOT = BooleanProperty.create("root");
     public static final int MAX_AGE = 7;
 
     private static final VoxelShape SHAPE = Block.box(2.0D, 2.0D, 2.0D, 14.0D, 16.0D, 14.0D);
 
     public BlockBushPlant() {
         super(Properties.of(Material.PLANT).noCollission().randomTicks().instabreak().sound(SoundType.CROP));
-        registerDefaultState(stateDefinition.any().setValue(AGE, 0));
+        registerDefaultState(stateDefinition.any().setValue(ROOT, true).setValue(AGE, 0));
     }
 
     public abstract ItemStack getHarvest();
@@ -64,7 +64,7 @@ public abstract class BlockBushPlant extends CropBlock implements BonemealableBl
     private void grow(Level level, BlockPos pos, BlockState state, int growth) {
 
         if (canPlacePlantAbove(level, pos)) {
-            level.setBlock(pos.above(), state, 2);
+            level.setBlock(pos.above(), state.setValue(ROOT, false), 2);
         }
 
         else if (!isMaxAge(state)) {
@@ -123,10 +123,24 @@ public abstract class BlockBushPlant extends CropBlock implements BonemealableBl
     }
 
     @Override
-    protected boolean mayPlaceOn(BlockState placedOnState, BlockGetter level, BlockPos placedOnPos) {
+    public boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
+        BlockPos placedOnPos = pos.below();
+        BlockState placedOnState = level.getBlockState(placedOnPos);
+
+        if (!placedOnState.is(Blocks.FARMLAND)) {
+            return false;
+        }
+
+        return (level.getRawBrightness(pos, 0) >= 8 || level.canSeeSky(pos));
+    }
+
+    @Override
+    public BlockState updateShape(BlockState state, Direction facing, BlockState facingStage, LevelAccessor level, BlockPos currentPos, BlockPos facingPos) {
+        BlockPos placedOnPos = currentPos.below();
+        BlockState placedOnState = level.getBlockState(placedOnPos);
         boolean isPlacedOnFarmland = placedOnState.is(Blocks.FARMLAND);
         boolean isPlacedOnItself = placedOnState.is(this);
-        return isPlacedOnFarmland || isPlacedOnItself;
+        return !isPlacedOnFarmland && !isPlacedOnItself ? Blocks.AIR.defaultBlockState() : state;
     }
 
     @Override
@@ -142,5 +156,11 @@ public abstract class BlockBushPlant extends CropBlock implements BonemealableBl
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
         return SHAPE;
+    }
+
+    @Override
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+        builder.add(ROOT);
+        builder.add(AGE);
     }
 }

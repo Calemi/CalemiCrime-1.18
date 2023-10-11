@@ -18,10 +18,14 @@ import com.tm.calemicrime.packet.CCPacketHandler;
 import com.tm.calemicrime.tab.CCTab;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
+import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.commands.synchronization.ArgumentTypes;
 import net.minecraft.commands.synchronization.EmptyArgumentSerializer;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.item.CreativeModeTab;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -53,6 +57,7 @@ public class CalemiCrime {
 
     public static final DamageSource BLACK_TAR_EXPIRE = (new DamageSource("black_tar_expire")).bypassArmor();
     public static final DamageSource RADIATION = (new DamageSource("radiation")).bypassArmor();
+    public static final DamageSource COMBAT_LOG = (new DamageSource("combat_log")).bypassArmor();
 
     public static boolean isCuriosLoaded = false;
 
@@ -68,7 +73,7 @@ public class CalemiCrime {
 
         MOD_EVENT_BUS = FMLJavaModLoadingContext.get().getModEventBus();
         MOD_EVENT_BUS.addListener(this::onCommonSetup);
-        MOD_EVENT_BUS.addListener(this::onClientSetup);
+        MOD_EVENT_BUS.register(new ClientSetupEvent());
         MOD_EVENT_BUS.addListener(this::onSetupComplete);
 
         InitItems.init();
@@ -80,13 +85,14 @@ public class CalemiCrime {
         InitSounds.SOUNDS.register(MOD_EVENT_BUS);
         InitTaskTypes.init();
 
-        PreventBlockPlaceListFile.init();
-        PreventItemUseListFile.init();
         RentAcceptorTypesFile.init();
         LootBoxFile.init();
         PlotsFile.init();
         DryingRackRecipesFile.init();
         RegionTeamsFile.init();
+        UnstuckLocationsFile.init();
+        DirtyFile.init();
+        PlotBlockPlaceLimitFile.init();
 
         MinecraftForge.EVENT_BUS.register(this);
 
@@ -99,34 +105,19 @@ public class CalemiCrime {
         MinecraftForge.EVENT_BUS.register(new RegionProtectorEvents());
         MinecraftForge.EVENT_BUS.register(new MiscPreventionEvents());
         MinecraftForge.EVENT_BUS.register(new ToxicItemEvents());
-        MinecraftForge.EVENT_BUS.register(new FilePreventionEvents());
         MinecraftForge.EVENT_BUS.register(new DrugEvents());
         MinecraftForge.EVENT_BUS.register(new ItemTooltipEvents());
-        MinecraftForge.EVENT_BUS.register(new NiftyEvents());
         MinecraftForge.EVENT_BUS.register(new VehicleEvents());
         MinecraftForge.EVENT_BUS.register(new ItemTradeEventListener());
+        MinecraftForge.EVENT_BUS.register(new TeamRemoveEvents());
+        MinecraftForge.EVENT_BUS.register(new RegionProfilesCleanEvents());
+        MinecraftForge.EVENT_BUS.register(new RegionTeamRentAcceptorsCleanEvents());
+        MinecraftForge.EVENT_BUS.register(new CombatLogEvent());
 
         ArgumentTypes.register("cc:team", RegionTeamArgument.class, new EmptyArgumentSerializer<>(RegionTeamArgument::team));
     }
 
-    private void onClientSetup(final FMLClientSetupEvent event) {
-
-        MenuScreens.register(InitMenuTypes.RENT_ACCEPTOR.get(), ScreenRentAcceptor::new);
-        MenuScreens.register(InitMenuTypes.MINE_GENERATOR.get(), ScreenMineGenerator::new);
-
-        InitBlockRenderTypes.init();
-
-        BlockEntityRenderers.register(InitBlockEntityTypes.REGION_PROTECTOR.get(), RenderRegionProtector::new);
-        BlockEntityRenderers.register(InitBlockEntityTypes.MINE_GENERATOR.get(), RenderMineGenerator::new);
-        BlockEntityRenderers.register(InitBlockEntityTypes.RADIATION_PROJECTOR.get(), RenderRadiationProjector::new);
-        BlockEntityRenderers.register(InitBlockEntityTypes.DRYING_RACK.get(), RenderDryingRack::new);
-
-        ModelOverrides.register(InitItems.DONOR_PISTOL.get(), new SimpleModel(GunModels.DONOR_PISTOL::getModel));
-        ModelOverrides.register(InitItems.R99.get(), new SimpleModel(GunModels.R99::getModel));
-    }
-
     private void onSetupComplete(final FMLLoadCompleteEvent event) {
-        InitBrewingRecipes.init();
         InitCompostables.init();
         InitDisplayLinkBehaviours.init();
     }

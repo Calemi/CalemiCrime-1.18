@@ -2,9 +2,7 @@ package com.tm.calemicrime.client.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.tm.calemicore.util.render.RenderedFloatingItemStack;
 import com.tm.calemicrime.blockentity.BlockEntityMineGenerator;
-import com.tm.calemicrime.blockentity.BlockEntityRegionProtector;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -23,7 +21,9 @@ public class RenderMineGenerator implements BlockEntityRenderer<BlockEntityMineG
     @Override
     public void render(BlockEntityMineGenerator mineGenerator, float partialTicks, PoseStack poseStack, MultiBufferSource buffer, int packedLight, int packedOverlay) {
 
-        if (Minecraft.getInstance().player.isCreative() && Minecraft.getInstance().getEntityRenderDispatcher().shouldRenderHitBoxes()) {
+        Minecraft mc = Minecraft.getInstance();
+
+        if ((mc.player.isCreative() || mc.player.isSpectator()) && mc.getEntityRenderDispatcher().shouldRenderHitBoxes()) {
 
             if (mineGenerator != null && mineGenerator.getRegionOffset() != null && mineGenerator.getRegionSize() != null) {
                 VertexConsumer vertexconsumer = buffer.getBuffer(RenderType.lines());
@@ -31,6 +31,10 @@ public class RenderMineGenerator implements BlockEntityRenderer<BlockEntityMineG
                         mineGenerator.getRegionOffset().x, mineGenerator.getRegionOffset().y, mineGenerator.getRegionOffset().z,
                         mineGenerator.getRegionOffset().x + mineGenerator.getRegionSize().x, mineGenerator.getRegionOffset().y + mineGenerator.getRegionSize().y, mineGenerator.getRegionOffset().z + mineGenerator.getRegionSize().z,
                         1F, 1F, 0F, 1F);
+                LevelRenderer.renderLineBox(poseStack, vertexconsumer,
+                        0, 0, 0, 1, 1, 1,
+                        1F, 1F, 0F, 1F);
+
             }
         }
     }
@@ -47,6 +51,6 @@ public class RenderMineGenerator implements BlockEntityRenderer<BlockEntityMineG
 
     @Override
     public int getViewDistance() {
-        return 96;
+        return 5000;
     }
 }

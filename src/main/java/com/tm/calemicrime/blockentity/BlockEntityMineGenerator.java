@@ -4,6 +4,7 @@ import com.tm.calemicore.util.Location;
 import com.tm.calemicore.util.blockentity.BlockEntityContainerBase;
 import com.tm.calemicrime.init.InitBlockEntityTypes;
 import com.tm.calemicrime.menu.MenuMineGenerator;
+import com.tm.calemicrime.util.NotifyHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
@@ -32,6 +33,8 @@ public class BlockEntityMineGenerator extends BlockEntityContainerBase {
 
     private Location regionOffset = new Location(getLevel(), 0, 0, 0);
     private Location regionSize = new Location(getLevel(), 16, 16, 16);
+
+    private boolean outerLayer = false;
 
     private int remainingTimeToFill;
 
@@ -75,6 +78,14 @@ public class BlockEntityMineGenerator extends BlockEntityContainerBase {
         regionSize = value;
     }
 
+    public boolean hasOuterLayer() {
+        return outerLayer;
+    }
+
+    public void setHasOuterLayer(boolean value) {
+        outerLayer = value;
+    }
+
     public int getRemainingTimeToFill() {
         return remainingTimeToFill;
     }
@@ -84,10 +95,6 @@ public class BlockEntityMineGenerator extends BlockEntityContainerBase {
     }
 
     public static void tick(Level level, BlockPos pos, BlockState state, BlockEntityMineGenerator mineGenerator) {
-
-        if (level.isClientSide()) {
-            return;
-        }
 
         if (mineGenerator.getRemainingTimeToFill() > 0) {
 
@@ -104,11 +111,13 @@ public class BlockEntityMineGenerator extends BlockEntityContainerBase {
         }
 
         else {
-            mineGenerator.fillRegion();
+            if (!level.isClientSide()) mineGenerator.fillRegion();
             mineGenerator.setRemainingTimeToFill(MAX_TIME_TO_FILL);
         }
 
-        if (level.getGameTime() % 20 * 10 == 0) {
+        if (!level.isClientSide() && level.getGameTime() % 20 * 10 == 0) {
+
+            mineGenerator.markUpdated();
 
             if (mineGenerator.isRegionClear()) {
                 mineGenerator.fillRegion();
@@ -123,7 +132,7 @@ public class BlockEntityMineGenerator extends BlockEntityContainerBase {
         for (Player player : playerList) {
 
             if (getRegion().contains(player.position().add(0, 1, 0))) {
-                player.sendMessage(new TextComponent(ChatFormatting.RED + "This area will regenerate in " + seconds + " second(s). Please move out or you will suffocate!"), Util.NIL_UUID);
+                NotifyHelper.warnChat(player, "This area will regenerate in " + seconds + " second(s). Please move out or you will suffocate!");
             }
         }
     }
@@ -134,14 +143,60 @@ public class BlockEntityMineGenerator extends BlockEntityContainerBase {
             return;
         }
 
-        for (int x = (int) getRegion().minX; x < (int) getRegion().maxX; x++) {
+        int minX = (int) getRegion().minX;
+        int maxX = (int) getRegion().maxX;
+        int minY = (int) getRegion().minY;
+        int maxY = (int) getRegion().maxY;
+        int minZ = (int) getRegion().minZ;
+        int maxZ = (int) getRegion().maxZ;
 
-            for (int y = (int) getRegion().minY; y < (int) getRegion().maxY; y++) {
+        for (int x = minX; x < maxX; x++) {
 
-                for (int z = (int) getRegion().minZ; z < (int) getRegion().maxZ; z++) {
+            for (int y = minY; y < maxY; y++) {
+
+                for (int z = minZ; z < maxZ; z++) {
 
                     level.setBlock(new BlockPos(x, y, z), selectRandomBlock().defaultBlockState(), 3);
                 }
+            }
+        }
+
+        if (!hasOuterLayer()) {
+            return;
+        }
+
+        ItemStack firstStack = items.get(0);
+
+        if (firstStack.isEmpty() || !(firstStack.getItem() instanceof BlockItem block)){
+            return;
+        }
+
+        BlockState blockState = Block.byItem(firstStack.getItem()).defaultBlockState();
+
+        for (int x = minX; x < maxX; x++) {
+
+            for (int y = minY; y < maxY; y++) {
+
+                level.setBlock(new BlockPos(x, y, minZ), blockState, 3);
+                level.setBlock(new BlockPos(x, y, maxZ - 1), blockState, 3);
+            }
+        }
+
+        for (int x = minX; x < maxX; x++) {
+
+            for (int z = minZ; z < maxZ; z++) {
+
+                level.setBlock(new BlockPos(x, minY, z), blockState, 3);
+                level.setBlock(new BlockPos(x, maxY - 1, z), blockState, 3);
+            }
+        }
+
+        for (int z = minZ; z < maxZ; z++) {
+
+            for (int y = minY; y < maxY; y++) {
+
+                level.setBlock(new BlockPos(minX, y, z), blockState, 3);
+                level.setBlock(new BlockPos(maxX - 1, y, z), blockState, 3);
             }
         }
     }
@@ -150,7 +205,10 @@ public class BlockEntityMineGenerator extends BlockEntityContainerBase {
 
         int totalWeight = 0;
 
-        for (ItemStack item : items) {
+        for (int i = hasOuterLayer() ? 1 : 0; i < items.size(); i++) {
+
+            ItemStack item = items.get(i);
+
             if (!item.isEmpty() && item.getItem() instanceof BlockItem) totalWeight += item.getCount();
         }
 
@@ -158,7 +216,9 @@ public class BlockEntityMineGenerator extends BlockEntityContainerBase {
 
             int randomNumber = level.random.nextInt(totalWeight) + 1;
 
-            for (ItemStack item : items) {
+            for (int i = hasOuterLayer() ? 1 : 0; i < items.size(); i++) {
+
+                ItemStack item = items.get(i);
 
                 if (!item.isEmpty() && item.getItem() instanceof BlockItem) {
 
@@ -219,6 +279,7 @@ public class BlockEntityMineGenerator extends BlockEntityContainerBase {
 
         regionOffset = Location.readFromNBT(level, tag.getCompound("RegionOffset"));
         regionSize = Location.readFromNBT(level, tag.getCompound("RegionEdge"));
+        setHasOuterLayer(tag.getBoolean("HasOuterLayer"));
 
         remainingTimeToFill = tag.getInt("Time");
     }
@@ -234,6 +295,8 @@ public class BlockEntityMineGenerator extends BlockEntityContainerBase {
         CompoundTag regionEdgeTag = new CompoundTag();
         regionSize.writeToNBT(regionEdgeTag);
         tag.put("RegionEdge", regionEdgeTag);
+
+        tag.putBoolean("HasOuterLayer", hasOuterLayer());
 
         tag.putInt("Time", remainingTimeToFill);
     }

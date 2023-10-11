@@ -1,0 +1,7 @@
+{
+  "loader": "mantle:fluid_texture",
+  "textures": {
+    "still": "calemicrime:blocks/ammonium_sulfate_solution_still",
+    "flowing": "calemicrime:blocks/ammonium_sulfate_solution_flowing"
+  }
+}

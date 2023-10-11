@@ -3,6 +3,7 @@ package com.tm.calemicrime.util;
 import cofh.thermal.core.item.HazmatArmorItem;
 import com.tm.calemicore.util.helper.SoundHelper;
 import com.tm.calemicrime.init.InitSounds;
+import com.tm.calemicrime.main.CCConfig;
 import com.tm.calemicrime.main.CalemiCrime;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Mth;
@@ -36,7 +37,7 @@ public class HazardHelper {
 
         for (int i = 0; i < 4; i++) {
 
-            int rand = player.getLevel().getRandom().nextInt(100);
+            int rand = player.getLevel().getRandom().nextInt(CCConfig.server.hazmatSuitRadiationDamageChance.get());
 
             if (rand <= radiationStrength * 10) {
 

@@ -28,7 +28,7 @@ public class ItemTradeEventListener {
 
             IItemFilter filter = ItemFiltersAPI.getFilter(sellTask.item);
 
-            if (!data.isCompleted(sellTask)) {
+            if (!data.isCompleted(sellTask) && data.areDependenciesComplete(sellTask.quest)) {
 
                 if (filter != null && filter.filter(sellTask.item, event.getStack())) {
                     data.addProgress(sellTask, event.getAmount());
@@ -56,7 +56,7 @@ public class ItemTradeEventListener {
 
             IItemFilter filter = ItemFiltersAPI.getFilter(buyTask.item);
 
-            if (!data.isCompleted(buyTask)) {
+            if (!data.isCompleted(buyTask) && data.areDependenciesComplete(buyTask.quest)) {
 
                 if (filter != null && filter.filter(buyTask.item, event.getStack())) {
                     data.addProgress(buyTask, event.getAmount());

@@ -65,11 +65,11 @@ public class PacketRentAcceptor {
     }
 
     public PacketRentAcceptor(FriendlyByteBuf buf) {
-        command = buf.readUtf(20).trim();
+        command = buf.readUtf(100).trim();
         pos = new BlockPos(buf.readInt(), buf.readInt(), buf.readInt());
         maxRentTicks = buf.readInt();
         costToFill = buf.readLong();
-        type = buf.readUtf(50).trim();
+        type = buf.readUtf(100).trim();
         fileKey = buf.readUtf(100).trim();
         ruleSetIndex = buf.readInt();
         ruleOverrideIndex = buf.readByte();
@@ -78,13 +78,13 @@ public class PacketRentAcceptor {
     }
 
     public void toBytes (FriendlyByteBuf buf) {
-        buf.writeUtf(command, 20);
+        buf.writeUtf(command, 100);
         buf.writeInt(pos.getX());
         buf.writeInt(pos.getY());
         buf.writeInt(pos.getZ());
         buf.writeInt(maxRentTicks);
         buf.writeLong(costToFill);
-        buf.writeUtf(type, 50);
+        buf.writeUtf(type, 100);
         buf.writeUtf(fileKey, 100);
         buf.writeInt(ruleSetIndex);
         buf.writeByte(ruleOverrideIndex);
@@ -124,7 +124,7 @@ public class PacketRentAcceptor {
 
                         //TEAM CHECK
 
-                        if (RegionTeamHelper.getRegionTeam(player) == null) {
+                        if (RegionTeamHelper.getTeam(player) == null) {
                             player.sendMessage(new TextComponent(ChatFormatting.RED + "You need to create a team first!"), Util.NIL_UUID);
                             player.sendMessage(new TextComponent(ChatFormatting.RED + "Use: /crime team create <teamname>"),  Util.NIL_UUID);
                             return;
@@ -132,7 +132,7 @@ public class PacketRentAcceptor {
 
                         if (residentTeam != null) {
 
-                            if (!RegionTeamHelper.getRegionTeam(player).equals(residentTeam) && !player.isCreative()) {
+                            if (!RegionTeamHelper.getTeam(player).equals(residentTeam) && !player.isCreative()) {
                                 player.sendMessage(new TextComponent(ChatFormatting.RED + "You are not a member of the team!"), Util.NIL_UUID);
                                 return;
                             }
@@ -189,14 +189,14 @@ public class PacketRentAcceptor {
                         }
 
                         rentAcceptor.refillRentTime();
-                        rentAcceptor.setResidentTeam(RegionTeamHelper.getRegionTeam(player));
+                        rentAcceptor.setResidentTeam(RegionTeamHelper.getTeam(player));
                     }
 
                     else if (command.equalsIgnoreCase("stoprent")) {
 
-                        if (residentTeam != null) {
+                        if (residentTeam != null && !player.isCreative()) {
 
-                            if (!RegionTeamHelper.getRegionTeam(player).equals(residentTeam) && !player.isCreative()) {
+                            if (!RegionTeamHelper.getTeam(player).equals(residentTeam)) {
 
                                 player.sendMessage(new TextComponent(ChatFormatting.RED + "You are not a member of the team!"), Util.NIL_UUID);
 

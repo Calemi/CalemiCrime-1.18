@@ -117,12 +117,10 @@ public class InitItems {
 
     //LSD
     public static final RegistryObject<Item> ERGOT = regItem("ergot", () -> new Item(new Item.Properties().tab(CalemiCrime.TAB)));
-    public static final RegistryObject<Item> ERGOTAMINE_BOTTLE = regItem("ergotamine_bottle", () -> new ItemToxic(new Item.Properties().tab(CalemiCrime.TAB)));
     public static final RegistryObject<Item> LSD = regItem("lsd", ItemLSD::new);
 
     //METH
     public static final RegistryObject<Item> PSEUDOEPHEDRINE = regItem("pseudoephedrine", () -> new Item(new Item.Properties().tab(CalemiCrime.TAB)));
-    public static final RegistryObject<Item> METHYLSULFONYLMETHANE_BOTTLE = regItem("methylsulfonylmethane_bottle", () -> new Item(new Item.Properties().tab(CalemiCrime.TAB)));
     public static final RegistryObject<Item> UNPROCESSED_METH = regItem("unprocessed_meth", () -> new Item(new Item.Properties().tab(CalemiCrime.TAB)));
     public static final RegistryObject<Item> METH = regItem("meth", ItemMeth::new);
 
@@ -133,8 +131,6 @@ public class InitItems {
     //KETAMINE
     public static final RegistryObject<Item> SILICA_DUST = regItem("silica_dust", () -> new Item(new Item.Properties().tab(CalemiCrime.TAB)));
     public static final RegistryObject<Item> SILICA_GEL = regItem("silica_gel", () -> new Item(new Item.Properties().tab(CalemiCrime.TAB)));
-    public static final RegistryObject<Item> ACACIA_EXTRACT_BOTTLE = regItem("acacia_extract_bottle", () -> new Item(new Item.Properties().tab(CalemiCrime.TAB)));
-    public static final RegistryObject<Item> SWEETENED_ACACIA_EXTRACT_BOTTLE = regItem("sweetened_acacia_extract_bottle", () -> new Item(new Item.Properties().tab(CalemiCrime.TAB)));
     public static final RegistryObject<Item> KETAMINE = regItem("ketamine", ItemKetamine::new);
 
     //COCAINE
@@ -146,9 +142,6 @@ public class InitItems {
 
     //BLACK TAR HEROIN
     public static final RegistryObject<Item> BLACK_TAR_HEROIN = regItem("black_tar_heroin", ItemBlackTarHeroin::new);
-
-    //MORPHINE
-    public static final RegistryObject<Item> MORPHINE_BOTTLE = regItem("morphine_bottle", () -> new Item(new Item.Properties().tab(CalemiCrime.TAB)));
 
     //COSMETICS
     public static final RegistryObject<Item> LOOT_BOX = regItem("loot_box", ItemLootBox::new);
@@ -165,6 +158,8 @@ public class InitItems {
 
     public static final RegistryObject<BuddycardBinderItem> BINDER = ITEMS.register("buddycard_binder_crime", () -> new BuddycardBinderItem(CRIME_REQUIREMENT, BuddycardsItems.DEFAULT_BINDER_PROPERTIES));
     public static final RegistryObject<BuddysteelSetMedalItem> MEDAL = ITEMS.register("buddysteel_medal_crime", () -> new BuddysteelSetMedalItem(CRIME_REQUIREMENT, MedalTypes.CRIME_SET, CRIME_SET, BuddycardsItems.DEFAULT_CURIO_PROPERTIES));
+
+    //public static final RegistryObject<Item> TEST = regItem("test", ItemTest::new);
 
 
     public static RegistryObject<Block> regBlock(String name, CreativeModeTab tab, final Supplier<? extends Block> sup) {

@@ -1,0 +1,7 @@
+{
+  "loader": "mantle:fluid_texture",
+  "textures": {
+    "still": "calemicrime:blocks/crystal_blue_dye_still",
+    "flowing": "calemicrime:blocks/crystal_blue_dye_flowing"
+  }
+}

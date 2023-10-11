@@ -1,6 +1,6 @@
 package com.tm.calemicrime.mixin;
 
-import com.tm.calemicrime.accessor.PlaneDataSaver;
+import com.tm.calemicrime.accessor.VehicleAccessor;
 import net.minecraft.nbt.CompoundTag;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -11,7 +11,7 @@ import xyz.przemyk.simpleplanes.entities.PlaneEntity;
 import java.util.UUID;
 
 @Mixin(PlaneEntity.class)
-public abstract class PlaneNBTMixin implements PlaneDataSaver {
+public abstract class PlaneNBTMixin implements VehicleAccessor {
 
     public UUID ownerID;
 

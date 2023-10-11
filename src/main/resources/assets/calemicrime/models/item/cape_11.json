@@ -1,0 +1,6 @@
+{
+  "parent": "calemicrime:item/cape_model",
+  "textures": {
+    "layer0": "calemicrime:cape/cape_11"
+  }
+}

@@ -1,9 +1,0 @@
-{
-  "type": "minecraft:smelting",
-  "ingredient": {
-    "item": "calemicrime:unprocessed_meth"
-  },
-  "result": "calemicrime:sheet_of_meth",
-  "experience": 0.3,
-  "cookingtime": 200
-}

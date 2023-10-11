@@ -52,6 +52,10 @@ public class DrugEvents {
     @SubscribeEvent
     public void onUpdate(LivingEvent.LivingUpdateEvent event) {
 
+        if (!(event.getEntityLiving() instanceof Player)) {
+            return;
+        }
+
         Level level = event.getEntityLiving().getLevel();
 
         if (level.isClientSide() && level.getGameTime() % 10 == 0) {

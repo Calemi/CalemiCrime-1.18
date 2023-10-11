@@ -2,7 +2,8 @@ package com.tm.calemicrime.blockentity;
 
 import com.tm.calemicore.util.Location;
 import com.tm.calemicore.util.blockentity.BlockEntityContainerBase;
-import com.tm.calemicore.util.helper.LogHelper;
+import com.tm.calemicrime.file.DirtyFile;
+import com.tm.calemicrime.file.PlotsFile;
 import com.tm.calemicrime.init.InitBlockEntityTypes;
 import com.tm.calemicrime.main.CCReference;
 import com.tm.calemicrime.menu.MenuRentAcceptor;
@@ -12,13 +13,11 @@ import com.tm.calemicrime.util.RegionTeamHelper;
 import com.tm.calemieconomy.blockentity.BlockEntityBank;
 import com.tm.calemieconomy.blockentity.ICurrencyNetworkUnit;
 import com.tm.calemieconomy.util.helper.NetworkHelper;
-import dev.ftb.mods.ftbteams.data.TeamManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -38,6 +37,8 @@ public class BlockEntityRentAcceptor extends BlockEntityContainerBase implements
     public Location bankLocation;
 
     public final RegionRuleSet regionRuleSetOverride = new RegionRuleSet();
+
+    public long dirtyDate = 0;
 
     public UUID residentTeamID;
     public String residentTeamName = "";
@@ -59,8 +60,29 @@ public class BlockEntityRentAcceptor extends BlockEntityContainerBase implements
         super(InitBlockEntityTypes.RENT_ACCEPTOR.get(), pos, state);
     }
 
+    public void injectValuesFromFile() {
+
+        if (fileKey.equals("")) {
+            return;
+        }
+
+        PlotsFile.PlotEntry entry = PlotsFile.list.get(fileKey);
+
+        if (entry == null) {
+            System.out.println("[" + CCReference.MOD_NAME + "]: Could not find plot: " + fileKey + " in file!");
+            return;
+        }
+
+        rentType = entry.getRentType();
+        costToFillRentTime = entry.getRentCost();
+        maxRentHours = entry.getRentTimeHours();
+        autoPlotReset = entry.isAutoReset();
+        plotResetTimeSeconds = entry.getResetTimeSeconds();
+        markUpdated();
+    }
+
     public RegionTeam getResidentTeam() {
-        return RegionTeamHelper.getRegionTeam(residentTeamID);
+        return RegionTeamHelper.getTeam(residentTeamID);
     }
 
     public void setResidentTeam(RegionTeam team) {
@@ -143,20 +165,13 @@ public class BlockEntityRentAcceptor extends BlockEntityContainerBase implements
 
     public static void tick(Level level, BlockPos pos, BlockState state, BlockEntityRentAcceptor rentAcceptor) {
 
-        if (!level.isClientSide() && level.getGameTime() % 20 == 0) {
-            addRentAcceptorToList(rentAcceptor);
-            cleanRegionProtectorList();
-        }
-
         if (rentAcceptor.getRemainingRentSeconds() > 0) {
 
             rentAcceptor.lastRentDepleteTimeSeconds = Integer.MAX_VALUE;
 
             if (!level.isClientSide()) {
 
-                TeamManager manager = TeamManager.INSTANCE;
-
-                if (manager != null && rentAcceptor.getResidentTeam() == null) {
+                if (rentAcceptor.getResidentTeam() == null) {
                     rentAcceptor.emptyRentTime();
                     rentAcceptor.markUpdated();
                     return;
@@ -166,8 +181,19 @@ public class BlockEntityRentAcceptor extends BlockEntityContainerBase implements
 
         else if (rentAcceptor.residentTeamID != null) {
             rentAcceptor.clearResidentTeam();
-            rentAcceptor.markUpdated();
             rentAcceptor.lastRentDepleteTimeSeconds = rentAcceptor.systemTimeSeconds;
+            rentAcceptor.markUpdated();
+        }
+
+        if (!level.isClientSide() && level.getGameTime() % 20 == 0) {
+            addRentAcceptorToList(rentAcceptor);
+            cleanRegionProtectorList();
+
+            if (rentAcceptor.residentTeamID != null) {
+
+                RegionTeam team = RegionTeamHelper.getTeam(rentAcceptor.residentTeamID);
+                team.addRentAcceptorPosition(rentAcceptor);
+            }
         }
 
         if (!level.isClientSide() && level.getGameTime() % 20 == 10) {
@@ -175,22 +201,16 @@ public class BlockEntityRentAcceptor extends BlockEntityContainerBase implements
             rentAcceptor.systemTimeSeconds = System.nanoTime() / 1000000000;
             rentAcceptor.markUpdated();
 
-            if (rentAcceptor.autoPlotReset && rentAcceptor.getResidentTeam() == null && !rentAcceptor.isPlotReset) {
+            if (rentAcceptor.dirtyDate != DirtyFile.dirtyDate) {
+                rentAcceptor.dirtyDate = DirtyFile.dirtyDate;
+                rentAcceptor.injectValuesFromFile();
+            }
 
-                LogHelper.log(CCReference.MOD_NAME, "Deplete: " + rentAcceptor.getSecondsSinceRentDeplete());
+            if (rentAcceptor.autoPlotReset && rentAcceptor.getResidentTeam() == null && !rentAcceptor.isPlotReset) {
 
                 if (rentAcceptor.getSecondsSinceRentDeplete() >= rentAcceptor.plotResetTimeSeconds) {
 
                     rentAcceptor.isPlotReset = true;
-
-                    for (BlockEntityRegionProtector regionProtector : BlockEntityRegionProtector.regionProtectors) {
-
-                        BlockEntityRentAcceptor connectedRentAcceptor = regionProtector.rentAcceptor;
-
-                        if (connectedRentAcceptor != null && connectedRentAcceptor.equals(rentAcceptor)) {
-                            regionProtector.loadPlot((ServerLevel) level);
-                        }
-                    }
                 }
             }
         }
@@ -273,6 +293,8 @@ public class BlockEntityRentAcceptor extends BlockEntityContainerBase implements
 
         regionRuleSetOverride.loadFromNBT(tag);
 
+        dirtyDate = tag.getLong("DirtyDate");
+
         if (tag.hasUUID("ResidentTeam")) residentTeamID = tag.getUUID("ResidentTeam");
         residentTeamName = tag.getString("ResidentTeamName");
         rentType = tag.contains("RentType") ? tag.getString("RentType") : "";
@@ -295,6 +317,9 @@ public class BlockEntityRentAcceptor extends BlockEntityContainerBase implements
         super.saveAdditional(tag);
 
         regionRuleSetOverride.saveToNBT(tag);
+
+        tag.putLong("DirtyDate", dirtyDate);
+
         if (residentTeamID != null) tag.putUUID("ResidentTeam", residentTeamID);
         tag.putString("ResidentTeamName", residentTeamName);
         tag.putString("RentType", rentType);

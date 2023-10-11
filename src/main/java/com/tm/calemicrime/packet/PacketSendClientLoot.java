@@ -10,8 +10,8 @@ import java.util.function.Supplier;
 
 public class PacketSendClientLoot {
 
-    private ItemStack[] stacks = new ItemStack[16];
-    private int[] rarities = new int[16];
+    private ItemStack[] stacks = new ItemStack[32];
+    private int[] rarities = new int[32];
 
     public PacketSendClientLoot() {}
 

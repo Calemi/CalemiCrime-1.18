@@ -1,31 +1,18 @@
 package com.tm.calemicrime.event;
 
 import com.tm.calemicore.util.Location;
-import net.minecraft.world.entity.npc.Villager;
+import net.minecraft.data.worldgen.features.TreeFeatures;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.material.PushReaction;
-import net.minecraftforge.event.entity.EntityMobGriefingEvent;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.event.world.ExplosionEvent;
 import net.minecraftforge.event.world.PistonEvent;
+import net.minecraftforge.event.world.SaplingGrowTreeEvent;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 public class MiscPreventionEvents {
-
-    @SubscribeEvent
-    public void onBlockExploded(ExplosionEvent.Start event) {
-        event.setCanceled(true);
-    }
-
-    @SubscribeEvent
-    public void onMobGrief(EntityMobGriefingEvent event) {
-
-        if (!(event.getEntity() instanceof Villager)) {
-            event.setResult(Event.Result.DENY);
-        }
-    }
 
     @SubscribeEvent
     public void onPistonEvent(PistonEvent.Pre event) {
@@ -49,5 +36,19 @@ public class MiscPreventionEvents {
     @SubscribeEvent
     public void onPistonEvent(BlockEvent.PortalSpawnEvent event) {
         event.setCanceled(true);
+    }
+
+    @SubscribeEvent
+    public void onSaplingGrow(SaplingGrowTreeEvent event) {
+
+        if (event.getFeature() == TreeFeatures.HUGE_BROWN_MUSHROOM || event.getFeature() == TreeFeatures.HUGE_RED_MUSHROOM) {
+            event.setResult(Event.Result.DENY);
+        }
+    }
+
+    @SubscribeEvent
+    public void onSaplingGrow(ExplosionEvent event) {
+        event.setCanceled(true);
+        event.setResult(Event.Result.DENY);
     }
 }

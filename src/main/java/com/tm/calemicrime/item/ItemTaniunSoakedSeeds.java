@@ -26,6 +26,6 @@ public class ItemTaniunSoakedSeeds extends ItemWashable {
     }
 
     public int getUseDuration(ItemStack stack) {
-        return CCConfig.drugs.taniunSoakedSeedsCrackTime.get() * 20;
+        return CCConfig.drugs.taniunSoakedSeedsCrackTimeTicks.get();
     }
 }

@@ -4,11 +4,8 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.tm.calemicore.util.screen.ScreenBase;
 import com.tm.calemicore.util.screen.widget.SmoothButton;
 import com.tm.calemicrime.blockentity.BlockEntityMineGenerator;
-import com.tm.calemicrime.blockentity.BlockEntityRegionProtector;
 import com.tm.calemicrime.packet.CCPacketHandler;
 import com.tm.calemicrime.packet.PacketMineGenerator;
-import com.tm.calemicrime.packet.PacketRegionProtector;
-import com.tm.calemicrime.util.RegionRuleSet;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.TextComponent;
@@ -31,6 +28,8 @@ public class ScreenMineGeneratorOptions extends ScreenBase {
     private EditBox regionSizeYBox;
     private EditBox regionSizeZBox;
 
+    private SmoothButton outerLayerToggle;
+
     public ScreenMineGeneratorOptions(Player player, InteractionHand hand, BlockEntityMineGenerator mineGenerator) {
         super(player, hand);
         this.mineGenerator = mineGenerator;
@@ -52,6 +51,8 @@ public class ScreenMineGeneratorOptions extends ScreenBase {
         regionSizeXBox = initField(mineGenerator.getRegionSize().x, editBoxXOffset, editBoxYOffset + editBoxYSpace);
         regionSizeYBox = initField(mineGenerator.getRegionSize().y, editBoxXOffset + editBoxXSpace, editBoxYOffset + editBoxYSpace);
         regionSizeZBox = initField(mineGenerator.getRegionSize().z, editBoxXOffset + editBoxXSpace * 2, editBoxYOffset + editBoxYSpace);
+
+        outerLayerToggle = addRenderableWidget(new SmoothButton(getScreenX() + editBoxXOffset - 21, getScreenY() + editBoxYOffset + editBoxYSpace + 20, 50, getOuterLayerToggleKey(), (btn) -> toggleOuterLayer()));
     }
 
     private EditBox initField (int value, int x, int y) {
@@ -65,6 +66,18 @@ public class ScreenMineGeneratorOptions extends ScreenBase {
         }
 
         return null;
+    }
+
+    private String getOuterLayerToggleKey() {
+        return mineGenerator.hasOuterLayer() ? "screen.regionprotector.btn.true" : "screen.regionprotector.btn.false";
+    }
+
+    private void toggleOuterLayer() {
+
+        final boolean newValue = !mineGenerator.hasOuterLayer();
+
+        mineGenerator.setHasOuterLayer(newValue);
+        CCPacketHandler.INSTANCE.sendToServer(new PacketMineGenerator("syncouterlayer", mineGenerator.getBlockPos(), new BlockPos(0, 0, 0), new BlockPos(0, 0, 0), newValue));
     }
 
     private void confirmEditBoxes() {
@@ -89,7 +102,7 @@ public class ScreenMineGeneratorOptions extends ScreenBase {
         BlockPos offset = new BlockPos(offsetX, offsetY, offsetZ);
         BlockPos edge = new BlockPos(edgeX, edgeY, edgeZ);
 
-        CCPacketHandler.INSTANCE.sendToServer(new PacketMineGenerator("syncregion", mineGenerator.getBlockPos(), offset, edge));
+        CCPacketHandler.INSTANCE.sendToServer(new PacketMineGenerator("syncregion", mineGenerator.getBlockPos(), offset, edge, false));
     }
 
     private int parseInteger(String value) {
@@ -111,6 +124,8 @@ public class ScreenMineGeneratorOptions extends ScreenBase {
         regionSizeXBox.tick();
         regionSizeYBox.tick();
         regionSizeZBox.tick();
+
+        outerLayerToggle.setMessage(new TranslatableComponent(getOuterLayerToggleKey()));
     }
 
     @Override
@@ -134,6 +149,9 @@ public class ScreenMineGeneratorOptions extends ScreenBase {
 
         TranslatableComponent regionEdgeText = new TranslatableComponent("screen.regionprotector.txt.regionsize");
         minecraft.font.draw(poseStack, regionEdgeText, regionSizeXBox.x, regionSizeXBox.y - editBoxYOffset, 0xFFFFFF);
+
+        TranslatableComponent globalText = new TranslatableComponent("screen.minegenerator.txt.outerlayer");
+        minecraft.font.draw(poseStack, globalText, outerLayerToggle.x, outerLayerToggle.y - editBoxYOffset, 0xFFFFFF);
     }
 
     @Override

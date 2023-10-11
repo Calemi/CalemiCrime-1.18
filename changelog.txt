@@ -1,0 +1,93 @@
+[v2.0.28]
+- Removed all drug withdraw effects except for Black Tar Heroin.
+- Fixed issue with teammates and allies not being able to interact with vehicles if the owner is logged off.
+- Optimised NPCs.
+- Optimised drug event.
+
+[v2.0.27]
+- Fixed crash on server startup.
+
+[v2.0.26]
+- Made Capes Items 3D.
+- Increased the amount of generated visual items the Loot Box screen.
+- Increased FileKey character limit to 100.
+- Attempt #1 to fix Teams sometimes exceeding Rent Type Limit.
+
+[v2.0.25]
+- Prevented explosions again.
+
+[v2.0.24]
+- Fixed Curved Tracks being able to be broken by players in survival.
+- Fixed rent in Rent Acceptors not able to be stopped by players in creative.
+- Fixed toxic items not damaging players when in off-hand.
+- Fixed Mine Generator not syncing with clients (ghost blocks & wrong sound timing).
+- Fixed Region Protectors not working when unloaded.
+
+[v2.0.23]
+- Attempt #1 to fix aircraft items from dropping incorrectly.
+- Made SUVs climb up 2 blocks.
+- Fixed issue with plot reset water-logging blocks.
+- Changed most warning to be above hotbar instead of in chat. Also some are accompanied by sounds.
+
+[v2.0.22]
+- Prevented manual item application outside of plots.
+- Dropping vehicle items from a player that doesn't own them.
+- Prevented Big Mushrooms from growing.
+
+[v2.0.21]
+- Fixed issue with unloaded plots not counting towards a team's plot count.
+
+[v2.0.20]
+- Added Crystal Blue Dye liquid.
+- Removed all bottle items.
+
+[v2.0.19]
+- Added tooltip for drugs to show what effects they provide.
+- Removed explosions & mob griefing preventions.
+
+[v2.0.18]
+- Mine Generators now have an outer layer option.
+- Logging out in PVP will now always kill you.
+- Fixed issue with players within non-PVP zones hurting players inside PVP zones.
+
+[v2.0.17]
+- Added block place limit file to limit the amount of blocks that can be placed in plots.
+- Cannabis & Coca plants can no longer be placed above itself, it can only grow now.
+- Added config option for Hazmat suit damage chance from radiation.
+- Changed config option for Taniun Soaked Seeds crack time from seconds to ticks.
+- Removed PreventBlockPlaceList & PreventItemUseList files. Plugins will handle this for the server.
+
+[v2.0.16]
+- Removed most recipes & loot tables. We are moving to KubeJS for the server.
+- Fixed Buy/Sell tasks adding progress before it's started.
+- Added default icons and title for Buy/Sell tasks
+- Fixed PVP and white region borders not rendering for player in spectator mode.
+
+[v2.0.15]
+- Hid white bounding box for survival players.
+- Rent Acceptors now also auto-inject their values.
+- Added /unstuck
+- Sync Drying Rack recipe result to clients.
+
+[v2.0.14]
+- Removed all Brewing Stand recipes.
+
+[v2.0.13]
+- Fixed Mine Generator & Radiation Projector not rendering their bounding boxes.
+- Fixed Combat Log cooldown continuing after death.
+- Added custom function "MoveOnFTBQuest" for FlashNPCs.
+- Attempt #2 to fix vehicle protection.
+
+[v2.0.12]
+- Removed Taniun Solution recipe to instead use KubeJS on server.
+- Changed Ergotamine recipe to take Weakness Potions instead of Water Bottles.
+- Attempt to fix Drying Rack Item saving.
+- Removed save and load all plot commands.
+- Added Ammonium Sulfate Solution.
+- Added bounding box around Mine Generator, Region Protector & Radiation Projector when in spectator.
+
+[v2.0.11]
+- Prevented Fake Player from using Drying Racks.
+
+[v2.0.10]
+- Attempt at fixing vehicle protection.

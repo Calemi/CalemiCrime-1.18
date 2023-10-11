@@ -8,6 +8,9 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Player;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ItemLSD extends ItemDrug {
 
     @Override
@@ -16,15 +19,13 @@ public class ItemLSD extends ItemDrug {
     }
 
     @Override
-    public void onConsumed(Player player, int additiveDuration) {
-        player.addEffect(new MobEffectInstance(InitMobEffects.LSD_HIGH.get(), getDuration() + additiveDuration));
-        player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED,  getDuration() + additiveDuration, 1));
-        player.getLevel().playLocalSound(player.getX(), player.getY(), player.getZ(), SoundEvents.AMBIENT_CAVE, SoundSource.PLAYERS, 1, 1, false);
+    public List<MobEffectInstance> getEffects(int additiveDuration) {
+        List<MobEffectInstance> effects = new ArrayList<>();
+        effects.add(new MobEffectInstance(InitMobEffects.LSD_HIGH.get(), getDuration() + additiveDuration));
+        effects.add(new MobEffectInstance(MobEffects.MOVEMENT_SPEED,  getDuration() + additiveDuration, 1));
+        return effects;
     }
 
     @Override
-    public void onExpired(Player player) {
-        player.addEffect(new MobEffectInstance(MobEffects.CONFUSION, CCConfig.drugs.drugWithdrawEffectDuration.get() * 20));
-        player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, CCConfig.drugs.drugWithdrawEffectDuration.get() * 20, 2));
-    }
+    public void onExpired(Player player) {}
 }

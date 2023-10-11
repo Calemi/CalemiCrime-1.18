@@ -2,10 +2,22 @@ package com.tm.calemicrime.blockentity;
 
 import com.tm.calemicore.util.Location;
 import com.tm.calemicore.util.blockentity.BlockEntityBase;
+import com.tm.calemicore.util.helper.ItemHelper;
+import com.tm.calemicore.util.helper.LogHelper;
+import com.tm.calemicrime.accessor.CorpseAccessor;
 import com.tm.calemicrime.init.InitBlockEntityTypes;
+import com.tm.calemicrime.init.InitItems;
 import com.tm.calemicrime.main.CCConfig;
 import com.tm.calemicrime.main.CCReference;
+import com.tm.calemicrime.util.NotifyHelper;
+import com.tm.calemicrime.util.RegionHelper;
+import com.tm.calemicrime.util.RegionProfile;
 import com.tm.calemicrime.util.RegionRuleSet;
+import de.maxhenkel.corpse.Main;
+import de.maxhenkel.corpse.entities.CorpseEntity;
+import lain.mods.cos.impl.ModObjects;
+import lain.mods.cos.impl.inventory.InventoryCosArmor;
+import net.minecraft.ChatFormatting;
 import net.minecraft.ResourceLocationException;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -15,6 +27,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Clearable;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -23,48 +36,17 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureMana
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.Vec3;
 
-import java.util.ArrayList;
 import java.util.Optional;
 
 public class BlockEntityRegionProtector extends BlockEntityBase {
 
-    public static final ArrayList<BlockEntityRegionProtector> regionProtectors = new ArrayList<>();
-
-    public Location regionOffset = new Location(getLevel(), 0, 0, 0);
-    public Location regionSize = new Location(getLevel(), 16, 16, 16);
-    public int priority = 0;
-    public boolean global;
-    public RegionType regionType = RegionType.NONE;
-    public final RegionRuleSet regionRuleSet = new RegionRuleSet();
+    public RegionProfile profile = new RegionProfile(getLevel(), getLocation());
 
     public long lastSaveTime = 0;
 
-    public BlockEntityRentAcceptor rentAcceptor;
-
     public BlockEntityRegionProtector(BlockPos pos, BlockState state) {
         super(InitBlockEntityTypes.REGION_PROTECTOR.get(), pos, state);
-    }
-
-    public AABB getRegion() {
-
-        Vec3 start = new Vec3(getLocation().x + regionOffset.x, getLocation().y + regionOffset.y, getLocation().z + regionOffset.z);
-        Vec3 end = new Vec3(getLocation().x + regionOffset.x + regionSize.x, getLocation().y + regionOffset.y + regionSize.y, getLocation().z + regionOffset.z + regionSize.z);
-
-        return new AABB(start, end);
-    }
-
-    public void setRegion(AABB aabb) {
-
-        Vec3i start = new Vec3i(aabb.minX, aabb.minY, aabb.minZ);
-        Vec3i end = new Vec3i(aabb.maxX + 1, aabb.maxY + 1, aabb.maxZ + 1);
-
-        end = end.subtract(start);
-        start = start.subtract(new Vec3i(getLocation().x, getLocation().y, getLocation().z));
-
-        regionOffset = new Location(level, new BlockPos(start));
-        regionSize = new Location(level, new BlockPos(end));
     }
 
     private ResourceLocation getPlotResourceLocation() {
@@ -76,40 +58,70 @@ public class BlockEntityRegionProtector extends BlockEntityBase {
         if (level.getGameTime() % 20 == 0) {
 
             if (!level.isClientSide()) {
-                addRegionProtectorToList(regionProtector);
-                cleanRegionProtectorList();
+                RegionHelper.allProfiles.put(regionProtector.getBlockPos(), regionProtector.profile);
             }
 
             regionProtector.checkForRentAcceptors();
+
+            //IF PVP
+            if (regionProtector.profile.getRuleSet().ruleSets[5] == RegionRuleSet.RuleOverrideType.ALLOW) {
+
+                for (CorpseEntity entity : level.getEntitiesOfClass(CorpseEntity.class, regionProtector.profile.getRegion())) {
+
+                    if (entity instanceof CorpseAccessor mixin) {
+
+                        if (mixin.getAge() < Main.SERVER_CONFIG.corpseSkeletonTime.get()) {
+                            mixin.setAge(Main.SERVER_CONFIG.corpseSkeletonTime.get());
+                        }
+                    }
+                }
+
+                for (Player player : level.players()) {
+
+                    if (regionProtector.profile.isInRegion(player)) {
+
+                        NotifyHelper.notifyHotbar(player, ChatFormatting.RED, "[PVP Zone] Disconnecting will kill you!");
+
+                        InventoryCosArmor cosArmorInventory = ModObjects.invMan.getCosArmorInventory(player.getUUID());
+
+                        for (int i = 0; i < 4; i++) {
+
+                            ItemStack stack = cosArmorInventory.getItem(i);
+
+                            if (stack.isEmpty()) {
+                                continue;
+                            }
+
+                            cosArmorInventory.setSkinArmor(i, false);
+                            ItemHelper.spawnStackAtEntity(level, player, stack);
+                            cosArmorInventory.setItem(i, ItemStack.EMPTY);
+                        }
+                    }
+                }
+            }
         }
-    }
-
-    private static void addRegionProtectorToList(BlockEntityRegionProtector regionProtector) {
-
-        if (!regionProtectors.contains(regionProtector)) {
-            regionProtectors.add(regionProtector);
-        }
-    }
-
-    public static void cleanRegionProtectorList() {
-        regionProtectors.removeIf(BlockEntity::isRemoved);
     }
 
     public void checkForRentAcceptors() {
 
-        rentAcceptor = null;
+        boolean foundRentAcceptor = false;
 
         for (Direction direction : Direction.values()) {
 
             if (new Location(getLocation(), direction, 1).getBlockEntity() instanceof BlockEntityRentAcceptor rentAcceptor) {
-                this.rentAcceptor = rentAcceptor;
+                profile.setRentAcceptor(rentAcceptor);
+                foundRentAcceptor = true;
             }
+        }
+
+        if (!foundRentAcceptor) {
+            profile.setRentAcceptor(null);
         }
     }
 
     @Override
     public AABB getRenderBoundingBox() {
-        return getRegion();
+        return profile.getRegion();
     }
 
     public boolean savePlot() {
@@ -118,14 +130,36 @@ public class BlockEntityRegionProtector extends BlockEntityBase {
             return false;
         }
 
-        if (getRegion().getXsize() * getRegion().getYsize() * getRegion().getZsize() > CCConfig.server.maximumPlotSaveVolume.get()) {
+        if (profile.getType() == RegionProfile.Type.NONE) {
             return false;
+        }
+
+        if (profile.getRegion().getXsize() * profile.getRegion().getYsize() * profile.getRegion().getZsize() > CCConfig.server.maximumPlotSaveVolume.get()) {
+            return false;
+        }
+
+        for (int x = 0; x < profile.getRegion().getXsize(); x++) {
+            for (int y = 0; y < profile.getRegion().getYsize(); y++) {
+                for (int z = 0; z < profile.getRegion().getZsize(); z++) {
+
+                    int xRelative = (int)profile.getRegion().minX + x;
+                    int yRelative = (int)profile.getRegion().minY + y;
+                    int zRelative = (int)profile.getRegion().minZ + z;
+
+                    BlockState state = level.getBlockState(new BlockPos(xRelative, yRelative, zRelative));
+
+                    if (state.is(InitItems.REGION_PROJECTOR.get()) || state.is(InitItems.RENT_ACCEPTOR.get())) {
+                        LogHelper.log(CCReference.MOD_NAME, "FOUND " + state);
+                        return false;
+                    }
+                }
+            }
         }
 
         Location location = getLocation();
         ResourceLocation structureName = getPlotResourceLocation();
 
-        BlockPos blockpos = getBlockPos().offset(regionOffset.getBlockPos());
+        BlockPos blockpos = getBlockPos().offset(profile.getOffset().getBlockPos());
         ServerLevel serverlevel = (ServerLevel) level;
 
         StructureManager structuremanager = serverlevel.getStructureManager();
@@ -139,13 +173,21 @@ public class BlockEntityRegionProtector extends BlockEntityBase {
             return false;
         }
 
-        Vec3i regionSizeVec = new Vec3i(regionSize.x, regionSize.y, regionSize.z);
+        Vec3i regionSizeVec = new Vec3i(profile.getSize().x, profile.getSize().y, profile.getSize().z);
 
         structuretemplate.fillFromWorld(level, blockpos, regionSizeVec, true, Blocks.STRUCTURE_VOID);
         structuretemplate.setAuthor("Admin");
 
         try {
-            return structuremanager.save(structureName);
+
+            boolean value = structuremanager.save(structureName);
+
+            if (value) {
+                lastSaveTime = System.currentTimeMillis();
+                markUpdated();
+            }
+
+            return value;
         }
 
         catch (ResourceLocationException resourcelocationexception) {
@@ -173,7 +215,7 @@ public class BlockEntityRegionProtector extends BlockEntityBase {
     private boolean loadPlot(ServerLevel serverLevel, StructureTemplate structureTemplate) {
 
         BlockPos blockpos = getBlockPos();
-        Vec3i regionSizeVec = new Vec3i(regionSize.x, regionSize.y, regionSize.z);
+        Vec3i regionSizeVec = new Vec3i(profile.getSize().x, profile.getSize().y, profile.getSize().z);
         Vec3i templateSize = structureTemplate.getSize();
 
         if (!regionSizeVec.equals(templateSize)) {
@@ -182,16 +224,20 @@ public class BlockEntityRegionProtector extends BlockEntityBase {
 
         StructurePlaceSettings structureplacesettings = new StructurePlaceSettings();
 
-        BlockPos blockpos1 = blockpos.offset(regionOffset.getBlockPos());
+        BlockPos blockpos1 = blockpos.offset(profile.getOffset().getBlockPos());
 
-        for (BlockPos pos : BlockPos.betweenClosed((int) getRegion().minX, (int) getRegion().minY, (int) getRegion().minZ, (int) getRegion().maxX, (int) getRegion().maxY, (int) getRegion().maxZ)) {
+        for (BlockPos pos : BlockPos.betweenClosed((int) profile.getRegion().minX, (int) profile.getRegion().minY, (int) profile.getRegion().minZ, (int) profile.getRegion().maxX, (int) profile.getRegion().maxY, (int) profile.getRegion().maxZ)) {
 
             BlockEntity blockentity = serverLevel.getBlockEntity(pos);
             Clearable.tryClear(blockentity);
+
+            if (serverLevel.isWaterAt(pos)) {
+                serverLevel.setBlock(pos, Blocks.AIR.defaultBlockState(), 2);
+            }
         }
 
         serverLevel.getAllEntities().forEach((entity) -> {
-            if (entity != null && getRegion().contains(entity.position()) && !(entity instanceof Player)) {
+            if (entity != null && profile.getRegion().contains(entity.position()) && !(entity instanceof Player)) {
                 entity.kill();
             }
         });
@@ -205,69 +251,17 @@ public class BlockEntityRegionProtector extends BlockEntityBase {
     public void load(CompoundTag tag) {
         super.load(tag);
 
-        regionOffset = Location.readFromNBT(level, tag.getCompound("RegionOffset"));
-        regionSize = Location.readFromNBT(level, tag.getCompound("RegionEdge"));
-
-        priority = tag.getInt("Priority");
-        global = tag.getBoolean("Global");
-
-        regionType = RegionType.fromIndex(tag.getInt("regionType"));
+        profile.loadFromNBT(tag);
 
         lastSaveTime = tag.getLong("LastSaveTime");
-
-        regionRuleSet.loadFromNBT(tag);
     }
 
     @Override
     protected void saveAdditional(CompoundTag tag) {
         super.saveAdditional(tag);
 
-        CompoundTag regionOffsetTag = new CompoundTag();
-        regionOffset.writeToNBT(regionOffsetTag);
-        tag.put("RegionOffset", regionOffsetTag);
-
-        CompoundTag regionEdgeTag = new CompoundTag();
-        regionSize.writeToNBT(regionEdgeTag);
-        tag.put("RegionEdge", regionEdgeTag);
-
-        tag.putInt("Priority", priority);
-        tag.putBoolean("Global", global);
-
-        tag.putInt("regionType", regionType.getIndex());
+        profile.saveToNBT(tag);
 
         tag.putLong("LastSaveTime", lastSaveTime);
-
-        regionRuleSet.saveToNBT(tag);
-    }
-
-    public enum RegionType {
-
-        NONE(0, "none"),
-        RESIDENTIAL(1, "residential"),
-        COMMERCIAL(2, "commercial");
-
-        private final int index;
-        private final String name;
-
-        RegionType(int index, String name) {
-            this.index = index;
-            this.name = name;
-        }
-
-        public int getIndex() {
-            return index;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public static RegionType fromIndex(int index) {
-            return switch (index) {
-                case 1 -> RESIDENTIAL;
-                case 2 -> COMMERCIAL;
-                default -> NONE;
-            };
-        }
     }
 }

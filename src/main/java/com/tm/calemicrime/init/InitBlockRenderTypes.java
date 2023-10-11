@@ -42,5 +42,9 @@ public class InitBlockRenderTypes {
         ItemBlockRenderTypes.setRenderLayer(InitFluids.ERGOTAMINE.getFlowing(), RenderType.translucent());
         ItemBlockRenderTypes.setRenderLayer(InitFluids.MORPHINE.get(), RenderType.translucent());
         ItemBlockRenderTypes.setRenderLayer(InitFluids.MORPHINE.getFlowing(), RenderType.translucent());
+        ItemBlockRenderTypes.setRenderLayer(InitFluids.AMMONIUM_SULFATE_SOLUTION.get(), RenderType.translucent());
+        ItemBlockRenderTypes.setRenderLayer(InitFluids.AMMONIUM_SULFATE_SOLUTION.getFlowing(), RenderType.translucent());
+        ItemBlockRenderTypes.setRenderLayer(InitFluids.CRYSTAL_BLUE_DYE.get(), RenderType.translucent());
+        ItemBlockRenderTypes.setRenderLayer(InitFluids.CRYSTAL_BLUE_DYE.getFlowing(), RenderType.translucent());
     }
 }

@@ -35,7 +35,7 @@ public class RegionTeamArgument implements ArgumentType<String> {
 
         String teamName = pContext.getArgument(pName, String.class);
 
-        RegionTeam team = RegionTeamHelper.getRegionTeam(teamName);
+        RegionTeam team = RegionTeamHelper.getTeam(teamName);
 
         if (team != null) {
             return team;

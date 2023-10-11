@@ -54,7 +54,7 @@ public class TeamCommands {
                 return Command.SINGLE_SUCCESS;
             }
 
-            if (RegionTeamHelper.getRegionTeam(teamName) != null) {
+            if (RegionTeamHelper.getTeam(teamName) != null) {
                 CrimeCommandsBase.sendError(player, "A team with that name already exists! Team names must be unique!");
                 return Command.SINGLE_SUCCESS;
             }
@@ -75,7 +75,7 @@ public class TeamCommands {
             if (checkTeam(player, false, "You are not in a team!")) return Command.SINGLE_SUCCESS;
             if (checkOwner(player, false, "Only team owners can delete their team!")) return Command.SINGLE_SUCCESS;
 
-            RegionTeam team = RegionTeamHelper.getRegionTeam(player);
+            RegionTeam team = RegionTeamHelper.getTeam(player);
             team.delete();
 
             CrimeCommandsBase.sendSuccess(player, "Your team has been deleted.");
@@ -109,7 +109,7 @@ public class TeamCommands {
 
             if (checkTeam(player, false, "You are not in a team!")) return Command.SINGLE_SUCCESS;
 
-            RegionTeam team = RegionTeamHelper.getRegionTeam(player);
+            RegionTeam team = RegionTeamHelper.getTeam(player);
 
             return teamInfo(player, team);
 
@@ -181,7 +181,7 @@ public class TeamCommands {
                 return Command.SINGLE_SUCCESS;
             }
 
-            RegionTeam team = RegionTeamHelper.getRegionTeam(player);
+            RegionTeam team = RegionTeamHelper.getTeam(player);
             team.setName(teamName);
 
             CrimeCommandsBase.sendSuccess(player, "Your team's name is now: " + teamName);
@@ -199,12 +199,12 @@ public class TeamCommands {
             if (checkTeam(player, false, "You are not in a team!")) return Command.SINGLE_SUCCESS;
             if (checkOwner(player, false,"Only team owners can invite players to their team!")) return Command.SINGLE_SUCCESS;
 
-            if (RegionTeamHelper.hasRegionTeam(invitee)) {
+            if (RegionTeamHelper.hasTeam(invitee)) {
                 CrimeCommandsBase.sendError(player, "That player is already on a team!");
                 return Command.SINGLE_SUCCESS;
             }
 
-            RegionTeam team = RegionTeamHelper.getRegionTeam(player);
+            RegionTeam team = RegionTeamHelper.getTeam(player);
 
             if (team.isInvited(invitee)) {
                 CrimeCommandsBase.sendError(player, "That player has already been invited!");
@@ -233,7 +233,7 @@ public class TeamCommands {
             if (checkTeam(player, false,"You are not in a team!")) return Command.SINGLE_SUCCESS;
             if (checkOwner(player, false, "Only team owners can uninvite players from their team!")) return Command.SINGLE_SUCCESS;
 
-            RegionTeam team = RegionTeamHelper.getRegionTeam(player);
+            RegionTeam team = RegionTeamHelper.getTeam(player);
 
             boolean foundUninvitee = false;
 
@@ -267,7 +267,7 @@ public class TeamCommands {
             if (checkTeam(player, false,"You are not in a team!")) return Command.SINGLE_SUCCESS;
             if (checkOwner(player, false, "Only team owners can kick players from their team!")) return Command.SINGLE_SUCCESS;
 
-            RegionTeam team = RegionTeamHelper.getRegionTeam(player);
+            RegionTeam team = RegionTeamHelper.getTeam(player);
 
             UUID kickedPlayerID = null;
 
@@ -340,7 +340,7 @@ public class TeamCommands {
 
             if (checkTeam(player, false,"You are not in a team!")) return Command.SINGLE_SUCCESS;
 
-            RegionTeam team = RegionTeamHelper.getRegionTeam(player);
+            RegionTeam team = RegionTeamHelper.getTeam(player);
             team.removeMember(player);
 
             CrimeCommandsBase.sendSuccess(player, "You have left your team.");
@@ -358,7 +358,7 @@ public class TeamCommands {
             if (checkTeam(player, false, "You are not in a team!")) return Command.SINGLE_SUCCESS;
             if (checkOwner(player, false,"Only team owners can promote players in their team!")) return Command.SINGLE_SUCCESS;
 
-            RegionTeam team = RegionTeamHelper.getRegionTeam(player);
+            RegionTeam team = RegionTeamHelper.getTeam(player);
 
             for (RegionTeamMember member : team.getMembers()) {
 
@@ -391,7 +391,7 @@ public class TeamCommands {
             if (checkTeam(player, false,"You are not in a team!")) return Command.SINGLE_SUCCESS;
             if (checkOwner(player, false, "Only team owners can demote players in their team!")) return Command.SINGLE_SUCCESS;
 
-            RegionTeam team = RegionTeamHelper.getRegionTeam(player);
+            RegionTeam team = RegionTeamHelper.getTeam(player);
 
             for (RegionTeamMember member : team.getMembers()) {
 
@@ -424,7 +424,7 @@ public class TeamCommands {
             if (checkTeam(player, false,"You are not in a team!")) return Command.SINGLE_SUCCESS;
             if (checkOwner(player, false,"Only team owners can ally players!")) return Command.SINGLE_SUCCESS;
 
-            RegionTeam team = RegionTeamHelper.getRegionTeam(player);
+            RegionTeam team = RegionTeamHelper.getTeam(player);
 
             if (team.isMember(ally)) {
                 CrimeCommandsBase.sendError(player, "You cannot ally a player that is already in your team!");
@@ -453,7 +453,7 @@ public class TeamCommands {
             if (checkTeam(player, false,"You are not in a team!")) return Command.SINGLE_SUCCESS;
             if (checkOwner(player, false, "Only team owners can disally players!")) return Command.SINGLE_SUCCESS;
 
-            RegionTeam team = RegionTeamHelper.getRegionTeam(player);
+            RegionTeam team = RegionTeamHelper.getTeam(player);
 
             if (!team.isAlly(disally)) {
                 CrimeCommandsBase.sendError(player, "That player is not an ally!");
@@ -469,7 +469,7 @@ public class TeamCommands {
 
     private static boolean checkTeam(Player player, boolean errorCondition, String errorMsg) {
 
-        if (RegionTeamHelper.hasRegionTeam(player) == errorCondition) {
+        if (RegionTeamHelper.hasTeam(player) == errorCondition) {
             CrimeCommandsBase.sendError(player, errorMsg);
             return true;
         }
@@ -479,7 +479,7 @@ public class TeamCommands {
 
     private static boolean checkOwner(Player player, boolean errorCondition, String errorMsg) {
 
-        if (RegionTeamHelper.getRegionTeamMembership(player).isOwner() == errorCondition) {
+        if (RegionTeamHelper.getTeamMembership(player).isOwner() == errorCondition) {
             CrimeCommandsBase.sendError(player, errorMsg);
             return true;
         }

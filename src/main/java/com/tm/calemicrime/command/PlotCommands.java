@@ -22,9 +22,7 @@ public class PlotCommands {
     public static ArgumentBuilder<CommandSourceStack, ?> plots() {
 
         return Commands.literal("plots")
-                .then(rent())
-                .then(save())
-                .then(load());
+                .then(rent());
     }
 
     private static ArgumentBuilder<CommandSourceStack, ?> rent() {
@@ -34,7 +32,7 @@ public class PlotCommands {
                 .then(plotRentAdd());
     }
 
-    private static ArgumentBuilder<CommandSourceStack, ?> save() {
+    /*private static ArgumentBuilder<CommandSourceStack, ?> save() {
 
         return Commands.literal("save").requires((player) -> player.hasPermission(3)).executes(ctx -> {
 
@@ -64,7 +62,7 @@ public class PlotCommands {
 
             return Command.SINGLE_SUCCESS;
         });
-    }
+    }*/
 
     private static ArgumentBuilder<CommandSourceStack, ?> plotRentGet() {
 
@@ -78,7 +76,7 @@ public class PlotCommands {
 
             for (BlockEntityRentAcceptor rentAcceptor : BlockEntityRentAcceptor.rentAcceptors) {
 
-                if (rentAcceptor.getResidentTeam().isMember(player)) {
+                if (rentAcceptor.getResidentTeam() != null && rentAcceptor.getResidentTeam().isMember(player)) {
 
                     ChatFormatting rentTimeColor = ChatFormatting.GREEN;
 

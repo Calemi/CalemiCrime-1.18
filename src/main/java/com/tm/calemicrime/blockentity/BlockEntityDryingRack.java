@@ -21,6 +21,10 @@ public class BlockEntityDryingRack extends BlockEntityBase {
 
     public static void tick(Level level, BlockPos pos, BlockState state, BlockEntityDryingRack rack) {
 
+        if (level.isClientSide()) {
+            return;
+        }
+
         if (rack.dryingStack.isEmpty()) {
             rack.dryingTicks = 0;
             return;
@@ -46,14 +50,21 @@ public class BlockEntityDryingRack extends BlockEntityBase {
     @Override
     public void load(CompoundTag tag) {
         super.load(tag);
-        dryingStack = ItemStack.of(tag);
+
+        if (tag.contains("DryingStack")) {
+            CompoundTag stackTag = tag.getCompound("DryingStack");
+            dryingStack = ItemStack.of(stackTag);
+        }
+
         dryingTicks = tag.getInt("DryingTicks");
     }
 
     @Override
     protected void saveAdditional(CompoundTag tag) {
         super.saveAdditional(tag);
-        dryingStack.save(tag);
+        CompoundTag stackTag = new CompoundTag();
+        dryingStack.save(stackTag);
+        tag.put("DryingStack", stackTag);
         tag.putInt("DryingTicks", dryingTicks);
     }
 }

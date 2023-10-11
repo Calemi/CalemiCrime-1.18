@@ -67,7 +67,7 @@ public class ScreenRentAcceptorOptions extends ScreenBase {
         if (minecraft != null) {
             EditBox editBox = new EditBox(minecraft.font, getScreenX() + x - 20, getScreenY() + y - 7, 100, 12, new TextComponent(""));
             addWidget(editBox);
-            editBox.setMaxLength(30);
+            editBox.setMaxLength(64);
             editBox.setValue("" + value);
             return editBox;
         }
