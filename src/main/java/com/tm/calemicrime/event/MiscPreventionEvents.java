@@ -47,8 +47,12 @@ public class MiscPreventionEvents {
     }
 
     @SubscribeEvent
-    public void onSaplingGrow(ExplosionEvent event) {
-        event.setCanceled(true);
+    public void onExplosion(ExplosionEvent event) {
+
+        if (event.isCancelable()) {
+            event.setCanceled(true);
+        }
+
         event.setResult(Event.Result.DENY);
     }
 }

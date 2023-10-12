@@ -218,6 +218,10 @@ public class PacketRentAcceptor {
                         rentAcceptor.autoPlotReset = autoResetPlot;
                     }
 
+                    else if (command.equalsIgnoreCase("fixrenttime")) {
+                        rentAcceptor.lastRentRefreshTimeSeconds = rentAcceptor.systemTimeSeconds;
+                    }
+
                     rentAcceptor.markUpdated();
                 }
             }

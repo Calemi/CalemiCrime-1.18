@@ -1,3 +1,7 @@
+[v2.0.29]
+- Added button for admins to fix rent time.
+- Attempt #1 to fix explosion crash with Supplementaries Bomb.
+
 [v2.0.28]
 - Removed all drug withdraw effects except for Black Tar Heroin.
 - Fixed issue with teammates and allies not being able to interact with vehicles if the owner is logged off.
