@@ -5,13 +5,10 @@ import com.tm.calemicore.util.blockentity.BlockEntityContainerBase;
 import com.tm.calemicrime.init.InitBlockEntityTypes;
 import com.tm.calemicrime.menu.MenuMineGenerator;
 import com.tm.calemicrime.util.NotifyHelper;
-import net.minecraft.ChatFormatting;
-import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -29,7 +26,7 @@ import java.util.List;
 
 public class BlockEntityMineGenerator extends BlockEntityContainerBase {
 
-    public static final int MAX_TIME_TO_FILL = 20 * 60 * 5;
+    public static final int MAX_TIME_TO_FILL = 20 * 60 * 4;
 
     private Location regionOffset = new Location(getLevel(), 0, 0, 0);
     private Location regionSize = new Location(getLevel(), 16, 16, 16);
@@ -236,9 +233,15 @@ public class BlockEntityMineGenerator extends BlockEntityContainerBase {
 
     private boolean isRegionClear() {
 
-        for (int x = (int) getRegion().minX; x < (int) getRegion().maxX; x++) {
-            for (int y = (int) getRegion().minY; y < (int) getRegion().maxY; y++) {
-                for (int z = (int) getRegion().minZ; z < (int) getRegion().maxZ; z++) {
+        int offset = 0;
+
+        if (hasOuterLayer()) {
+            offset = 1;
+        }
+
+        for (int x = (int) getRegion().minX + offset; x < (int) getRegion().maxX - offset; x++) {
+            for (int y = (int) getRegion().minY + offset; y < (int) getRegion().maxY - offset; y++) {
+                for (int z = (int) getRegion().minZ + offset; z < (int) getRegion().maxZ - offset; z++) {
 
                     if (!new Location(level, x, y, z).isAirBlock()) return false;
                 }

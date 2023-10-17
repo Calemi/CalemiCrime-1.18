@@ -21,12 +21,7 @@ public class NotifyHelper {
     }
 
     public static void errorHotbar(Player player, String text) {
-        errorHotbar(player, text, true);
-    }
-
-    public static void errorHotbar(Player player, String text, boolean sound) {
         notifyHotbar(player, ChatFormatting.RED, text);
-        if (sound) SoundHelper.playAtPlayer(player, SoundEvents.ITEM_BREAK, 1, 0.5F);
     }
 
     public static void warnHotbar(Player player, String text) {

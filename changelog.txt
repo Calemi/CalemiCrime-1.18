@@ -1,3 +1,11 @@
+[v2.0.30]
+- Mines with an outer layer now do not consider the outer layer when determining if the mine is clear.
+- Mine generators now regenerate after 4 minutes instead of 5.
+- Attempt #1 to fix players hiding armor in pvp zones.
+- Players can no longer suffocate.
+- Removed fix rent time button and replace it with an automatic solution.
+- Removed protection error sound.
+
 [v2.0.29]
 - Added button for admins to fix rent time.
 - Attempt #1 to fix explosion crash with Supplementaries Bomb.

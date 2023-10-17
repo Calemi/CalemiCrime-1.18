@@ -113,6 +113,7 @@ public class CalemiCrime {
         MinecraftForge.EVENT_BUS.register(new RegionProfilesCleanEvents());
         MinecraftForge.EVENT_BUS.register(new RegionTeamRentAcceptorsCleanEvents());
         MinecraftForge.EVENT_BUS.register(new CombatLogEvent());
+        MinecraftForge.EVENT_BUS.register(new MineGeneratorEvents());
 
         ArgumentTypes.register("cc:team", RegionTeamArgument.class, new EmptyArgumentSerializer<>(RegionTeamArgument::team));
     }

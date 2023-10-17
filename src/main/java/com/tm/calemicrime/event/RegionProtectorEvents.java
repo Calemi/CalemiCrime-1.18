@@ -8,7 +8,6 @@ import com.simibubi.create.content.kinetics.deployer.DeployerFakePlayer;
 import com.tm.calemicore.util.Location;
 import com.tm.calemicore.util.helper.LogHelper;
 import com.tm.calemicrime.block.BlockBushPlant;
-import com.tm.calemicrime.blockentity.BlockEntityRegionProtector;
 import com.tm.calemicrime.blockentity.BlockEntityRentAcceptor;
 import com.tm.calemicrime.file.PlotBlockPlaceLimitFile;
 import com.tm.calemicrime.main.CCReference;
@@ -63,7 +62,7 @@ public class RegionProtectorEvents {
         Player player = event.getPlayer();
 
         if (RegionHelper.handleEventCancellation(event, level, player, location, 0)) {
-            sendErrorMessage(player, true);
+            sendErrorMessage(player);
             event.setCanceled(true);
         }
     }
@@ -76,7 +75,7 @@ public class RegionProtectorEvents {
         Player player = event.getPlayer();
 
         if (RegionHelper.handleEventCancellation(event, level, player, location, 0)) {
-            sendErrorMessage(player, false);
+            sendErrorMessage(player);
             event.setCanceled(true);
         }
     }
@@ -292,7 +291,7 @@ public class RegionProtectorEvents {
         if (player.getItemInHand(hand).getItem() instanceof BucketItem bucket) {
 
             if (RegionHelper.handleEventCancellation(event, level, player, location, 2)) {
-                sendErrorMessage(player, true);
+                sendErrorMessage(player);
                 event.setCanceled(true);
             }
         }
@@ -319,7 +318,7 @@ public class RegionProtectorEvents {
         if (damager instanceof Player player && !(target instanceof Player)) {
 
             if (RegionHelper.handleEventCancellation(event, level, player, location, 3)) {
-                sendErrorMessage(player, true);
+                sendErrorMessage(player);
                 event.setCanceled(true);
             }
         }
@@ -353,7 +352,7 @@ public class RegionProtectorEvents {
         }
 
         if (RegionHelper.handleEventCancellation(event, level, player, location, 4)) {
-            if (event.getHand() == InteractionHand.MAIN_HAND) sendErrorMessage(player, false);
+            if (event.getHand() == InteractionHand.MAIN_HAND) sendErrorMessage(player);
             event.setCanceled(true);
         }
     }
@@ -370,7 +369,7 @@ public class RegionProtectorEvents {
         }
 
         if (RegionHelper.handleEventCancellation(event, level, player, location, 4)) {
-            if (event.getHand() == InteractionHand.MAIN_HAND) sendErrorMessage(player, false);
+            if (event.getHand() == InteractionHand.MAIN_HAND) sendErrorMessage(player);
             event.setCanceled(true);
             event.setCancellationResult(InteractionResult.FAIL);
         }
@@ -397,13 +396,13 @@ public class RegionProtectorEvents {
         RegionProfile sourceProfile = RegionHelper.getPrioritizedRegionProfile(sourceLocation, 5);
 
         if (targetProfile != null && targetProfile.getRuleSet().ruleSets[5] == RegionRuleSet.RuleOverrideType.PREVENT) {
-            sendErrorMessage(sourcePlayer, true);
+            sendErrorMessage(sourcePlayer);
             event.setCanceled(true);
             return;
         }
 
         if (sourceProfile != null && sourceProfile.getRuleSet().ruleSets[5] == RegionRuleSet.RuleOverrideType.PREVENT) {
-            sendErrorMessage(sourcePlayer, true);
+            sendErrorMessage(sourcePlayer);
             event.setCanceled(true);
         }
     }
@@ -483,7 +482,7 @@ public class RegionProtectorEvents {
         NotifyHelper.errorHotbar(player, message);
     }
 
-    private void sendErrorMessage(Player player, boolean sound) {
-        NotifyHelper.errorHotbar(player, "You cannot do that in this area!", sound);
+    private void sendErrorMessage(Player player) {
+        NotifyHelper.errorHotbar(player, "You cannot do that in this area!");
     }
 }

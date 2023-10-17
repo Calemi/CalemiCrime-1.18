@@ -2,6 +2,7 @@ package com.tm.calemicrime.blockentity;
 
 import com.tm.calemicore.util.Location;
 import com.tm.calemicore.util.blockentity.BlockEntityContainerBase;
+import com.tm.calemicore.util.helper.LogHelper;
 import com.tm.calemicrime.file.DirtyFile;
 import com.tm.calemicrime.file.PlotsFile;
 import com.tm.calemicrime.init.InitBlockEntityTypes;
@@ -62,7 +63,7 @@ public class BlockEntityRentAcceptor extends BlockEntityContainerBase implements
 
     public void injectValuesFromFile() {
 
-        if (fileKey.equals("")) {
+        if (fileKey.isEmpty()) {
             return;
         }
 
@@ -119,7 +120,7 @@ public class BlockEntityRentAcceptor extends BlockEntityContainerBase implements
     public int getRemainingRentSeconds() {
 
         int remainingRentSeconds = getMaxRentSeconds() - getSecondsSinceRentRefresh();
-        remainingRentSeconds = Mth.clamp(remainingRentSeconds, 0, remainingRentSeconds);
+        remainingRentSeconds = Math.max(remainingRentSeconds, 0);
 
         return remainingRentSeconds;
     }
@@ -173,6 +174,15 @@ public class BlockEntityRentAcceptor extends BlockEntityContainerBase implements
 
                 if (rentAcceptor.getResidentTeam() == null) {
                     rentAcceptor.emptyRentTime();
+                    rentAcceptor.markUpdated();
+                    return;
+                }
+
+                LogHelper.log(CCReference.MOD_NAME, "REMAINING: " + rentAcceptor.lastRentRefreshTimeSeconds);
+                LogHelper.log(CCReference.MOD_NAME, "MAX: " + rentAcceptor.systemTimeSeconds);
+
+                if (rentAcceptor.lastRentRefreshTimeSeconds > rentAcceptor.systemTimeSeconds) {
+                    rentAcceptor.refillRentTime();
                     rentAcceptor.markUpdated();
                     return;
                 }

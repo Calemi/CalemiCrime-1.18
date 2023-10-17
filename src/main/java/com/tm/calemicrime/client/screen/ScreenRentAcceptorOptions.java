@@ -30,8 +30,6 @@ public class ScreenRentAcceptorOptions extends ScreenBase {
     private SmoothButton autoResetPlotBtn;
     private EditBox plotResetTimeBox;
 
-    private SmoothButton fixRentTimeBtn;
-
     public ScreenRentAcceptorOptions(Player player, InteractionHand hand, BlockEntityRentAcceptor rentAcceptor) {
         super(player, hand);
         this.rentAcceptor = rentAcceptor;
@@ -62,8 +60,6 @@ public class ScreenRentAcceptorOptions extends ScreenBase {
 
         autoResetPlotBtn = addRenderableWidget(new SmoothButton(getScreenX() + btnXOffset, getScreenY() + btnYOffset + (btnYSpace * 6), 50, getAutoResetPlotButtonKey(), (btn) -> toggleAutoPlotReset()));
         plotResetTimeBox = initField(rentAcceptor.plotResetTimeSeconds, editBoxXOffset, editBoxYOffset + (editBoxYSpace * 4));
-
-        fixRentTimeBtn = addRenderableWidget(new SmoothButton(getScreenX() + btnXOffset, getScreenY() + btnYOffset + (btnYSpace * 7), 50, "FIX", (btn) -> fixRentTime()));
     }
 
     private EditBox initField (Object value, int x, int y) {
@@ -140,11 +136,6 @@ public class ScreenRentAcceptorOptions extends ScreenBase {
         CCPacketHandler.INSTANCE.sendToServer(new PacketRentAcceptor("syncautoplotreset", rentAcceptor.getBlockPos(), rentAcceptor.autoPlotReset));
     }
 
-    private void fixRentTime() {
-        rentAcceptor.lastRentRefreshTimeSeconds = rentAcceptor.systemTimeSeconds;
-        CCPacketHandler.INSTANCE.sendToServer(new PacketRentAcceptor("fixrenttime", rentAcceptor.getBlockPos()));
-    }
-
     @Override
     public void tick() {
         super.tick();
@@ -217,9 +208,6 @@ public class ScreenRentAcceptorOptions extends ScreenBase {
 
         TextComponent autoPlotResetText = new TextComponent("Auto Plot Reset");
         minecraft.font.draw(poseStack, autoPlotResetText, autoResetPlotBtn.x - minecraft.font.width(autoPlotResetText) - buttonOffset, autoResetPlotBtn.y + buttonOffset, 0xFFFFFF);
-
-        TextComponent fixRentText = new TextComponent("Fix Rent Time");
-        minecraft.font.draw(poseStack, fixRentText, fixRentTimeBtn.x - minecraft.font.width(fixRentText) - buttonOffset, fixRentTimeBtn.y + buttonOffset, 0xFFFFFF);
     }
 
     @Override

@@ -88,11 +88,12 @@ public class BlockEntityRegionProtector extends BlockEntityBase {
 
                             ItemStack stack = cosArmorInventory.getItem(i);
 
+                            cosArmorInventory.setSkinArmor(i, false);
+
                             if (stack.isEmpty()) {
                                 continue;
                             }
 
-                            cosArmorInventory.setSkinArmor(i, false);
                             ItemHelper.spawnStackAtEntity(level, player, stack);
                             cosArmorInventory.setItem(i, ItemStack.EMPTY);
                         }
