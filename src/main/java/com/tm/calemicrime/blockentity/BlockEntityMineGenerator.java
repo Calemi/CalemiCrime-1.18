@@ -10,6 +10,8 @@ import net.minecraft.core.Vec3i;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -112,8 +114,12 @@ public class BlockEntityMineGenerator extends BlockEntityContainerBase {
             mineGenerator.setRemainingTimeToFill(MAX_TIME_TO_FILL);
         }
 
-        if (!level.isClientSide() && level.getGameTime() % 20 * 10 == 0) {
+        if (!level.isClientSide() && level.getGameTime() % (20 * 10) == 0) {
 
+            level.getEntitiesOfClass(Player.class, mineGenerator.getRegion()).forEach(player -> {
+                player.addEffect(new MobEffectInstance(MobEffects.NIGHT_VISION, 20 * 20, 0, true, true));
+            });
+            
             mineGenerator.markUpdated();
 
             if (mineGenerator.isRegionClear()) {
