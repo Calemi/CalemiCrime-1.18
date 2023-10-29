@@ -7,6 +7,7 @@ import com.tm.calemicrime.blockentity.BlockEntityRentAcceptor;
 import com.tm.calemicrime.client.screen.ScreenRentAcceptorOptions;
 import com.tm.calemicrime.init.InitBlockEntityTypes;
 import com.tm.calemicrime.team.RegionTeam;
+import com.tm.calemieconomy.util.helper.CurrencyHelper;
 import dev.ftb.mods.ftbteams.data.TeamManager;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
@@ -70,6 +71,7 @@ public class BlockRentAcceptor extends BaseEntityBlock {
 
                         else {
                             player.sendMessage(new TextComponent(ChatFormatting.RED + "This plot is owned by the team: " + team.getName()), Util.NIL_UUID);
+                            player.sendMessage(new TextComponent(ChatFormatting.RED + "Total price of plot: " + CurrencyHelper.formatCurrency(rentAcceptor.costToFillRentTime, true)), Util.NIL_UUID);
                             player.sendMessage(new TextComponent(ChatFormatting.RED + "Time left on their rent: ").append(rentAcceptor.getFormattedTime(rentAcceptor.getRemainingRentSeconds())), Util.NIL_UUID);
                         }
                     }

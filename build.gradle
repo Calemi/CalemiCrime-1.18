@@ -173,6 +173,8 @@ dependencies {
     implementation fg.deobf("curse.maven:cosmetic_armor_reworked-237307:${cosmetic_armor_reworked_file_id}")
 
     implementation fg.deobf("curse.maven:corpse-316582:${corpse_file_id}")
+
+    implementation fg.deobf("curse.maven:drawers-223852:${drawers_file_id}")
 }
 
 jar {

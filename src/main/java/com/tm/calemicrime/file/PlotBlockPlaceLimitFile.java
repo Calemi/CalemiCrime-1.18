@@ -7,7 +7,6 @@ import com.tm.calemicrime.util.FileHelper;
 import net.minecraft.commands.arguments.blocks.BlockStateParser;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.ArrayList;
 
@@ -23,7 +22,7 @@ public class PlotBlockPlaceLimitFile {
     private static ArrayList<BlockPlaceLimitEntry> getDefaults() {
 
         ArrayList<BlockPlaceLimitEntry> entries = new ArrayList<>();
-        entries.add(new BlockPlaceLimitEntry("minecraft:stone", 3));
+        entries.add(new BlockPlaceLimitEntry("minecraft:stone", 3, 0));
         return entries;
     }
 
@@ -43,10 +42,12 @@ public class PlotBlockPlaceLimitFile {
 
         private final String block;
         private final int limit;
+        private final int blockCountToIncreaseLimit;
 
-        public BlockPlaceLimitEntry(String block, int limit) {
+        public BlockPlaceLimitEntry(String block, int limit, int blockCountToIncreaseLimit) {
             this.block = block;
             this.limit = limit;
+            this.blockCountToIncreaseLimit = blockCountToIncreaseLimit;
         }
 
         public Block getBlock() {
@@ -63,8 +64,13 @@ public class PlotBlockPlaceLimitFile {
             }
         }
 
-        public int getLimit() {
-            return limit;
+        public int getLimit(int plotSize) {
+
+            if (blockCountToIncreaseLimit <= 0) {
+                return limit;
+            }
+
+            return limit + Math.round((float)plotSize / blockCountToIncreaseLimit);
         }
     }
 }

@@ -5,12 +5,22 @@
   "compatibilityLevel": "JAVA_17",
   "refmap": "calemicrime.refmap.json",
   "mixins": [
-    "CarMoveMixin",	"CarStepMixin", "PlaneNBTMixin", "NPCMoveMixin", "NPCTickMixin", "CorpseNBTMixin", "EnchantmentsMixin", "CarNBTMixin", "CurvedTrackBreakDestroyMixin"
+	"CarMoveMixin",
+	"CarNBTMixin",
+	"CarStepMixin",
+	"CorpseNBTMixin",
+	"CurvedTrackBreakDestroyMixin",
+	"DeployerBlockEntityMixin",
+	"DeployerItemHandlerMixin",
+	"EnchantmentsMixin",
+	"NPCMoveMixin",
+	"PlaneNBTMixin"
   ],
   "client": [
-    "client.PlayerModelMixin", "CapeLayerMixin"
+	"CapeLayerMixin",
+	"client.PlayerModelMixin"
   ],
   "injectors": {
-    "defaultRequire": 1
+	"defaultRequire": 1
   }
 }

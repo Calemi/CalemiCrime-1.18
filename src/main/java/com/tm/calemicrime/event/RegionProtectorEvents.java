@@ -127,7 +127,7 @@ public class RegionProtectorEvents {
                 if (limitEntry != null) {
 
                     AABB region = profile.getRegion();
-                    int blockLimit = limitEntry.getLimit();
+                    int blockLimit = limitEntry.getLimit(profile.getSize().x * profile.getSize().y * profile.getSize().z);
                     int blockCount = 0;
 
                    for (int x = 0; x < region.getXsize(); x++) {
@@ -154,13 +154,15 @@ public class RegionProtectorEvents {
                                 }
 
                                 if (blockCount > blockLimit) {
-                                    sendErrorMessage(player, "You've reached the limit for that block in your plot!");
+                                    sendErrorMessage(player, blockBeingPlaced.getName().getString() + " Limit Reached: " + (blockCount - 1) + " / " + blockLimit);
                                     event.setCanceled(true);
                                     return;
                                 }
                             }
                         }
                     }
+
+                    sendWarnMessage(player, blockBeingPlaced.getName().getString() + " Limit: " + blockCount + " / " + blockLimit);
                 }
             }
 
@@ -477,6 +479,10 @@ public class RegionProtectorEvents {
     }
 
     //-----------------------------------------------------------------------------------------------------------------------------------------------\\
+
+    private void sendWarnMessage(Player player, String message) {
+        NotifyHelper.warnHotbar(player, message);
+    }
 
     private void sendErrorMessage(Player player, String message) {
         NotifyHelper.errorHotbar(player, message);

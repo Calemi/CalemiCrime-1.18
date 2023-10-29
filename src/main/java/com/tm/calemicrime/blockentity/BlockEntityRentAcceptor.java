@@ -48,7 +48,6 @@ public class BlockEntityRentAcceptor extends BlockEntityContainerBase implements
     public int maxRentHours = 1;
     public long lastRentRefreshTimeSeconds = 0;
     public long lastRentDepleteTimeSeconds = Integer.MAX_VALUE;
-    public long systemTimeSeconds = 0;
     public long costToFillRentTime = 1;
 
     public boolean isPlotReset = true;
@@ -97,11 +96,23 @@ public class BlockEntityRentAcceptor extends BlockEntityContainerBase implements
         residentTeamID = null;
     }
 
+    public long getSystemTimeSeconds() {
+        return System.nanoTime() / 1000000000;
+    }
+
     public int getMaxRentSeconds() {
         return maxRentHours * 60 * 60;
     }
 
     public int getSecondsSinceRentRefresh() {
+
+        long secondsSinceRefresh = getSystemTimeSeconds() - lastRentRefreshTimeSeconds;
+        secondsSinceRefresh = Mth.clamp(secondsSinceRefresh, 0, Integer.MAX_VALUE);
+
+        return Math.toIntExact(secondsSinceRefresh);
+    }
+
+    public int getSecondsSinceRentRefresh(long systemTimeSeconds) {
 
         long secondsSinceRefresh = systemTimeSeconds - lastRentRefreshTimeSeconds;
         secondsSinceRefresh = Mth.clamp(secondsSinceRefresh, 0, Integer.MAX_VALUE);
@@ -111,7 +122,7 @@ public class BlockEntityRentAcceptor extends BlockEntityContainerBase implements
 
     public int getSecondsSinceRentDeplete() {
 
-        long secondsSinceDeplete = systemTimeSeconds - lastRentDepleteTimeSeconds;
+        long secondsSinceDeplete = getSystemTimeSeconds() - lastRentDepleteTimeSeconds;
         secondsSinceDeplete = Mth.clamp(secondsSinceDeplete, 0, Integer.MAX_VALUE);
 
         return Math.toIntExact(secondsSinceDeplete);
@@ -142,12 +153,12 @@ public class BlockEntityRentAcceptor extends BlockEntityContainerBase implements
     }
 
     public void refillRentTime() {
-        lastRentRefreshTimeSeconds = systemTimeSeconds;
+        lastRentRefreshTimeSeconds = getSystemTimeSeconds();
     }
 
     public void emptyRentTime() {
-        lastRentRefreshTimeSeconds = systemTimeSeconds - Integer.MAX_VALUE;
-        lastRentDepleteTimeSeconds = systemTimeSeconds;
+        lastRentRefreshTimeSeconds = getSystemTimeSeconds() - Integer.MAX_VALUE;
+        lastRentDepleteTimeSeconds = getSystemTimeSeconds();
     }
 
     public int getTimeUntilPlotReset() {
@@ -179,9 +190,9 @@ public class BlockEntityRentAcceptor extends BlockEntityContainerBase implements
                 }
 
                 LogHelper.log(CCReference.MOD_NAME, "REMAINING: " + rentAcceptor.lastRentRefreshTimeSeconds);
-                LogHelper.log(CCReference.MOD_NAME, "MAX: " + rentAcceptor.systemTimeSeconds);
+                LogHelper.log(CCReference.MOD_NAME, "MAX: " + rentAcceptor.getSystemTimeSeconds());
 
-                if (rentAcceptor.lastRentRefreshTimeSeconds > rentAcceptor.systemTimeSeconds) {
+                if (rentAcceptor.lastRentRefreshTimeSeconds > rentAcceptor.getSystemTimeSeconds()) {
                     rentAcceptor.refillRentTime();
                     rentAcceptor.markUpdated();
                     return;
@@ -191,7 +202,7 @@ public class BlockEntityRentAcceptor extends BlockEntityContainerBase implements
 
         else if (rentAcceptor.residentTeamID != null) {
             rentAcceptor.clearResidentTeam();
-            rentAcceptor.lastRentDepleteTimeSeconds = rentAcceptor.systemTimeSeconds;
+            rentAcceptor.lastRentDepleteTimeSeconds = rentAcceptor.getSystemTimeSeconds();
             rentAcceptor.markUpdated();
         }
 
@@ -208,7 +219,6 @@ public class BlockEntityRentAcceptor extends BlockEntityContainerBase implements
 
         if (!level.isClientSide() && level.getGameTime() % 20 == 10) {
 
-            rentAcceptor.systemTimeSeconds = System.nanoTime() / 1000000000;
             rentAcceptor.markUpdated();
 
             if (rentAcceptor.dirtyDate != DirtyFile.dirtyDate) {
@@ -312,7 +322,6 @@ public class BlockEntityRentAcceptor extends BlockEntityContainerBase implements
         maxRentHours = tag.getInt("MaxRentTime");
         lastRentRefreshTimeSeconds = tag.getLong("LastRentRefreshTime");
         lastRentDepleteTimeSeconds = tag.getLong("LastRentDepleteTime");
-        systemTimeSeconds = tag.getLong("SystemTime");
         costToFillRentTime = tag.getLong("CostToFillRentTime");
 
         isPlotReset = tag.getBoolean("IsPlotReset");
@@ -337,7 +346,6 @@ public class BlockEntityRentAcceptor extends BlockEntityContainerBase implements
         tag.putInt("MaxRentTime", maxRentHours);
         tag.putLong("LastRentRefreshTime", lastRentRefreshTimeSeconds);
         tag.putLong("LastRentDepleteTime", lastRentDepleteTimeSeconds);
-        tag.putLong("SystemTime", systemTimeSeconds);
         tag.putLong("CostToFillRentTime", costToFillRentTime);
 
         tag.putBoolean("IsPlotReset", isPlotReset);

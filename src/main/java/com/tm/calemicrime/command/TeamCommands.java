@@ -113,13 +113,13 @@ public class TeamCommands {
 
             return teamInfo(player, team);
 
-        }).then(Commands.argument("team", RegionTeamArgument.team()).executes(ctx -> {
+        }).then(Commands.argument("teamName", RegionTeamArgument.team()).executes(ctx -> {
 
             Player player = ctx.getSource().getPlayerOrException();
             RegionTeam team = null;
 
             try {
-                team = RegionTeamArgument.getTeam(ctx, "team");
+                team = RegionTeamArgument.getTeam(ctx, "teamName");
             }
 
             catch (CommandSyntaxException ignored) {}
@@ -130,7 +130,20 @@ public class TeamCommands {
             }
 
             return teamInfo(player, team);
-        }));
+
+        })).then(Commands.literal("player").then(Commands.argument("playerName", EntityArgument.player()).executes(ctx -> {
+
+            Player player = ctx.getSource().getPlayerOrException();
+            Player infoPlayer = EntityArgument.getPlayer(ctx, "playerName");
+            RegionTeam team = RegionTeamHelper.getTeam(infoPlayer);
+
+            if (team == null) {
+                CrimeCommandsBase.sendError(player, "They are not on a team!");
+                return Command.SINGLE_SUCCESS;
+            }
+
+            return teamInfo(player, team);
+        })));
     }
 
     private static int teamInfo(Player player, RegionTeam team) {

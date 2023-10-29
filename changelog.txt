@@ -1,3 +1,16 @@
+[v2.0.31]
+- Added the ability to increase Plot Block Limit size based on volume.
+- The "/crime team info" command can now use player names.
+- Firework Rockets/Arrows can no longer damage Players.
+- Mines now grant players night vision when inside.
+- Mines now check if empty every 10 seconds (instead of 1) for better performance.
+- Attempt #1 to fix crash with Car's over Hoppers.
+- Attempt #1 to fix crash with Deployers bucketing liquids.
+- Fixed bug relating to Deployers taking stacks with counts greater than their max stack size.
+- Fixed bug relating to Deployers mining Storage Drawers.
+- Fixed "/crime plots rent get" command not showing accurate rent time.
+- Re-enabled NPC ticks.
+
 [v2.0.30]
 - Mines with an outer layer now do not consider the outer layer when determining if the mine is clear.
 - Mine generators now regenerate after 4 minutes instead of 5.

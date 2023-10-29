@@ -3,7 +3,6 @@ package com.tm.calemicrime.command;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
-import com.tm.calemicrime.blockentity.BlockEntityRegionProtector;
 import com.tm.calemicrime.blockentity.BlockEntityRentAcceptor;
 import com.tm.calemieconomy.util.helper.CurrencyHelper;
 import dev.ftb.mods.ftbteams.data.TeamManager;
@@ -12,7 +11,6 @@ import net.minecraft.Util;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.TextComponent;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
 
 import java.text.DecimalFormat;
@@ -31,38 +29,6 @@ public class PlotCommands {
                 .then(plotRentGet())
                 .then(plotRentAdd());
     }
-
-    /*private static ArgumentBuilder<CommandSourceStack, ?> save() {
-
-        return Commands.literal("save").requires((player) -> player.hasPermission(3)).executes(ctx -> {
-
-            Player player = ctx.getSource().getPlayerOrException();
-
-            for (BlockEntityRegionProtector regionProtector : BlockEntityRegionProtector.regionProtectors) {
-                regionProtector.savePlot();
-            }
-
-            player.sendMessage(new TextComponent(ChatFormatting.GREEN + "Saved all plots."), Util.NIL_UUID);
-
-            return Command.SINGLE_SUCCESS;
-        });
-    }
-
-    private static ArgumentBuilder<CommandSourceStack, ?> load() {
-
-        return Commands.literal("load").requires((player) -> player.hasPermission(3)).executes(ctx -> {
-
-            Player player = ctx.getSource().getPlayerOrException();
-
-            for (BlockEntityRegionProtector regionProtector : BlockEntityRegionProtector.regionProtectors) {
-                regionProtector.loadPlot((ServerLevel) player.getLevel());
-            }
-
-            player.sendMessage(new TextComponent(ChatFormatting.GREEN + "Loaded all plots."), Util.NIL_UUID);
-
-            return Command.SINGLE_SUCCESS;
-        });
-    }*/
 
     private static ArgumentBuilder<CommandSourceStack, ?> plotRentGet() {
 

@@ -1,15 +1,21 @@
 package com.tm.calemicrime.event;
 
+import com.jaquadro.minecraft.storagedrawers.block.BlockDrawers;
+import com.simibubi.create.content.kinetics.deployer.DeployerFakePlayer;
 import com.tm.calemicore.util.Location;
 import net.minecraft.data.worldgen.features.TreeFeatures;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.FireworkRocketEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.material.PushReaction;
+import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.event.world.ExplosionEvent;
 import net.minecraftforge.event.world.PistonEvent;
 import net.minecraftforge.event.world.SaplingGrowTreeEvent;
 import net.minecraftforge.eventbus.api.Event;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 public class MiscPreventionEvents {
@@ -54,5 +60,28 @@ public class MiscPreventionEvents {
         }
 
         event.setResult(Event.Result.DENY);
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public void onBlockBreak(BlockEvent.BreakEvent event) {
+
+        Level level = (Level) event.getWorld();
+        Location location = new Location(level, event.getPos());
+        Player player = event.getPlayer();
+
+        if (player instanceof DeployerFakePlayer) {
+
+            if (location.getBlock() instanceof BlockDrawers) {
+                event.setCanceled(true);
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public void onLivingDamage(LivingDamageEvent event) {
+
+        if (event.getSource().getDirectEntity() instanceof FireworkRocketEntity) {
+            event.setCanceled(true);
+        }
     }
 }
