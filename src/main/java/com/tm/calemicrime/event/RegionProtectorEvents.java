@@ -168,6 +168,7 @@ public class RegionProtectorEvents {
 
             if (RegionHelper.handleEventCancellation(event, level, player, location, 1)) {
                 event.setCanceled(true);
+                sendErrorMessage(player);
             }
         }
     }
@@ -195,6 +196,7 @@ public class RegionProtectorEvents {
                 event.setUseBlock(Event.Result.DENY);
                 event.setUseItem(Event.Result.DENY);
                 event.setCanceled(true);
+                sendErrorMessage(player);
             }
 
             return;
@@ -209,6 +211,7 @@ public class RegionProtectorEvents {
                 event.setUseBlock(Event.Result.DENY);
                 event.setUseItem(Event.Result.DENY);
                 event.setCanceled(true);
+                sendErrorMessage(player);
             }
 
             return;
@@ -222,6 +225,7 @@ public class RegionProtectorEvents {
                 event.setUseBlock(Event.Result.DENY);
                 event.setUseItem(Event.Result.DENY);
                 event.setCanceled(true);
+                sendErrorMessage(player);
             }
 
             return;
@@ -256,10 +260,10 @@ public class RegionProtectorEvents {
             if (!(player.getItemInHand(event.getHand()).getItem() instanceof BlockItem) || !player.isCrouching()) {
 
                 if (RegionHelper.handleEventCancellation(event, level, player, location, 2)) {
-                    if (!player.getLevel().isClientSide()) player.sendMessage(new TextComponent(ChatFormatting.RED + "Couldn't place! Try crouching."), Util.NIL_UUID);
                     event.setUseBlock(Event.Result.DENY);
                     event.setUseItem(Event.Result.DENY);
                     event.setCanceled(true);
+                    sendErrorMessage(player, "Couldn't place! Try crouching.");
                 }
             }
         }
@@ -270,6 +274,7 @@ public class RegionProtectorEvents {
                 event.setUseBlock(Event.Result.DENY);
                 event.setUseItem(Event.Result.DENY);
                 event.setCanceled(true);
+                sendErrorMessage(player);
             }
         }
     }
@@ -434,13 +439,14 @@ public class RegionProtectorEvents {
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public void checkBulletHit(GunFireEvent event) {
+    public void checkGunFire(GunFireEvent event) {
 
         Player shooter = event.getPlayer();
         Level level = shooter.getLevel();
         Location shooterLocation = new Location(shooter);
 
         if (RegionHelper.handleEventCancellation(event, level, null, shooterLocation, 5)) {
+            sendErrorMessage(shooter);
             event.setCanceled(true);
         }
     }

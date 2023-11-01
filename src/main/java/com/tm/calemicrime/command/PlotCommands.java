@@ -4,6 +4,8 @@ import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.tm.calemicrime.blockentity.BlockEntityRentAcceptor;
+import com.tm.calemicrime.util.RegionHelper;
+import com.tm.calemicrime.util.RegionProfile;
 import com.tm.calemieconomy.util.helper.CurrencyHelper;
 import dev.ftb.mods.ftbteams.data.TeamManager;
 import net.minecraft.ChatFormatting;
@@ -40,9 +42,18 @@ public class PlotCommands {
             player.sendMessage(new TextComponent(ChatFormatting.GREEN + "Your plots:"), Util.NIL_UUID);
             player.sendMessage(new TextComponent(""), Util.NIL_UUID);
 
-            for (BlockEntityRentAcceptor rentAcceptor : BlockEntityRentAcceptor.rentAcceptors) {
+            for (RegionProfile regionProfile : RegionHelper.allProfiles.values()) {
+
+                if (regionProfile.getRentAcceptor() == null) {
+                    continue;
+                }
+
+                BlockEntityRentAcceptor rentAcceptor = regionProfile.getRentAcceptor();
 
                 if (rentAcceptor.getResidentTeam() != null && rentAcceptor.getResidentTeam().isMember(player)) {
+
+                    rentAcceptor.refreshSystemTimeSeconds();
+                    rentAcceptor.markUpdated();
 
                     ChatFormatting rentTimeColor = ChatFormatting.GREEN;
 
@@ -73,7 +84,7 @@ public class PlotCommands {
                     }
 
                     DecimalFormat formatter = new DecimalFormat("#0.0");
-                    player.sendMessage(new TextComponent(rentTypeColor + rentAcceptor.rentType + " " + rentAcceptor.getLocation()), Util.NIL_UUID);
+                    player.sendMessage(new TextComponent(rentTypeColor + rentAcceptor.rentType + " " + rentAcceptor.getLocation() + (!rentAcceptor.fileKey.isEmpty() ? " (" + rentAcceptor.fileKey + ")" : "")), Util.NIL_UUID);
                     player.sendMessage(new TextComponent("  Rent Time: " + rentTimeColor + formatter.format(ratio * 100) + "% - " + rentAcceptor.getFormattedTime(remainingRentTime) + " / " + rentAcceptor.getFormattedTime(maxRentTime)), Util.NIL_UUID);
                     player.sendMessage(new TextComponent("  Cost to Refill Time: ").append(CurrencyHelper.formatCurrency(rentAcceptor.getCostToRefillRentTime(), true)), Util.NIL_UUID);
                     player.sendMessage(new TextComponent(""), Util.NIL_UUID);
@@ -94,8 +105,13 @@ public class PlotCommands {
 
             player.sendMessage(new TextComponent(ChatFormatting.GREEN + "Added " + minutes + " minute(s) to all plots."), Util.NIL_UUID);
 
-            for (BlockEntityRentAcceptor rentAcceptor : BlockEntityRentAcceptor.rentAcceptors) {
-                rentAcceptor.addRentTime(minutes);
+            for (RegionProfile regionProfile : RegionHelper.allProfiles.values()) {
+
+                if (regionProfile.getRentAcceptor() == null) {
+                    continue;
+                }
+
+                regionProfile.getRentAcceptor().addRentTime(minutes);
             }
 
             return Command.SINGLE_SUCCESS;

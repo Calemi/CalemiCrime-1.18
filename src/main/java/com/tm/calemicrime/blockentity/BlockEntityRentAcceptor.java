@@ -33,8 +33,6 @@ import java.util.UUID;
 
 public class BlockEntityRentAcceptor extends BlockEntityContainerBase implements ICurrencyNetworkUnit {
 
-    public static final ArrayList<BlockEntityRentAcceptor> rentAcceptors = new ArrayList<>();
-
     public Location bankLocation;
 
     public final RegionRuleSet regionRuleSetOverride = new RegionRuleSet();
@@ -45,6 +43,7 @@ public class BlockEntityRentAcceptor extends BlockEntityContainerBase implements
     public String residentTeamName = "";
     public String rentType = "";
 
+    public long systemTimeSeconds = 0;
     public int maxRentHours = 1;
     public long lastRentRefreshTimeSeconds = 0;
     public long lastRentDepleteTimeSeconds = Integer.MAX_VALUE;
@@ -96,8 +95,8 @@ public class BlockEntityRentAcceptor extends BlockEntityContainerBase implements
         residentTeamID = null;
     }
 
-    public long getSystemTimeSeconds() {
-        return System.nanoTime() / 1000000000;
+    public void refreshSystemTimeSeconds() {
+        systemTimeSeconds = System.nanoTime() / 1000000000;
     }
 
     public int getMaxRentSeconds() {
@@ -105,14 +104,6 @@ public class BlockEntityRentAcceptor extends BlockEntityContainerBase implements
     }
 
     public int getSecondsSinceRentRefresh() {
-
-        long secondsSinceRefresh = getSystemTimeSeconds() - lastRentRefreshTimeSeconds;
-        secondsSinceRefresh = Mth.clamp(secondsSinceRefresh, 0, Integer.MAX_VALUE);
-
-        return Math.toIntExact(secondsSinceRefresh);
-    }
-
-    public int getSecondsSinceRentRefresh(long systemTimeSeconds) {
 
         long secondsSinceRefresh = systemTimeSeconds - lastRentRefreshTimeSeconds;
         secondsSinceRefresh = Mth.clamp(secondsSinceRefresh, 0, Integer.MAX_VALUE);
@@ -122,7 +113,7 @@ public class BlockEntityRentAcceptor extends BlockEntityContainerBase implements
 
     public int getSecondsSinceRentDeplete() {
 
-        long secondsSinceDeplete = getSystemTimeSeconds() - lastRentDepleteTimeSeconds;
+        long secondsSinceDeplete = systemTimeSeconds - lastRentDepleteTimeSeconds;
         secondsSinceDeplete = Mth.clamp(secondsSinceDeplete, 0, Integer.MAX_VALUE);
 
         return Math.toIntExact(secondsSinceDeplete);
@@ -153,12 +144,12 @@ public class BlockEntityRentAcceptor extends BlockEntityContainerBase implements
     }
 
     public void refillRentTime() {
-        lastRentRefreshTimeSeconds = getSystemTimeSeconds();
+        lastRentRefreshTimeSeconds = systemTimeSeconds;
     }
 
     public void emptyRentTime() {
-        lastRentRefreshTimeSeconds = getSystemTimeSeconds() - Integer.MAX_VALUE;
-        lastRentDepleteTimeSeconds = getSystemTimeSeconds();
+        lastRentRefreshTimeSeconds = systemTimeSeconds - Integer.MAX_VALUE;
+        lastRentDepleteTimeSeconds = systemTimeSeconds;
     }
 
     public int getTimeUntilPlotReset() {
@@ -190,9 +181,9 @@ public class BlockEntityRentAcceptor extends BlockEntityContainerBase implements
                 }
 
                 LogHelper.log(CCReference.MOD_NAME, "REMAINING: " + rentAcceptor.lastRentRefreshTimeSeconds);
-                LogHelper.log(CCReference.MOD_NAME, "MAX: " + rentAcceptor.getSystemTimeSeconds());
+                LogHelper.log(CCReference.MOD_NAME, "MAX: " + rentAcceptor.systemTimeSeconds);
 
-                if (rentAcceptor.lastRentRefreshTimeSeconds > rentAcceptor.getSystemTimeSeconds()) {
+                if (rentAcceptor.lastRentRefreshTimeSeconds > rentAcceptor.systemTimeSeconds) {
                     rentAcceptor.refillRentTime();
                     rentAcceptor.markUpdated();
                     return;
@@ -202,13 +193,11 @@ public class BlockEntityRentAcceptor extends BlockEntityContainerBase implements
 
         else if (rentAcceptor.residentTeamID != null) {
             rentAcceptor.clearResidentTeam();
-            rentAcceptor.lastRentDepleteTimeSeconds = rentAcceptor.getSystemTimeSeconds();
+            rentAcceptor.lastRentDepleteTimeSeconds = rentAcceptor.systemTimeSeconds;
             rentAcceptor.markUpdated();
         }
 
         if (!level.isClientSide() && level.getGameTime() % 20 == 0) {
-            addRentAcceptorToList(rentAcceptor);
-            cleanRegionProtectorList();
 
             if (rentAcceptor.residentTeamID != null) {
 
@@ -219,6 +208,7 @@ public class BlockEntityRentAcceptor extends BlockEntityContainerBase implements
 
         if (!level.isClientSide() && level.getGameTime() % 20 == 10) {
 
+            rentAcceptor.refreshSystemTimeSeconds();
             rentAcceptor.markUpdated();
 
             if (rentAcceptor.dirtyDate != DirtyFile.dirtyDate) {
@@ -234,31 +224,6 @@ public class BlockEntityRentAcceptor extends BlockEntityContainerBase implements
                 }
             }
         }
-    }
-
-    private static void addRentAcceptorToList(BlockEntityRentAcceptor rentAcceptor) {
-
-        if (!rentAcceptors.contains(rentAcceptor)) {
-            rentAcceptors.add(rentAcceptor);
-        }
-    }
-
-    public static void cleanRegionProtectorList() {
-
-        List<BlockEntityRentAcceptor> toRemove = new ArrayList<>();
-
-        for (BlockEntityRentAcceptor rentAcceptor : rentAcceptors) {
-
-            if (rentAcceptor == null) {
-                toRemove.add(rentAcceptor);
-            }
-
-            else if (rentAcceptor.isRemoved()) {
-                toRemove.add(rentAcceptor);
-            }
-        }
-
-        rentAcceptors.removeAll(toRemove);
     }
 
     /**
@@ -319,6 +284,7 @@ public class BlockEntityRentAcceptor extends BlockEntityContainerBase implements
         residentTeamName = tag.getString("ResidentTeamName");
         rentType = tag.contains("RentType") ? tag.getString("RentType") : "";
 
+        systemTimeSeconds = tag.getLong("SystemTime");
         maxRentHours = tag.getInt("MaxRentTime");
         lastRentRefreshTimeSeconds = tag.getLong("LastRentRefreshTime");
         lastRentDepleteTimeSeconds = tag.getLong("LastRentDepleteTime");
@@ -343,6 +309,7 @@ public class BlockEntityRentAcceptor extends BlockEntityContainerBase implements
         tag.putString("ResidentTeamName", residentTeamName);
         tag.putString("RentType", rentType);
 
+        tag.putLong("SystemTime", systemTimeSeconds);
         tag.putInt("MaxRentTime", maxRentHours);
         tag.putLong("LastRentRefreshTime", lastRentRefreshTimeSeconds);
         tag.putLong("LastRentDepleteTime", lastRentDepleteTimeSeconds);

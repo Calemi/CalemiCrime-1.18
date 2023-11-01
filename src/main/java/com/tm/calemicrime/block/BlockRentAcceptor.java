@@ -70,8 +70,8 @@ public class BlockRentAcceptor extends BaseEntityBlock {
                         }
 
                         else {
-                            player.sendMessage(new TextComponent(ChatFormatting.RED + "This plot is owned by the team: " + team.getName()), Util.NIL_UUID);
-                            player.sendMessage(new TextComponent(ChatFormatting.RED + "Total price of plot: " + CurrencyHelper.formatCurrency(rentAcceptor.costToFillRentTime, true)), Util.NIL_UUID);
+                            player.sendMessage(new TextComponent(ChatFormatting.RED + "This plot is owned by the team: ").append(team.getName()), Util.NIL_UUID);
+                            player.sendMessage(new TextComponent(ChatFormatting.RED + "Total price of plot: ").append(CurrencyHelper.formatCurrency(rentAcceptor.costToFillRentTime, true).getString()), Util.NIL_UUID);
                             player.sendMessage(new TextComponent(ChatFormatting.RED + "Time left on their rent: ").append(rentAcceptor.getFormattedTime(rentAcceptor.getRemainingRentSeconds())), Util.NIL_UUID);
                         }
                     }

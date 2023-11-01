@@ -1,3 +1,8 @@
+[v2.0.32]
+- Fixed some error messages not showing when they should.
+- Attempt #1 to fix Rent Acceptor rent time & bar not decreasing.
+- Fixed Rent Acceptor error message not formatting correctly.
+
 [v2.0.31]
 - Added the ability to increase Plot Block Limit size based on volume.
 - The "/crime team info" command can now use player names.
