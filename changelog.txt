@@ -1,3 +1,9 @@
+[v2.0.34]
+- Attempt #3 to fix Rent Acceptor rent time & bar not decreasing.
+
+[v2.0.33]
+- Attempt #2 to fix Rent Acceptor rent time & bar not decreasing.
+
 [v2.0.32]
 - Fixed some error messages not showing when they should.
 - Attempt #1 to fix Rent Acceptor rent time & bar not decreasing.

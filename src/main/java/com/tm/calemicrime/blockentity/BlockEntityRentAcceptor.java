@@ -27,8 +27,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 public class BlockEntityRentAcceptor extends BlockEntityContainerBase implements ICurrencyNetworkUnit {
@@ -43,7 +41,7 @@ public class BlockEntityRentAcceptor extends BlockEntityContainerBase implements
     public String residentTeamName = "";
     public String rentType = "";
 
-    public long systemTimeSeconds = 0;
+    public long systemTimeSeconds = System.nanoTime() / 1000000000;
     public int maxRentHours = 1;
     public long lastRentRefreshTimeSeconds = 0;
     public long lastRentDepleteTimeSeconds = Integer.MAX_VALUE;
@@ -167,6 +165,11 @@ public class BlockEntityRentAcceptor extends BlockEntityContainerBase implements
     }
 
     public static void tick(Level level, BlockPos pos, BlockState state, BlockEntityRentAcceptor rentAcceptor) {
+
+        if (rentAcceptor.systemTimeSeconds == 0) {
+            rentAcceptor.refreshSystemTimeSeconds();
+            rentAcceptor.markUpdated();
+        }
 
         if (rentAcceptor.getRemainingRentSeconds() > 0) {
 
