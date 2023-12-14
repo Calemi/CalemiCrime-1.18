@@ -19,6 +19,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -32,6 +33,7 @@ import java.util.UUID;
 public class BlockEntityRentAcceptor extends BlockEntityContainerBase implements ICurrencyNetworkUnit {
 
     public Location bankLocation;
+    public BlockEntityRegionProtector regionProtector;
 
     public final RegionRuleSet regionRuleSetOverride = new RegionRuleSet();
 
@@ -223,7 +225,12 @@ public class BlockEntityRentAcceptor extends BlockEntityContainerBase implements
 
                 if (rentAcceptor.getSecondsSinceRentDeplete() >= rentAcceptor.plotResetTimeSeconds) {
 
-                    rentAcceptor.isPlotReset = true;
+                    if (rentAcceptor.regionProtector != null) {
+
+                        if (rentAcceptor.regionProtector.loadPlot((ServerLevel) rentAcceptor.level)) {
+                            rentAcceptor.isPlotReset = true;
+                        }
+                    }
                 }
             }
         }

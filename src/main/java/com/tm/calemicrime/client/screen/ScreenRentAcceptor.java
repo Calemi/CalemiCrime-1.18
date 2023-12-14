@@ -10,10 +10,7 @@ import com.tm.calemicore.util.screen.widget.SmoothButton;
 import com.tm.calemicrime.blockentity.BlockEntityRentAcceptor;
 import com.tm.calemicrime.main.CCReference;
 import com.tm.calemicrime.menu.MenuRentAcceptor;
-import com.tm.calemicrime.packet.CCPacketHandler;
-import com.tm.calemicrime.packet.PacketCalculateRentAcceptorCount;
-import com.tm.calemicrime.packet.PacketCalculateRentAcceptorLimit;
-import com.tm.calemicrime.packet.PacketRentAcceptor;
+import com.tm.calemicrime.packet.*;
 import com.tm.calemieconomy.item.ItemWallet;
 import com.tm.calemieconomy.util.helper.CurrencyHelper;
 import net.minecraft.client.Minecraft;
@@ -30,6 +27,8 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 public class ScreenRentAcceptor extends ScreenContainerBase<MenuRentAcceptor> {
 
     private final BlockEntityRentAcceptor rentAcceptor;
+
+    private SmoothButton loadPlotBtn;
 
     public int typeCount = -1;
     public int typeLimit = -1;
@@ -50,6 +49,8 @@ public class ScreenRentAcceptor extends ScreenContainerBase<MenuRentAcceptor> {
 
         addRenderableWidget(new SmoothButton(getScreenX() + 8, getScreenY() + 17, 70, "screen.rent_acceptor.btn.payrent", (btn) -> payRent()));
         addRenderableWidget(new SmoothButton(getScreenX() + 98, getScreenY() + 17, 70, "screen.rent_acceptor.btn.stoprent", (btn) -> stopRent()));
+
+        loadPlotBtn = addRenderableWidget(new SmoothButton(getScreenX() + (getXSize() / 2) - 35, getScreenY() - 40, 70, "screen.rent_acceptor.btn.loadplot", (btn) -> loadPlot()));
 
         calculateCount();
         calculateLimit();
@@ -74,18 +75,22 @@ public class ScreenRentAcceptor extends ScreenContainerBase<MenuRentAcceptor> {
         CCPacketHandler.INSTANCE.sendToServer(new PacketRentAcceptor("payRent", rentAcceptor.getBlockPos(), 0, 0, "", "", 0));
     }
 
+    private void stopRent () {
+
+        rentAcceptor.emptyRentTime();
+        CCPacketHandler.INSTANCE.sendToServer(new PacketRentAcceptor("stoprent", rentAcceptor.getBlockPos()));
+    }
+
+    private void loadPlot() {
+        CCPacketHandler.INSTANCE.sendToServer(new PacketRentAcceptor("loadplot", rentAcceptor.getBlockPos()));
+    }
+
     private void calculateCount()  {
         CCPacketHandler.INSTANCE.sendToServer(new PacketCalculateRentAcceptorCount(rentAcceptor.rentType));
     }
 
     private void calculateLimit()  {
         CCPacketHandler.INSTANCE.sendToServer(new PacketCalculateRentAcceptorLimit(rentAcceptor.rentType));
-    }
-
-    private void stopRent () {
-
-        rentAcceptor.emptyRentTime();
-        CCPacketHandler.INSTANCE.sendToServer(new PacketRentAcceptor("stoprent", rentAcceptor.getBlockPos()));
     }
 
     @Override
@@ -107,10 +112,15 @@ public class ScreenRentAcceptor extends ScreenContainerBase<MenuRentAcceptor> {
         ScreenHelper.drawCenteredString(poseStack, getScreenX() + getXSize() / 2, getScreenY() - 10, 0, 0xFFFFFF, new TextComponent(rentAcceptor.rentType + ": " + typeCount + " / " + typeLimit));
 
         if (rentAcceptor.autoPlotReset && rentAcceptor.getTimeUntilPlotReset() > 0 && rentAcceptor.getTimeUntilPlotReset() < rentAcceptor.plotResetTimeSeconds) {
+            loadPlotBtn.visible = true;
             ScreenHelper.drawCenteredString(poseStack, getScreenX() + getXSize() / 2, getScreenY() - 20, 0, 0xFFFFFF, new TextComponent("Plot will reset in: " + rentAcceptor.getFormattedTime(rentAcceptor.getTimeUntilPlotReset())));
         }
 
-        if (!rentAcceptor.residentTeamName.equals("")) {
+        else {
+            loadPlotBtn.visible = false;
+        }
+
+        if (!rentAcceptor.residentTeamName.isEmpty()) {
 
             poseStack.pushPose();
             RenderSystem.setShaderTexture(0, textureLocation);

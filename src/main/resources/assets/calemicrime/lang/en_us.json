@@ -30,6 +30,7 @@
   "container.rent_acceptor": "Rent Acceptor",
   "screen.rent_acceptor.btn.payrent": "Pay Rent",
   "screen.rent_acceptor.btn.stoprent": "Stop Rent",
+  "screen.rent_acceptor.btn.loadplot": "Reset Now",
   "screen.rent_acceptor.txt.maxrenttime": "Max Rent Time (hours)",
   "screen.rent_acceptor.txt.costtofillrenttime": "Cost To Fill Rent Time",
   "screen.rent_acceptor.txt.type": "Rent Type",

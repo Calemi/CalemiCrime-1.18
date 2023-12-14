@@ -105,19 +105,16 @@ public class BlockEntityRegionProtector extends BlockEntityBase {
 
     public void checkForRentAcceptors() {
 
-        boolean foundRentAcceptor = false;
-
         for (Direction direction : Direction.values()) {
 
             if (new Location(getLocation(), direction, 1).getBlockEntity() instanceof BlockEntityRentAcceptor rentAcceptor) {
                 profile.setRentAcceptor(rentAcceptor);
-                foundRentAcceptor = true;
+                rentAcceptor.regionProtector = this;
+                return;
             }
         }
 
-        if (!foundRentAcceptor) {
-            profile.setRentAcceptor(null);
-        }
+        profile.setRentAcceptor(null);
     }
 
     @Override
@@ -226,6 +223,22 @@ public class BlockEntityRegionProtector extends BlockEntityBase {
         StructurePlaceSettings structureplacesettings = new StructurePlaceSettings();
 
         BlockPos blockpos1 = blockpos.offset(profile.getOffset().getBlockPos());
+
+        if (!serverLevel.isLoaded(new BlockPos(profile.getRegion().minX, profile.getRegion().minY, profile.getRegion().minZ))) {
+            return false;
+        }
+
+        if (!serverLevel.isLoaded(new BlockPos(profile.getRegion().maxX, profile.getRegion().maxY, profile.getRegion().maxZ))) {
+            return false;
+        }
+
+        if (!serverLevel.isLoaded(new BlockPos(profile.getRegion().minX, profile.getRegion().minY, profile.getRegion().maxZ))) {
+            return false;
+        }
+
+        if (!serverLevel.isLoaded(new BlockPos(profile.getRegion().maxX, profile.getRegion().minY, profile.getRegion().minZ))) {
+            return false;
+        }
 
         for (BlockPos pos : BlockPos.betweenClosed((int) profile.getRegion().minX, (int) profile.getRegion().minY, (int) profile.getRegion().minZ, (int) profile.getRegion().maxX, (int) profile.getRegion().maxY, (int) profile.getRegion().maxZ)) {
 

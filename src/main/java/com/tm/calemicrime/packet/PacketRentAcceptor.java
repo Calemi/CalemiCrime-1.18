@@ -218,6 +218,15 @@ public class PacketRentAcceptor {
                         rentAcceptor.autoPlotReset = autoResetPlot;
                     }
 
+                    else if (command.equalsIgnoreCase("loadplot")) {
+
+                        if (rentAcceptor.regionProtector != null) {
+                            rentAcceptor.isPlotReset = true;
+                            rentAcceptor.lastRentDepleteTimeSeconds = Integer.MAX_VALUE;
+                            rentAcceptor.regionProtector.loadPlot(player.getLevel());
+                        }
+                    }
+
                     rentAcceptor.markUpdated();
                 }
             }

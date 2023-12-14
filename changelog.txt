@@ -1,3 +1,7 @@
+[v2.0.35]
+- Added button to reset plots before the auto timer.
+- Attempt #1 to fix plots not automatically resetting.
+
 [v2.0.34]
 - Attempt #3 to fix Rent Acceptor rent time & bar not decreasing.
 
