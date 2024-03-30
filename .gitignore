@@ -43,3 +43,9 @@ local.properties
 
 # PDT-specific
 .buildpath
+.gradle/7.3/checksums/checksums.lock
+.gradle/7.3/checksums/md5-checksums.bin
+.gradle/7.3/checksums/sha1-checksums.bin
+.gradle/7.3/dependencies-accessors/dependencies-accessors.lock
+.gradle/7.3/fileHashes/fileHashes.lock
+.gradle/buildOutputCleanup/buildOutputCleanup.lock
