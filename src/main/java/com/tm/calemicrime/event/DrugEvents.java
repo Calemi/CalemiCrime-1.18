@@ -117,8 +117,7 @@ public class DrugEvents {
 
         GameRenderer renderer = Minecraft.getInstance().gameRenderer;
 
-        if (renderer.currentEffect() == null || !renderer.currentEffect().getName().equals("minecraft:shaders/post/" + shaderName + ".json")) {
+
             renderer.loadEffect(new ResourceLocation("shaders/post/" + shaderName + ".json"));
-        }
     }
 }
